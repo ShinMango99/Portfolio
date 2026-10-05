@@ -73,7 +73,7 @@ button { font: inherit; }
 /* sections */
 .section { padding: 64px 0; border-bottom: 1px solid var(--line); }
 .section h2 { font-size: 1.75rem; margin-bottom: 8px; }
-.lead { color: var(--muted); max-width: 60ch; margin-bottom: 32px; }
+.lead { color: var(--muted); max-width: none; margin-bottom: 32px; }
 .eyebrow { color: var(--muted); font-size: 1rem; margin: 16px 0 4px; }
 .todo { color: var(--todo); font-style: italic; }
 
