@@ -1,4 +1,4 @@
-# Jaemin Cho · Game Developer Portfolio (rough draft)
+# Jaemin Cho · Game Developer Portfolio
 
 Static single-page portfolio for GitHub Pages: **https://shinmango99.github.io/Portfolio/**
 
