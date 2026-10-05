@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jaemin Cho · Game Developer (Draft)</title>
+  <meta name="description" content="Jaemin Cho: Unity / C# game developer, pixel artist and learning assistant. Projects, roles and a timeline from 2022 to now.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Jaemin Cho · Game Developer">
+  <meta property="og:description" content="Unity / C# gameplay, pixel art and teaching. Projects, roles and a timeline from 2022 to now.">
+  <meta property="og:url" content="https://shinmango99.github.io/Portfolio/">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="#top">Jaemin Cho</a>
+      <nav aria-label="Sections">
+        <ul class="nav">
+          <li><a href="#abilities">Abilities</a></li>
+          <li><a href="#timeline">Timeline</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#teaching">Teaching</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 1. Hero -->
+    <section class="section hero" id="top" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div>
+          <img class="profile-photo" id="profile-photo" src="assets/img/profile.webp" alt="Drawing of Jaemin Cho" width="120" height="120">
+          <p class="eyebrow" id="hero-name"></p>
+          <h1 id="hero-title">
+            <span class="sr-only" id="hero-sr"></span>
+            <span aria-hidden="true">I'm confident in <em id="phrase"></em>.</span>
+          </h1>
+          <p class="lead" id="hero-intro"></p>
+          <p class="actions">
+            <a class="button button--primary" href="#timeline">See my timeline</a>
+            <a class="button" href="#contact">Contact</a>
+          </p>
+        </div>
+        <figure class="hero-feature">
+          <div class="media" id="hero-media"></div>
+          <figcaption id="hero-caption"></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 2. Abilities -->
+    <section class="section" id="abilities" aria-labelledby="abilities-title">
+      <div class="container">
+        <h2 id="abilities-title">Abilities</h2>
+        <p class="lead">Self-assessed levels out of 10. Lower numbers are skills I am still leveling up.</p>
+        <div class="skills" id="skills"></div>
+      </div>
+    </section>
+
+    <!-- 3. Timeline -->
+    <section class="section" id="timeline" aria-labelledby="timeline-title">
+      <div class="container">
+        <h2 id="timeline-title">Timeline</h2>
+        <p class="lead">From 2022 to now.</p>
+        <div id="timeline-list"></div>
+      </div>
+    </section>
+
+    <!-- 4. Selected work -->
+    <section class="section" id="work" aria-labelledby="work-title">
+      <div class="container">
+        <h2 id="work-title">Selected Work</h2>
+        <p class="lead">Game projects, newest first.</p>
+        <ul class="cards" id="work-list"></ul>
+      </div>
+    </section>
+
+    <!-- 5. Teaching -->
+    <section class="section" id="teaching" aria-labelledby="teaching-title">
+      <div class="container">
+        <h2 id="teaching-title">Teaching &amp; Community</h2>
+        <ul class="cards cards--two" id="teaching-list"></ul>
+      </div>
+    </section>
+
+    <!-- 6. Contact -->
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <h2 id="contact-title">Contact</h2>
+        <ul class="contact" id="contact-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year">2026</span> Jaemin Cho · Draft</p>
+    </div>
+  </footer>
+
+  <noscript>
+    <p class="container">This page needs JavaScript. My games are also at
+      <a href="https://mangocareer.itch.io">mangocareer.itch.io</a>.</p>
+  </noscript>
+</body>
+</html>
