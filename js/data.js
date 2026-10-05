@@ -125,7 +125,7 @@
       links: {
         itch: null,
         instagram: "https://www.instagram.com/p/DOC-EH6kjHV/",
-        youtube: https://youtu.be/0fFwyaOrnb8
+        youtube: "https://youtu.be/0fFwyaOrnb8"
       },
       video: null,
       poster: "assets/img/ccc-challenge.png",
