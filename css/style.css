@@ -143,7 +143,7 @@ button { font: inherit; }
   background: rgba(0, 0, 0, 0.75);
   color: #fff;
 }
-.media-play:hover span, .media-play:focus-visible span { background: var(--accent); }
+    .media-play:hover span, .media-play:focus-visible span { background: var(--yellow); color: var(--text); }
 .media-empty {
   position: absolute;
   inset: 0;
