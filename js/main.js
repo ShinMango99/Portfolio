@@ -188,15 +188,16 @@
 
   var c = prof.contact;
   $("#contact-list").innerHTML = [
-    ["itch.io", c.itch],
-    ["GitHub", c.github],
-    ["Email", isTodo(c.email) ? c.email : "mailto:" + c.email],
-    ["LinkedIn", c.linkedin],
-    ["Instagram", c.instagram]
+      ["itch.io", c.itch, "assets/img/logoItchio.png"],
+      ["GitHub", c.github, "assets/img/logoGithub.png"],
+      ["Email", isTodo(c.email) ? c.email : "mailto:" + c.email, "assets/img/logoGmail.png"],
+      ["LinkedIn", c.linkedin, "assets/img/logoLinkin.png"],
+      ["Instagram", c.instagram, "assets/img/logoInsta.png"]
   ].filter(function (l) { return l[1] !== undefined && l[1] !== null; }).map(function (l) {
-    if (isTodo(l[1])) return '<li><span class="button" aria-disabled="true">' + l[0] + ' <span class="todo">[TODO]</span></span></li>';
-    var ext = /^https?:/.test(l[1]);
-    return '<li><a class="button" href="' + esc(l[1]) + '"' + (ext ? ' target="_blank" rel="noopener"' : "") + ">" + l[0] + "</a></li>";
+      var icon = '<img class="contact-icon" src="' + l[2] + '" alt="" width="20" height="20">';
+      if (isTodo(l[1])) return '<li><span class="button" aria-disabled="true">' + icon + l[0] + ' <span class="todo">[TODO]</span></span></li>';
+      var ext = /^https?:/.test(l[1]);
+      return '<li><a class="button" href="' + esc(l[1]) + '"' + (ext ? ' target="_blank" rel="noopener"' : "") + ">" + icon + l[0] + "</a></li>";
   }).join("");
   $("#year").textContent = new Date().getFullYear();
 })();
