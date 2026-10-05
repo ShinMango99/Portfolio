@@ -218,3 +218,5 @@ button { font: inherit; }
 /* contact + footer */
 .contact { display: flex; flex-wrap: wrap; gap: 12px; }
 .site-footer { padding: 24px 0 40px; color: var(--muted); font-size: 1rem; }
+.contact .button { display: inline-flex; align-items: center; gap: 8px; }
+.contact-icon { width: 20px; height: 20px; flex-shrink: 0; }
