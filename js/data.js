@@ -294,7 +294,7 @@
       date: "2026-09-09",
       ongoing: true,
       completion: 0.3,
-      links: { itch: null, instagram: "https://www.instagram.com/p/DdB52fcKDRq/", youtube: null },
+      links: { itch: null, instagram: "https://www.instagram.com/p/DdB52fcKDRq/", youtube: "https://youtu.be/MTsg2eIMW3U" },
       video: null,
       poster: "assets/img/ohmycod.webp",
       summary: "A desperate flopping journey of a fish out of water!",
