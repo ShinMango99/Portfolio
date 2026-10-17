@@ -261,7 +261,7 @@
       date: "2026-05-26",
       ongoing: false,
       completion: 1,
-      links: { itch: "https://mangocareer.itch.io/toast-to-the-past", instagram: null, youtube: null },
+      links: { itch: "https://mangocareer.itch.io/toast-to-the-past", instagram: null, youtube: "https://youtu.be/NUGwvdhcQ6I" },
       video: null,
       poster: "https://img.itch.zone/aW1nLzI3NDYyNDI5LnBuZw==/original/85QetF.png",
       summary: "Time is your most precious resource: every action that speeds up or pauses time leaves an echo in the environment.",

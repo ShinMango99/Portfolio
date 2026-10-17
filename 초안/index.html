@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jaemin Cho · Game Developer</title>
+  <meta name="description" content="Jaemin Cho: Unity / C# game developer, pixel artist and teaching assistant. Game jam, class, club and personal projects with trailers, roles and results.">
+  <meta name="theme-color" content="#12111d">
+  <link rel="canonical" href="https://shinmango99.github.io/Portfolio/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Jaemin Cho · Game Developer">
+  <meta property="og:description" content="Unity / C# gameplay, pixel art and teaching. See what I made, what I did on each project, and how my path progressed.">
+  <meta property="og:url" content="https://shinmango99.github.io/Portfolio/">
+  <meta property="og:image" content="https://shinmango99.github.io/Portfolio/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/svg+xml" href="assets/pixel/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/pixel/favicon-32.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&family=Press+Start+2P&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="js/data.js" defer></script>
+  <script src="js/sprites.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-nav" id="site-nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#top" aria-label="Jaemin Cho, back to top">
+        <span class="nav-logo-icon" id="nav-logo-icon"></span>
+        <span class="nav-logo-text">J.CHO</span>
+      </a>
+      <nav aria-label="Sections">
+        <ul class="nav-links">
+          <li><a href="#abilities">Abilities</a></li>
+          <li><a href="#timeline">Timeline</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#teaching">Teaching</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="xp" aria-hidden="true">
+      <span class="xp-level" id="xp-level">LV 1</span>
+      <span class="xp-track"><span class="xp-fill" id="xp-fill"></span></span>
+      <span class="xp-pop" id="xp-pop">LEVEL UP!</span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 1. HERO -->
+    <section class="hero section" id="top" data-level="1" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <div class="hero-sprite" id="hero-sprite"></div>
+          <p class="eyebrow" id="hero-name">Jaemin Cho</p>
+          <h1 class="hero-title" id="hero-title">
+            <span class="sr-only" id="hero-sr"></span>
+            <span aria-hidden="true">I'm confident in <span class="typed" id="typed"></span><span class="caret"></span>.</span>
+          </h1>
+          <p class="hero-intro" id="hero-intro"></p>
+          <div class="btn-row">
+            <a class="btn btn--primary" href="#timeline">See my timeline</a>
+            <a class="btn" href="#contact">Contact</a>
+          </div>
+        </div>
+        <figure class="hero-trailer panel" id="hero-trailer">
+          <div class="trailer" id="hero-trailer-slot"></div>
+          <figcaption class="hero-trailer-cap" id="hero-trailer-cap"></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 2. ABILITIES -->
+    <section class="section" id="abilities" data-level="2" aria-labelledby="abilities-title">
+      <div class="container">
+        <h2 class="section-title" id="abilities-title"><span class="section-num">01</span> Abilities</h2>
+        <p class="section-lead">Self-assessed levels out of 10. Lower numbers are skills I am actively leveling up.</p>
+        <div class="skills-grid" id="skills-grid"></div>
+      </div>
+    </section>
+
+    <!-- 3. TIMELINE -->
+    <section class="section" id="timeline" data-level="3" aria-labelledby="timeline-title">
+      <div class="container">
+        <h2 class="section-title" id="timeline-title"><span class="section-num">02</span> Timeline</h2>
+        <p class="section-lead">Newest first. Every entry shows what I made and what came out of it. Select one for details.</p>
+        <div class="filters" role="group" aria-label="Filter timeline by category" id="filters"></div>
+        <div class="tl-layout">
+          <div class="tl" id="tl">
+            <div class="tl-spine" aria-hidden="true"><span class="tl-spine-fill" id="tl-spine-fill"></span></div>
+            <div id="tl-groups"></div>
+            <p class="tl-empty" id="tl-empty" hidden>No entries in this category yet.</p>
+          </div>
+          <aside class="tl-preview panel" id="tl-preview" aria-hidden="true"></aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SELECTED WORK -->
+    <section class="section" id="work" data-level="4" aria-labelledby="work-title">
+      <div class="container">
+        <h2 class="section-title" id="work-title"><span class="section-num">03</span> Selected Work</h2>
+        <p class="section-lead">Game projects. Hover or focus a card to preview, select it for the trailer, my role and tools.</p>
+        <ul class="work-grid" id="work-grid"></ul>
+      </div>
+    </section>
+
+    <!-- 5. TEACHING & COMMUNITY -->
+    <section class="section" id="teaching" data-level="5" aria-labelledby="teaching-title">
+      <div class="container">
+        <h2 class="section-title" id="teaching-title"><span class="section-num">04</span> Teaching &amp; Community</h2>
+        <p class="section-lead">Helping other people learn to make games.</p>
+        <div class="teach-grid" id="teach-grid"></div>
+      </div>
+    </section>
+
+    <!-- 6. CONTACT -->
+    <section class="section contact" id="contact" data-level="5" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="contact-box panel">
+          <p class="eyebrow">Save point reached</p>
+          <h2 class="section-title" id="contact-title">Let's make something</h2>
+          <p class="section-lead">Open to gameplay programming, game operations and community roles.</p>
+          <ul class="contact-links" id="contact-links"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year">2026</span> Jaemin Cho. Built with plain HTML, CSS and JS.</p>
+      <p><a href="#top">Back to top &uarr;</a></p>
+    </div>
+  </footer>
+
+  <dialog class="modal panel" id="modal" aria-labelledby="modal-title">
+    <button class="modal-close" type="button" id="modal-close" aria-label="Close details">&times;</button>
+    <div class="modal-inner" id="modal-body"></div>
+  </dialog>
+
+  <noscript>
+    <p class="noscript">This portfolio needs JavaScript to show its projects. You can also browse my games at
+      <a href="https://mangocareer.itch.io">mangocareer.itch.io</a>.</p>
+  </noscript>
+</body>
+</html>
