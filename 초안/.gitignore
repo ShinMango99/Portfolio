@@ -1,0 +1,8 @@
+# Source spreadsheet: not for publishing
+*.xlsx
+~$*
+
+# Local tooling
+.claude/
+.DS_Store
+Thumbs.db
