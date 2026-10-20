@@ -310,17 +310,17 @@
       category: "Personal",
       date: "2026-10-17",
       ongoing: true,
-      completion: 0.5,
+      completion: 0.2,
       links: { itch: "https://mangocareer.itch.io/this-is-not-chess", instagram: "https://www.instagram.com/reel/DenDmP3Kjz-/", youtube: "https://youtu.be/M9X4RftFP8I" },
       video: null,
       poster: "assets/img/this-is-not-chess.webp",
       summary: "Chess, but nothing stays still.",
       description:
-        "A Unity chess game where the board fights back. Pieces shatter into cubes and rebuild themselves, your king sweats when he's in check, and losing calls down a storm cloud over your head. On top of classic online chess, Deckmate mode mixes in Uno-style cards: play a card to bend the rules, with 13 jokers that can change the board mid-game. You can also play solo against an AI at 4 levels (Pawn → Knight → Rook → Queen).",
+        "A Unity chess game where the board fights back. On top of classic online chess, Deckmate mode mixes in Uno-style cards: play a card to bend the rules, and 22 jokers can completely change the board mid-game.",
       role: "Game design, rules design, game feel/VFX direction, programming (AI-assisted)",
       tools: "Unity, C#, AI pair programming",
       team: "1 (solo)",
-      outcome: "Playable build on itch.io with online multiplayer, an in-game chat, a Deckmate card mode with 13 jokers and a tutorial, and a 4-level AI opponent."
+      outcome: "Windows build downloadable on itch.io, with online multiplayer, a Classic mode, and a Deckmate card mode with 22 jokers."
     }
   ]
 };
