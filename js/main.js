@@ -140,7 +140,7 @@
       if (e.milestone) {
         var m = e.milestone;
         return '<li class="tl-item tl-item--milestone"><span class="tl-date">' + fmtDate(m.date) +
-          (m.end ? " – " + fmtDate(m.end) : "") + "</span> " +
+          (m.end ? " - " + fmtDate(m.end) : "") + "</span> " +
           (m.image ? '<img class="tl-logo" src="' + esc(m.image) + '" alt="">' : "") +
           '<span class="tl-title">' + esc(m.title) + "</span>" +
           (m.note ? '<p class="tl-note">' + esc(m.note) + "</p>" : "") + "</li>";

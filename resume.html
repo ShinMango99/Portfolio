@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jaemin Cho Resume</title>
+<style>
+  /* Same tokens as css/style.css so the resume and the portfolio match. */
+  :root {
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --text: #1c1c1c;
+    --muted: #666666;
+    --line: #d6d3cc;
+    --accent: #1f4e8c;
+    --yellow: #f7e9a0;
+    --yellow-strong: #f1d96b;
+    --font: "Times New Roman", Times, serif;
+  }
+
+  @page { size: Letter; margin: 0; }
+
+  *, *::before, *::after { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    background: var(--line);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 10pt;
+    line-height: 1.33;
+  }
+
+  a { color: var(--accent); text-underline-offset: 2px; }
+  p, ul { margin: 0; padding: 0; }
+  ul { list-style: none; }
+
+  /* icons: one stroke style, always paired with a word, never decoration only */
+  .ic { width: 1em; height: 1em; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.12em; }
+  .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* one Letter page: white main column + pale yellow sidebar */
+  .page {
+    display: grid;
+    grid-template-columns: 1fr 2.5in;
+    width: 8.5in;
+    min-height: 11in;
+    margin: 0 auto;
+    background: var(--surface);
+  }
+
+  .main { padding: 0.4in 0.3in 0.3in 0.5in; }
+  .side { padding: 0.4in 0.22in 0.3in 0.22in; background: var(--yellow); }
+
+  /* name block */
+  h1 {
+    display: inline;
+    margin: 0;
+    font-size: 27pt;
+    line-height: 1.15;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    /* solid band instead of a hard-stop gradient: gradients can show a seam line in some viewers */
+    box-shadow: inset 0 -0.34em 0 var(--yellow);
+  }
+  .role { margin-top: 4px; color: var(--accent); font-size: 12.5pt; font-weight: 700; }
+  .summary { margin-top: 9px; }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 13px 0 7px;
+    padding-bottom: 2px;
+    border-bottom: 1.5px solid var(--text);
+    font-size: 10.5pt;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .main h2 .ic { color: var(--accent); }
+  .side h2 { border-bottom-color: rgba(28, 28, 28, 0.55); }
+
+  .meta { color: var(--muted); }
+  .who { white-space: nowrap; }
+
+  /* timeline: newest first, line on the left, one dot per entry */
+  .timeline { position: relative; margin-left: 5px; padding-left: 15px; border-left: 2px solid var(--accent); }
+  .tl { position: relative; margin-bottom: 8px; break-inside: avoid; }
+  .tl:last-child { margin-bottom: 0; }
+  .tl::before {
+    content: "";
+    position: absolute;
+    left: -21px;
+    top: 4px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+  }
+  .tl.now::before { background: var(--yellow-strong); }
+  /* Projects are the most important section: larger type */
+  .projects { font-size: 11pt; line-height: 1.25; }
+  .projects .tl { margin-bottom: 5px; }
+  .projects .when { font-size: 10pt; }
+  .projects .row b { font-size: 12.5pt; }
+  .projects .lk img { width: 12px; height: 12px; }
+  .legend { margin-top: 6px; color: var(--muted); font-size: 8.5pt; }
+  .legend i { display: inline-block; width: 7px; height: 7px; margin-right: 3px; border-radius: 50%; border: 2px solid var(--accent); background: var(--yellow-strong); vertical-align: -1px; box-sizing: content-box; }
+
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .when { color: var(--muted); white-space: nowrap; font-size: 9pt; }
+  .tl p { margin-top: 1px; }
+  .lk { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; margin-right: 6px; }
+  .lk img { width: 11px; height: 11px; }
+
+  /* sidebar */
+  .contact li { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; white-space: nowrap; font-size: 9pt; }
+  .contact .chip {
+    flex: none;
+    display: grid; place-items: center;
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    background: var(--surface);
+    border: 1px solid rgba(28, 28, 28, 0.25);
+  }
+  .contact .chip img { width: 12px; height: 12px; }
+  .contact .chip .ic { width: 12px; height: 12px; color: var(--text); }
+  .side a { color: var(--accent); }
+  .side li { margin-bottom: 2px; }
+  .group { margin-bottom: 8px; }
+  .group b { display: block; }
+  .skill-row { display: flex; gap: 6px; }
+
+  @media screen and (max-width: 8.6in) {
+    .page { width: 100%; grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></symbol>
+  <symbol id="i-gamepad" viewBox="0 0 24 24"><path d="M6 12h4M8 10v4M15 13h.01M18 11h.01"/><path d="M17.32 5H6.68a4 4 0 0 0-3.98 3.59C2.6 9.42 2 14.46 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.41-1.41A2 2 0 0 1 9.83 16h4.34a2 2 0 0 1 1.42.59L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.55-.6-6.58-.68-7.26A4 4 0 0 0 17.32 5z"/></symbol>
+  <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+</svg>
+
+<div class="page">
+
+  <main class="main">
+    <h1>Jaemin Cho</h1>
+    <div class="role">Unity / C# Game Developer</div>
+
+    <p class="summary">
+      Computer Game Design student at George Mason University who has shipped 10+ playable games in Unity and Unreal,
+      from solo game jam entries to club projects with up to 14 people. Programs gameplay and UI, makes pixel art,
+      and has taught Unity and C# to other students.
+    </p>
+
+    <h2><svg class="ic"><use href="#i-gamepad"/></svg>Projects</h2>
+
+    <div class="timeline projects">
+
+      <div class="tl now">
+        <div class="row"><span><b>This Is Not Chess</b> <span class="meta who"><svg class="ic"><use href="#i-user"/></svg> Solo &middot; Unity, C#</span></span><span class="when">Oct 2026</span></div>
+        <p>Built on purpose with AI pair programming, to learn how to use AI well and to grow my development skills. Online multiplayer plus a card mode with 22 rule-bending jokers.
+          <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/this-is-not-chess">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/M9X4RftFP8I">trailer</a></span></p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Toast to the Past</b> <span class="meta who"><svg class="ic"><use href="#i-user"/></svg> Solo &middot; Unity, Aseprite</span></span><span class="when">May 2026</span></div>
+        <p>Time-manipulation platformer (programming and pixel art) for the 2026 GMU Spring GameJam.
+          <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/toast-to-the-past">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/NUGwvdhcQ6I">trailer</a></span></p>
+      </div>
+
+      <div class="tl now">
+        <div class="row"><span><b>Cat&rsquo;astrophe</b> <span class="meta who"><svg class="ic"><use href="#i-users"/></svg> Team of 6 &middot; Unity</span></span><span class="when">Nov 2025</span></div>
+        <p>Producer and main programmer on a mobile platformer; the Android build is 90% complete, aiming for Google Play.
+          <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/catastrophe">itch.io</a></span></p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Shh</b> <span class="meta who"><svg class="ic"><use href="#i-user"/></svg> Solo &middot; Unity, 3ds Max, Aseprite</span></span><span class="when">Sep 2025</span></div>
+        <p>Horror escape game made alone (programming, art, sound, voice); 1st place overall at Mason Korea Game Jam Fall 2025. First time trying procedural animation.
+          <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/shh">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/h2Kdwcp37r0">trailer</a></span></p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Save the Pig</b> <span class="meta who"><svg class="ic"><use href="#i-users"/></svg> Team of 7 &middot; Unity</span></span><span class="when">2023 - 2024</span></div>
+        <p>Co-programmed a farming sim about African Swine Fever; shown at the World Food Forum in Rome and released for HTML5 and Android.
+          <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://g-nonymous.itch.io/bio">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/xtaSFKIv6q4">trailer</a></span></p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Lost</b> <span class="meta who"><svg class="ic"><use href="#i-user"/></svg> Solo &middot; Unreal Engine</span></span><span class="when">Dec 2023</span></div>
+        <p>Produced and programmed a 3D horror maze escape in Unreal Engine and shipped a Windows build.
+          <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/lost">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/nUGToROrL2Y">trailer</a></span></p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Sweet Sixteen</b> <span class="meta who"><svg class="ic"><use href="#i-users"/></svg> Team of 14 &middot; Unity</span></span><span class="when">May 2023</span></div>
+        <p>Programmed the enemies and co-built the UI for a club game about drug addiction; Progress@Play Award.
+          <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/sweet-sixteen">itch.io</a></span></p>
+      </div>
+
+    </div>
+    <div class="legend"><i></i>In progress</div>
+
+    <h2><svg class="ic"><use href="#i-briefcase"/></svg>Experience</h2>
+
+    <div class="timeline">
+
+      <div class="tl">
+        <div class="row"><span><b>Learning Assistant</b>, Unity &amp; C# <span class="meta">&middot; George Mason University</span></span><span class="when">2026</span></div>
+        <p>Gave code reviews and technical guidance on camera, physics/collision, and health systems.</p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Programmer</b> <span class="meta">&middot; FAO Korea &amp; SDGs Builders collaboration</span></span><span class="when">Oct 2023</span></div>
+        <p>Built Save the Pig with Gnonymous for FAO; the game was exhibited at World Food Forum 2023 at FAO headquarters in Rome, where the booth drew 100+ visitors.
+          <span class="lk"><svg class="ic"><use href="#i-doc"/></svg><a href="https://chss.gmu.edu/articles/19979">GMU article</a></span><span class="lk"><svg class="ic"><use href="#i-globe"/></svg><a href="https://www.fao.org/asiapacific/events/events-detail/World-Food-Forum-/en">FAO event page</a></span></p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Lecturer</b>, MK Mentoring <span class="meta">&middot; Game design program</span></span><span class="when">Sep 2023</span></div>
+        <p>Taught 9 hours over 3 sessions; the students rebuilt the game Pong in Unity.</p>
+      </div>
+
+      <div class="tl">
+        <div class="row"><span><b>Vice President</b> <span class="meta">&middot; Gnonymous game club</span></span><span class="when">Feb - Dec 2023</span></div>
+        <p>Led club projects and members after serving as PR Manager (from Aug 2022).</p>
+      </div>
+
+    </div>
+  </main>
+
+  <aside class="side">
+    <h2><svg class="ic"><use href="#i-link"/></svg>Contact</h2>
+    <ul class="contact">
+      <li><span class="chip"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACIUlEQVR4Ae2XA8zdYBiFZ9vBbNu2bdu2bQSzbdtmNEWzF4zRvLXf2U62/ul901vOW5Ln4nw4z2XbSFX71fql/Bf4vQTQcfUEtJlzSDWfNP57F6ltCSaoE9EPqEvRQvY2lyuCtvOhmk+GajQEqlulVEGLuYe+KOUHbI8HnIgGXIoK/WYCPUSAr9xKQK/bGXrtMiX8lnOtmpgWalEKSAHcTjAmQoBve1iB6o2h1SvV12s51+h9sqpwAo9vZT3oXqBiJV2rVny923LO1Vrmg2sBrXypXSy2FShfGlqFMlecyjlHq1sETgJlznXeHyLAApbbChA+rlAqqSxm9nWsBOwEblzIjBznusBSgItZbCdgYP5y8rGR2wgY5dYCpg1YHE5A0uQbsBPAglhYfagCIp3tYiMgNmGxFLDBRiANBhyoH1JOEh7rsUsKQMIvlF617tMgAnylLE9xop0ZdwLMOU4JHwL3uZZF8Y92gsSTANEqljrkVoBzjXUsinNwGCSuBcRPbaKTAOeY10TfPX9XzL0zIWHuWYDIb72giZzPomg7V0DiWUBIZJJzmVnNjbr5yK5IW/dAwtyXgPzbJTKXAjE2nIEkuIBLkq6+uivVyuuQMP8pAmmX3bMUYP5TBArMf70r18KXkDD/aQLF53yC5KcJFJqOA0VnARLmJoHSwy0F+I/2gwQKz8DQCAFDgoVmjGN+EApMRTFKmPmSjfh/ZWTwX+Azqs2v1Z3jl+0AAAAASUVORK5CYII=" alt="Email"></span><a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=mangocareer030624%40gmail.com">mangocareer030624@gmail.com</a></li>
+      <li><span class="chip"><svg class="ic"><use href="#i-globe"/></svg></span><a href="https://shinmango99.github.io/Portfolio/">shinmango99.github.io/Portfolio</a></li>
+      <li><span class="chip"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt="itch.io"></span><a href="https://mangocareer.itch.io">mangocareer.itch.io</a></li>
+      <li><span class="chip"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEX////4+Pi3ubtvcnZNUVU+Q0cpLjLr6+x3en0sMTYkKS59gIORk5aUl5n8/Pzw8PFTV1tbX2Pc3d5DSEzn5+g3PECLjpFKTlKFh4qxs7XCxMUuMze/wcLh4uPV1tZzd3o/Q0jOz9CmqKpjZ2qfoaTxAyfNAAABPUlEQVR4AW3TBYKDMBQE0AltAgzuzur9z7ibH5oKfWjc4UEFl6s2Rl8vgcJZGMX04iTEM5UaPomzHA+KkidVAa/WfKNpffMd32oKCHUlWfb27Q19ZSMVrNHGTMDckMtQLqSegdXGpvi3Sf93W9UudRby2WzsEgL4oMvwoqY1AsrQNfFipbXkCGh1BV6oT1pfRwvfOJlo9ZA5NAonStbmB1pawBuDTAgkX4MzV/eC2H3e0C7lk1aBEzd+7SpigJOZVoXx+J5UxzADil+8+KZYoRaK5y2WZxSdgm0j+dakzkIc2kzT6W3IcFnDTzdt4sKbWMqkpNl229IMsfMmg6UaMsJXmv4qCMXDoI4mO5oADwyFDnGoO3KI0jSHQ6E3eJum5TP4Y+EVyUOGXHZjgWd7ZEwOJzZRjbPQt7mF8P4AzsYZpmkFLF4AAAAASUVORK5CYII=" alt="GitHub"></span><a href="https://github.com/shinmango99">github.com/shinmango99</a></li>
+      <li><span class="chip"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABDUlEQVR4AWP4////gOLB44D6nTcsGIo33QHi/zTGd0B2YTiAPpYjHIHNAf/piQk6wGPW8f/rLz8HYRCbXg5AWI4GQGJ0cwDY12gAJDbcHUA4CkZAIqQUK7Ts/m/SfxBMs5RupswBaACr+P47b/5zlG/5DyzZ/r/+8hNF7vuvP//nn3r0X6JhJ+0ccPrR+/+H7735jw9cf/n5v0D1Nuo5gBxQve06zR0AjoL7b7/+//zjN4bc+ScfaOeA33///k9Yfg4mDw7u/Xdeo6uhnQP6D93FMNxlxjF0ZbRzgMXEQ9iyI90cALIMJoccDXRzAK6CZog6YNQBow6gIx54Bwx4x2RAu2bAysoEZu9o7xgAQrvkxt3WZi0AAAAASUVORK5CYII=" alt="LinkedIn"></span><a href="https://www.linkedin.com/in/jaemin-cho-a26674267/">linkedin.com/in/jaemin-cho</a></li>
+    </ul>
+
+    <h2><svg class="ic"><use href="#i-code"/></svg>Skills</h2>
+    <div class="group"><b>Programming</b>C# (advanced)<br>C++ (familiar)</div>
+    <div class="group"><b>Engines</b>Unity (advanced)<br>Unreal Engine (basic)<br>Effect House</div>
+    <div class="group"><b>Art &amp; Video</b>Aseprite, Photoshop<br>3ds Max (basic)<br>DaVinci Resolve</div>
+    <div class="group"><b>Other</b>Git/GitHub, teaching,<br>team collaboration</div>
+
+    <h2><svg class="ic"><use href="#i-cap"/></svg>Education</h2>
+    <div class="group"><b>George Mason University</b>BFA, Computer Game Design<br><span class="meta">Feb 2022 - Expected 2027</span></div>
+
+    <h2><svg class="ic"><use href="#i-globe"/></svg>Languages</h2>
+    <ul><li>Korean (native)</li><li>English (upper intermediate)</li></ul>
+
+    <h2><svg class="ic"><use href="#i-award"/></svg>Awards</h2>
+    <ul><li>1st place overall, Mason Korea Game Jam Fall 2025</li><li>Progress@Play Award, 2023</li></ul>
+  </aside>
+
+</div>
+</body>
+</html>
