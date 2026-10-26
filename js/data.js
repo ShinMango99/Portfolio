@@ -5,7 +5,10 @@
     photo: "assets/img/profile.webp",
     intro:
       "Unity & C# Developer and Pixel Artist turning creative game concepts into playable reality.",
+    // hero title: heroLead / (typed phrase) / heroTail, one per line
+    heroLead: "I'm confident in",
     typedPhrases: ["Unity & C# gameplay", "pixel art", "teaching & mentoring", "team collaboration"],
+    heroTail: "and I ship what I start.",
     featured: "shh", // project id whose trailer is shown at the top right
     contact: {
       itch: "https://mangocareer.itch.io",
@@ -20,32 +23,31 @@
     {
       group: "Programming",
       items: [
-        { name: "C#", level: 8, desc: "Main language. What I have used the most while working in Unity." },
-        { name: "C++", level: 7, desc: "A stepping stone I went through while learning C#." }
+        { name: "C#", level: 7, desc: "Main language. What I have used the most while working in Unity." },
+        { name: "C++", level: 6, desc: "A stepping stone I went through while learning C#." }
       ]
     },
     {
       group: "Engine",
       items: [
-        { name: "Unity", level: 8, desc: "Main engine, used in every project." },
-        { name: "Unreal", level: 5, desc: "Blueprint-style coding was hard at first, but I have grown comfortable with it." }
+        { name: "Unity", level: 7, desc: "Main engine, used in every project." },
+        { name: "Unreal", level: 4, desc: "Blueprint-style coding was hard at first, but I have grown comfortable with it." }
       ]
     },
     {
       group: "Art",
       items: [
-        { name: "Pixel Art", level: 6, desc: "I can generally produce the look I have in mind." },
-        { name: "DaVinci Resolve", level: 5, desc: "I can edit and put together game trailers." },
-        { name: "Concept Art", level: 4, desc: "I can block out the compositions I imagine." },
-        { name: "Adobe", level: 4, desc: "Photoshop, Illustrator, InDesign and Premiere Pro: I understand how they are structured and can use them." },
-        { name: "3ds Max", level: 3, desc: "I understand how it is structured and can use it." }
+        { name: "Pixel Art", level: 5, desc: "I can generally produce the look I have in mind." },
+        { name: "DaVinci Resolve", level: 4, desc: "I can edit and put together game trailers." },
+        { name: "Adobe", level: 3, desc: "Photoshop, Illustrator, InDesign and Premiere Pro: I understand how they are structured and can use them." },
+        { name: "3ds Max", level: 2, desc: "I understand how it is structured and can use it." }
       ]
     },
     {
       group: "Communication",
       items: [
-        { name: "Teaching", level: 7, desc: "Experience teaching as a teaching assistant / instructor." },
-        { name: "Collaboration", level: 6, desc: "Experience making games through team projects and collaborations." }
+        { name: "Teaching", level: 6, desc: "Experience teaching as a teaching assistant / instructor." },
+        { name: "Collaboration", level: 5, desc: "Experience making games through team projects and collaborations." }
       ]
     }
   ],
@@ -209,7 +211,7 @@
         youtube: "https://youtu.be/xtaSFKIv6q4"
       },
       video: null,
-      poster: null,
+      poster: "assets/img/save-the-pig.jpg",
       summary: "ASF Prevention Farm: a farming sim about protecting pigs from African Swine Fever.",
       role: "Programmer (with Jiwon Bae)",
       tools: "Unity",

@@ -12,6 +12,7 @@
   --todo: #9a9a9a;
 
   --font: "Times New Roman", Times, serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --gutter: 16px;
 }
 
@@ -93,8 +94,13 @@ button { font: inherit; }
   background: var(--surface);
   text-decoration: none;
   cursor: pointer;
+  /* "sticker": hard offset shadow, lifts on hover, presses flat on click */
+  box-shadow: 3px 3px 0 var(--text);
+  transition: transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out), background 0.12s;
 }
-.button:hover, .button:focus-visible { background: var(--yellow); }
+.button:hover, .button:focus-visible { background: var(--yellow); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--text); }
+.button:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+.button[aria-disabled="true"] { box-shadow: none; transform: none; cursor: default; }
 .button--primary { background: var(--yellow-strong); }
 .button--primary:hover, .button--primary:focus-visible { background: var(--yellow); }
 .button--sm { padding: 6px 10px; font-size: 0.95rem; }
@@ -110,8 +116,24 @@ button { font: inherit; }
 }
 
 /* hero */
-.hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 16px; min-height: 2.5em; }
-.hero h1 em { color: var(--accent); background: linear-gradient(transparent 62%, var(--yellow) 62%); }
+/* the typed line's min-height is set by main.js to the tallest phrase, so typing never moves anything */
+/* ligatures off: Pixelify's "fi" glyph reads as "A" */
+.hero h1 { font-family: "Pixelify Sans", var(--font); font-weight: 700; font-variant-ligatures: none; font-feature-settings: "liga" 0, "clig" 0; font-size: clamp(1.9rem, 4.4vw, 2.75rem); line-height: 1.2; margin-bottom: 16px; }
+/* lead / typed phrase / tail, each on its own line */
+.hero h1 .hero-line { display: block; }
+.hero h1 #hero-tail:empty { display: none; }
+.hero h1 .caret {
+  display: inline-block;
+  width: 0.12em; height: 0.95em;
+  margin-left: 0.08em;
+  vertical-align: -0.1em;
+  background: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1 .caret { animation: caret-blink 1s steps(1) infinite; }
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+.hero h1 em { font-style: normal; color: var(--accent); background: linear-gradient(transparent 62%, var(--yellow) 62%); }
 .hero .lead { margin-bottom: 24px; }
 .hero-grid { display: grid; gap: 40px; align-items: center; }
 @media (min-width: 900px) { .hero-grid { grid-template-columns: 1fr 1fr; } }
@@ -157,15 +179,28 @@ button { font: inherit; }
 
 /* abilities */
 .skills { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-.skill-group { padding: 20px; background: var(--surface); border: 1px solid var(--line); }
-.skill-group header { margin-bottom: 16px; }
+/* cards in a row share one height; the description box sits at the bottom of each */
+.skill-group { display: flex; flex-direction: column; padding: 20px; background: var(--surface); border: 1px solid var(--text); box-shadow: 4px 4px 0 var(--text); }
+.skill-group header { margin-bottom: 12px; }
 .skill-group h3 { font-size: 1.2rem; }
-.skill + .skill { margin-top: 14px; }
+.skill-list { display: flex; flex-direction: column; gap: 4px; flex: 1; margin-bottom: 16px; }
+/* negative side margin keeps the text aligned with the card heading while the highlight bleeds out */
+.skill { display: block; width: calc(100% + 16px); margin: 0 -8px; padding: 6px 8px; border: 1px solid transparent; background: none; color: inherit; font-size: 1.05rem; text-align: left; cursor: pointer; }
+.skill { transition: background 0.12s, transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out); }
+.skill:hover, .skill:focus-visible { background: var(--yellow); border-color: var(--line); }
+.skill[aria-pressed="true"] { background: var(--yellow-strong); border-color: var(--text); box-shadow: 2px 2px 0 var(--text); }
+.skill:active { transform: translate(2px, 2px); box-shadow: none; transition-duration: 0.05s; }
+.skill-info { padding-top: 12px; border-top: 1px solid var(--line); min-height: calc(4.2em + 12px); font-size: 0.95rem; line-height: 1.4; }
 .skill-top { display: flex; justify-content: space-between; gap: 8px; }
 .skill-top b { font-weight: 700; }
 .skill-top span { color: var(--muted); }
-.bar { height: 6px; margin: 4px 0 4px; background: #ecebe7; }
-.bar i { display: block; height: 100%; background: var(--yellow-strong); box-shadow: 0 0 0 1px var(--text); }
+.bar { display: block; height: 6px; margin: 4px 0 4px; background: #ecebe7; }
+.bar i { display: block; height: 100%; background: var(--yellow-strong); box-shadow: 0 0 0 1px var(--text); transform-origin: left; }
+/* bars fill up once the card scrolls into view (main.js adds .in-view) */
+@media (prefers-reduced-motion: no-preference) {
+  .js-anim .bar i { transform: scaleX(0); transition: transform 0.9s var(--ease-out); transition-delay: calc(var(--i, 0) * 90ms + 100ms); }
+  .js-anim .skill-group.in-view .bar i { transform: scaleX(1); }
+}
 .skill p { color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
 
 /* timeline */
@@ -201,12 +236,64 @@ button { font: inherit; }
   border-radius: 50%;
 }
 
+/* timeline preview panel: right column on wide screens, hidden on small ones */
+.tl-layout { display: block; }
+.tl-preview { display: none; }
+@media (min-width: 900px) {
+  .tl-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 40px; align-items: start; }
+  .tl-preview {
+    display: block;
+    position: sticky; top: 80px;
+    padding: 16px;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--text);
+    box-shadow: 4px 4px 0 var(--text);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(12px);
+    /* hide: fade first, then drop visibility */
+    transition: opacity 0.18s, transform 0.18s var(--ease-out), visibility 0s linear 0.18s;
+  }
+  .tl-preview.is-open { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
+}
+.tl-preview-inner { display: flex; flex-direction: column; gap: 10px; }
+@media (prefers-reduced-motion: no-preference) {
+  .tl-preview-inner { animation: tl-swap 0.22s var(--ease-out); }
+  .tl-preview-inner .media img { animation: tl-zoom 0.5s var(--ease-out); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tl-preview { transform: none; }
+}
+@keyframes tl-swap { from { opacity: 0; transform: translateY(6px); } }
+@keyframes tl-zoom { from { transform: scale(1.08); } }
+.tl-item { transition: background 0.15s; }
+.tl-item.is-active { background: linear-gradient(90deg, var(--yellow), transparent 70%); }
+.tl-item:focus-visible { outline-offset: -2px; }
+.tl-preview .media { border-width: 0 0 1px; margin: -16px -16px 4px; border-bottom: 1px solid var(--line); border-top: 0; }
+.tl-preview-title { font-size: 1.25rem; }
+.tl-preview-logo { width: 56px; height: 56px; object-fit: contain; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); }
+.tl-preview-hint { color: var(--muted); font-style: italic; }
+.tl-preview dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 1rem; }
+.tl-preview dt { color: var(--muted); }
+.tl-preview dd { margin: 0; }
+
 /* cards */
 .cards { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
 .cards--two { grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
-.card { display: flex; flex-direction: column; height: 100%; background: var(--surface); border: 1px solid var(--line); }
+.card {
+  display: flex; flex-direction: column; height: 100%;
+  background: var(--surface);
+  border: 1px solid var(--text);
+  box-shadow: 4px 4px 0 var(--text);
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+.card:hover, .card:focus-within { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--text); }
+@media (prefers-reduced-motion: reduce) {
+  .button, .card, .skill { transition: none; }
+}
 .card:target { outline: 2px solid var(--accent); outline-offset: 2px; }
-.card .media { border-width: 0 0 1px; }
+.card .media { border-width: 0 0 1px; border-color: var(--text); }
 .card-body { display: flex; flex-direction: column; gap: 10px; padding: 16px; flex: 1; }
 .card-head h3 { font-size: 1.25rem; }
 .card-meta { color: var(--muted); font-size: 0.95rem; }
