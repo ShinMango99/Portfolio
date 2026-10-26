@@ -92,15 +92,49 @@
   $("#hero-intro").textContent = prof.intro;
   if (prof.photo) $("#profile-photo").src = prof.photo;
   else $("#profile-photo").remove();
-  $("#hero-sr").textContent = "I'm confident in " + prof.typedPhrases.join(", ") + ".";
+  $("#hero-lead").textContent = prof.heroLead;
+  $("#hero-tail").textContent = prof.heroTail || "";
+  $("#hero-sr").textContent = prof.heroLead + " " + prof.typedPhrases.join(", ") + (prof.heroTail ? ", " + prof.heroTail : ".");
   var phrase = $("#phrase");
+  var typedLine = $(".hero-line--typed");
+
+  // Lock the typed line to its tallest phrase so the tail line and the page never shift.
+  function lockHeroHeight() {
+    var current = phrase.textContent;
+    typedLine.style.minHeight = "";
+    var max = 0;
+    prof.typedPhrases.forEach(function (t) {
+      phrase.textContent = t;
+      max = Math.max(max, typedLine.getBoundingClientRect().height);
+    });
+    phrase.textContent = current;
+    typedLine.style.minHeight = Math.ceil(max) + "px";
+  }
   phrase.textContent = prof.typedPhrases[0];
-  if (!reduced && prof.typedPhrases.length > 1) {
+  lockHeroHeight();
+  window.addEventListener("resize", lockHeroHeight);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockHeroHeight);
+  // type a phrase, hold, erase it, move to the next (reduced motion: just swap)
+  if (prof.typedPhrases.length > 1) {
     var pi = 0;
-    setInterval(function () {
-      pi = (pi + 1) % prof.typedPhrases.length;
-      phrase.textContent = prof.typedPhrases[pi];
-    }, 2500);
+    if (reduced) {
+      setInterval(function () {
+        pi = (pi + 1) % prof.typedPhrases.length;
+        phrase.textContent = prof.typedPhrases[pi];
+      }, 3000);
+    } else {
+      var n = phrase.textContent.length;
+      var deleting = true;
+      setTimeout(function tick() {
+        var word = prof.typedPhrases[pi];
+        n += deleting ? -1 : 1;
+        phrase.textContent = word.slice(0, n);
+        var delay = deleting ? 35 : 75;
+        if (!deleting && n === word.length) { deleting = true; delay = 1800; }
+        else if (deleting && n === 0) { deleting = false; pi = (pi + 1) % prof.typedPhrases.length; delay = 350; }
+        setTimeout(tick, delay);
+      }, 1800);
+    }
   }
 
   var featured = byId[prof.featured] || projects[0];
@@ -112,12 +146,47 @@
 
   $("#skills").innerHTML = D.skills.map(function (g) {
     return '<article class="skill-group"><header><h3>' + esc(g.group) + "</h3></header>" +
-      g.items.map(function (s) {
-        return '<div class="skill"><div class="skill-top"><b>' + esc(s.name) + "</b><span>" + s.level + " / 10</span></div>" +
-          '<div class="bar" role="img" aria-label="' + esc(s.name) + " level " + s.level + ' of 10"><i style="width:' + s.level * 10 + '%"></i></div>' +
-          "<p>" + esc(s.desc) + "</p></div>";
-      }).join("") + "</article>";
+      '<div class="skill-list">' + g.items.map(function (s, si) {
+        return '<button type="button" class="skill" style="--i:' + si + '" aria-pressed="false" data-name="' + esc(s.name) + '" data-desc="' + esc(s.desc) + '">' +
+          '<span class="skill-top"><b>' + esc(s.name) + "</b><span>" + s.level + " / 10</span></span>" +
+          '<span class="bar" role="img" aria-label="' + esc(s.name) + " level " + s.level + ' of 10"><i style="width:' + s.level * 10 + '%"></i></span></button>';
+      }).join("") + "</div>" +
+      '<p class="skill-info" aria-live="polite"></p></article>';
   }).join("");
+
+  // fill each card's bars once, the first time it scrolls into view
+  if ("IntersectionObserver" in window) {
+    document.documentElement.classList.add("js-anim");
+    var barIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in-view"); barIO.unobserve(e.target); }
+      });
+    }, { threshold: 0.35 });
+    Array.prototype.forEach.call(document.querySelectorAll(".skill-group"), function (g) { barIO.observe(g); });
+  }
+
+  // description shows on hover / focus / click (click pins it)
+  Array.prototype.forEach.call(document.querySelectorAll(".skill-group"), function (group) {
+    var info = group.querySelector(".skill-info");
+    var btns = Array.prototype.slice.call(group.querySelectorAll(".skill"));
+    function show(b) { info.innerHTML = "<b>" + esc(b.dataset.name) + ":</b> " + esc(b.dataset.desc); }
+    function reset() {
+      var pinned = group.querySelector('.skill[aria-pressed="true"]');
+      if (pinned) show(pinned); else info.textContent = "";
+    }
+    btns.forEach(function (b) {
+      b.addEventListener("mouseenter", function () { show(b); });
+      b.addEventListener("focus", function () { show(b); });
+      b.addEventListener("mouseleave", reset);
+      b.addEventListener("blur", reset);
+      b.addEventListener("click", function () {
+        var on = b.getAttribute("aria-pressed") !== "true";
+        btns.forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", String(on));
+        if (on) show(b); else reset();
+      });
+    });
+  });
 
   /* ---------- timeline (oldest first, no filters) ---------- */
 
@@ -139,19 +208,70 @@
     return '<h3 class="tl-year">' + y + '</h3><ol class="tl-list">' + byYear[y].map(function (e) {
       if (e.milestone) {
         var m = e.milestone;
-        return '<li class="tl-item tl-item--milestone"><span class="tl-date">' + fmtDate(m.date) +
+        return '<li class="tl-item tl-item--milestone" tabindex="0" data-m="' + D.milestones.indexOf(m) + '"><span class="tl-date">' + fmtDate(m.date) +
           (m.end ? " - " + fmtDate(m.end) : "") + "</span> " +
           (m.image ? '<img class="tl-logo" src="' + esc(m.image) + '" alt="">' : "") +
           '<span class="tl-title">' + esc(m.title) + "</span>" +
           (m.note ? '<p class="tl-note">' + esc(m.note) + "</p>" : "") + "</li>";
       }
       var p = e.project;
-      return '<li class="tl-item' + (p.ongoing ? " tl-item--now" : "") + '"><span class="tl-date">' + fmtDate(p.date) + "</span> " +
+      return '<li class="tl-item' + (p.ongoing ? " tl-item--now" : "") + '" data-id="' + esc(p.id) + '"><span class="tl-date">' + fmtDate(p.date) + "</span> " +
         '<span class="tl-title"><a href="#' + esc(p.id) + '">' + esc(p.title) + "</a></span> " +
         '<span class="tl-kind">(' + esc(p.category) + (p.ongoing ? ", in progress " + pct(p) + "%" : "") + ")</span>" +
         '<p class="tl-note">' + val(p.outcome) + "</p></li>";
     }).join("") + "</ol>";
   }).join("");
+
+  /* ---------- timeline preview panel (hover / focus an entry) ---------- */
+
+  var preview = $("#tl-preview");
+
+  function previewProject(p) {
+    var yt = ytId(p.links && p.links.youtube);
+    var poster = p.poster || (yt ? "https://i.ytimg.com/vi/" + yt + "/hqdefault.jpg" : null);
+    return (poster ? '<div class="media"><img src="' + esc(poster) + '" alt=""></div>' : "") +
+      '<h3 class="tl-preview-title">' + esc(p.title) + "</h3>" +
+      '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date) + " · " + statusText(p) + "</p>" +
+      "<p>" + val(p.summary) + "</p>" +
+      "<dl>" + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) + "</dl>" +
+      '<p><a href="#' + esc(p.id) + '">Full details</a></p>';
+  }
+  function previewMilestone(m) {
+    return (m.image ? '<img class="tl-preview-logo" src="' + esc(m.image) + '" alt="">' : "") +
+      '<h3 class="tl-preview-title">' + esc(m.title) + "</h3>" +
+      '<p class="card-meta">' + fmtDate(m.date) + (m.end ? " - " + fmtDate(m.end) : "") + "</p>" +
+      (m.note ? "<p>" + esc(m.note) + "</p>" : "");
+  }
+  var hideTimer = null;
+  function showPreview(li) {
+    clearTimeout(hideTimer);
+    $$tl().forEach(function (o) { o.classList.remove("is-active"); });
+    li.classList.add("is-active");
+    // fresh wrapper each time so the swap animation replays
+    preview.innerHTML = '<div class="tl-preview-inner">' +
+      (li.dataset.id ? previewProject(byId[li.dataset.id]) : previewMilestone(D.milestones[li.dataset.m])) + "</div>";
+    preview.classList.add("is-open");
+  }
+  // short delay so the pointer can travel from an entry to the panel (e.g. its link)
+  function hidePreview() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(function () {
+      preview.classList.remove("is-open");
+      $$tl().forEach(function (o) { o.classList.remove("is-active"); });
+    }, 150);
+  }
+  function $$tl() { return Array.prototype.slice.call(document.querySelectorAll(".tl-item")); }
+
+  $$tl().forEach(function (li) {
+    li.addEventListener("mouseenter", function () { showPreview(li); });
+    li.addEventListener("mouseleave", hidePreview);
+    li.addEventListener("focusin", function () { showPreview(li); });
+    li.addEventListener("focusout", hidePreview);
+  });
+  preview.addEventListener("mouseenter", function () { clearTimeout(hideTimer); });
+  preview.addEventListener("mouseleave", hidePreview);
+  preview.addEventListener("focusin", function () { clearTimeout(hideTimer); });
+  preview.addEventListener("focusout", hidePreview);
 
   /* ---------- project cards ---------- */
 
