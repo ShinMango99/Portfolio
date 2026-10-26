@@ -82,6 +82,7 @@ button { font: inherit; }
 }
 .lead { color: var(--muted); max-width: none; margin-bottom: 32px; }
 .eyebrow { color: var(--muted); font-size: 1rem; margin: 16px 0 4px; }
+.about .bio { max-width: 760px; margin: 16px 0 24px; }
 .todo { color: var(--todo); font-style: italic; }
 
 .button {
