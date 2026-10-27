@@ -9,7 +9,19 @@
     heroLead: "I'm confident in",
     typedPhrases: ["Unity & C# gameplay", "pixel art", "teaching & mentoring", "team collaboration"],
     heroTail: "and I ship what I start.",
-    featured: "shh", // project id whose trailer is shown at the top right
+    // Master reel (~1 min highlight video cut to music). YouTube URL or "assets/video/reel.mp4".
+    // While null, the Home hero shows the featured project thumbnails instead.
+    reel: "assets/video/reel.mp4",
+    reelPoster: "assets/img/reel-poster.jpg",
+    // shown big on the Home page, in this order
+    featured: ["shh", "save-the-pig", "this-is-not-chess", "catastrophe"],
+    // evidence for the claims above; each links to the page that proves it
+    proof: [
+      { title: "1st Place", text: "Mason Korea Game Jam Fall 2025, solo", href: "project.html?id=shh" },
+      { title: "World Food Forum", text: "Exhibited in Rome, 2023", href: "project.html?id=save-the-pig" },
+      { title: "10+ Games", text: "Playable, in Unity and Unreal", href: "solo.html" },
+      { title: "Unity / C# Teacher", text: "Lecturer and Learning Assistant", href: "teaching.html" }
+    ],
     contact: {
       itch: "https://mangocareer.itch.io",
       github: "https://github.com/shinmango99",
@@ -49,6 +61,41 @@
         { name: "Teaching", level: 6, desc: "Experience teaching as a teaching assistant / instructor." },
         { name: "Collaboration", level: 5, desc: "Experience making games through team projects and collaborations." }
       ]
+    }
+  ],
+
+  // Sub-pages linked from the Home portal and the top menu.
+  // Projects are sorted into solo / team / teaching automatically (main.js: groupOf).
+  categories: [
+    {
+      id: "solo",
+      title: "Solo Projects",
+      page: "solo.html",
+      cover: "shh",
+      more: "team", // "More projects" link at the bottom of the page
+      blurb: "Projects I built alone from start to finish: programming, art, sound and release. Includes Shh, the 1st-place game jam entry."
+    },
+    {
+      id: "team",
+      title: "Team Projects",
+      page: "team.html",
+      cover: "save-the-pig",
+      more: "solo",
+      blurb: "Club, class and competition projects with teams of 2 to 14, including Save the Pig for FAO Korea and the mobile platformer Cat'astrophe."
+    },
+    {
+      id: "teaching",
+      title: "Teaching",
+      page: "teaching.html",
+      cover: "learning-assistant",
+      blurb: "Teaching Unity and C# as a lecturer and as a Learning Assistant at George Mason University."
+    },
+    {
+      id: "about",
+      title: "About & Resume",
+      page: "about.html",
+      coverImage: "assets/img/profile.webp",
+      blurb: "Bio, skills, resume and a timeline from 2022 to now."
     }
   ],
 
@@ -109,7 +156,9 @@
       completion: 1,
       links: { itch: null, instagram: null, youtube: null },
       video: null,
-      poster: null,
+      poster: "assets/img/mentoring-1.webp",
+      // extra photos shown on the project page
+      gallery: ["assets/img/mentoring-1.webp", "assets/img/mentoring-2.webp", "assets/img/mentoring-3.webp"],
       summary:
         "Lectured for 9 hours in total (3 sessions of 3 hours each over 21 days) on \"How to Recreate the Game Pong\", and successfully recreated the Pong game with students during the program.",
       role: "Lecturer",
@@ -188,7 +237,7 @@
       links: {
         itch: "https://mangocareer.itch.io/lost",
         instagram: "https://www.instagram.com/p/DN4l3thEs0A/",
-        youtube: "https://youtu.be/nUGToROrL2Y"
+        youtube: "https://youtu.be/fpMcv02b-Ic"
       },
       video: null,
       poster: null,
@@ -212,6 +261,7 @@
       },
       video: null,
       poster: "assets/img/save-the-pig.jpg",
+      award: "Exhibited at the World Food Forum 2023, Rome",
       summary: "ASF Prevention Farm: a farming sim about protecting pigs from African Swine Fever.",
       role: "Programmer (with Jiwon Bae)",
       tools: "Unity",
@@ -226,7 +276,7 @@
       date: "2025-09-21",
       ongoing: false,
       completion: 1,
-      featured: true,
+      award: "1st place overall, Mason Korea Game Jam Fall 2025",
       links: {
         itch: "https://mangocareer.itch.io/shh",
         instagram: "https://www.instagram.com/p/DO6b5fDkjz-/",
@@ -281,7 +331,7 @@
       completion: 1,
       links: { itch: null, instagram: null, youtube: null },
       video: null,
-      poster: null,
+      poster: "assets/img/la.webp",
       summary:
         "Provided code reviews and technical guidance for Unity & C# projects (e.g., Isometric Camera, Physics/Collision, Health Systems). Helped students bridge the gap between game design concepts and practical C# implementation.",
       role: "Learning Assistant",

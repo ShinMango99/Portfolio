@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jaemin Cho · Game Developer (Draft)</title>
-  <meta name="description" content="Jaemin Cho: Unity / C# game developer, pixel artist and learning assistant. Projects, roles and a timeline from 2022 to now.">
+  <title>Jaemin Cho · Game Developer</title>
+  <meta name="description" content="Jaemin Cho: Unity / C# game developer and pixel artist. Solo and team games, teaching, and contact details.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Jaemin Cho · Game Developer">
-  <meta property="og:description" content="Unity / C# gameplay, pixel art and teaching. Projects, roles and a timeline from 2022 to now.">
+  <meta property="og:description" content="Unity / C# gameplay, pixel art and teaching. 1st place at Mason Korea Game Jam Fall 2025.">
   <meta property="og:url" content="https://shinmango99.github.io/Portfolio/">
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,111 +17,77 @@
   <script src="js/data.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
-<body>
+<body data-page="home">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-inner">
-      <a class="logo" href="#top">Jaemin Cho</a>
-      <nav aria-label="Sections">
+      <a class="logo" href="index.html" aria-current="page">Jaemin Cho</a>
+      <nav aria-label="Main">
         <ul class="nav">
-          <li><a href="#about">About</a></li>
-          <li><a href="#abilities">Abilities</a></li>
-          <li><a href="#timeline">Timeline</a></li>
-          <li><a href="#work">Work</a></li>
-          <li><a href="#teaching">Teaching</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="solo.html">Solo Projects</a></li>
+          <li><a href="team.html">Team Projects</a></li>
+          <li><a href="teaching.html">Teaching</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
       </nav>
+      <a class="header-email" href="mailto:mangocareer030624@gmail.com">mangocareer030624@gmail.com</a>
     </div>
   </header>
 
   <main id="main">
-    <!-- 1. Hero -->
-    <section class="section hero" id="top" aria-labelledby="hero-title">
+    <!-- Hero: pitch + proof + contact on the left, reel or featured games on the right -->
+    <section class="section hero" aria-labelledby="hero-title">
       <div class="container hero-grid">
         <div>
-          <img class="profile-photo" id="profile-photo" src="assets/img/profile.webp" alt="Drawing of Jaemin Cho" width="120" height="120">
           <p class="eyebrow" id="hero-name"></p>
           <h1 id="hero-title">
             <span class="sr-only" id="hero-sr"></span>
             <span aria-hidden="true"><span class="hero-line" id="hero-lead"></span><span class="hero-line hero-line--typed"><em id="phrase"></em><span class="caret"></span></span><span class="hero-line" id="hero-tail"></span></span>
           </h1>
-          <p class="lead" id="hero-intro"></p>
+          <ul class="proof" id="proof"></ul>
+          <p class="hero-contact">Email: <a href="mailto:mangocareer030624@gmail.com">mangocareer030624@gmail.com</a></p>
           <p class="actions">
-            <a class="button button--primary" href="#timeline">See my timeline</a>
-            <a class="button" href="#contact">Contact</a>
+            <a class="button button--primary" href="#work">See my work</a>
+            <a class="button" href="contact.html">Contact me</a>
           </p>
         </div>
-        <figure class="hero-feature">
-          <div class="media" id="hero-media"></div>
-          <figcaption id="hero-caption"></figcaption>
-        </figure>
+        <div class="hero-feature" id="hero-feature"></div>
       </div>
     </section>
 
-    <!-- About: third-person bio + resume -->
-    <section class="section about" id="about" aria-labelledby="about-title">
-      <div class="container">
-        <h2 id="about-title">About</h2>
-        <p class="bio">Jaemin Cho is a Unity and C# game developer and pixel artist studying Computer Game Design at George Mason University, with graduation expected in 2027. Jaemin has shipped more than ten playable games in Unity and Unreal Engine, from solo game jam entries to club projects with up to 14 teammates. The solo horror game Shh placed first overall at the Mason Korea Game Jam Fall 2025, and Save the Pig, an educational game co-programmed with the Gnonymous club for FAO Korea, was exhibited at the World Food Forum 2023 in Rome. Beyond programming gameplay and UI, Jaemin has served as Vice President of Gnonymous and has taught Unity and C# as a lecturer and Learning Assistant. Currently, Jaemin is building the mobile platformer Cat'astrophe with a team of six and a chess game developed through AI pair programming to grow as a developer. Jaemin is committed to finishing and shipping games, and works best in collaborative teams.</p>
-        <p class="actions">
-          <a class="button button--primary" href="resume.html" target="_blank" rel="noopener">View resume</a>
-          <a class="button" href="Jaemin_Cho_Resume.pdf" target="_blank" rel="noopener">Download PDF</a>
-        </p>
-      </div>
-    </section>
-
-    <!-- 2. Abilities -->
-    <section class="section" id="abilities" aria-labelledby="abilities-title">
-      <div class="container">
-        <h2 id="abilities-title">Abilities</h2>
-        <p class="lead">Self-assessed levels out of 10. Lower numbers are skills I am still leveling up.</p>
-        <div class="skills" id="skills"></div>
-      </div>
-    </section>
-
-    <!-- 3. Timeline -->
-    <section class="section" id="timeline" aria-labelledby="timeline-title">
-      <div class="container">
-        <h2 id="timeline-title">Timeline</h2>
-        <p class="lead">From 2022 to now. Hover an entry to see the details.</p>
-        <div class="tl-layout">
-          <div id="timeline-list"></div>
-          <aside class="tl-preview" id="tl-preview" aria-live="polite" aria-label="Timeline entry details"></aside>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. Selected work -->
+    <!-- Portal: one big thumbnail per sub-page -->
     <section class="section" id="work" aria-labelledby="work-title">
       <div class="container">
-        <h2 id="work-title">Selected Work</h2>
-        <p class="lead">Game projects, newest first.</p>
-        <ul class="cards" id="work-list"></ul>
+        <h2 id="work-title">Browse my work</h2>
+        <p class="lead">Pick a category. Every project has its own page with the trailer, my role and a playable link.</p>
+        <ul class="portal" id="portal"></ul>
       </div>
     </section>
 
-    <!-- 5. Teaching -->
-    <section class="section" id="teaching" aria-labelledby="teaching-title">
+    <section class="section" id="featured-section" aria-labelledby="featured-title" hidden>
       <div class="container">
-        <h2 id="teaching-title">Teaching &amp; Community</h2>
-        <ul class="cards cards--two" id="teaching-list"></ul>
+        <h2 id="featured-title">Featured games</h2>
+        <ul class="tiles" id="featured-list"></ul>
       </div>
     </section>
 
-    <!-- 6. Contact -->
-    <section class="section" id="contact" aria-labelledby="contact-title">
+    <section class="section section--contact" aria-labelledby="contact-title">
       <div class="container">
-        <h2 id="contact-title">Contact</h2>
-        <ul class="contact" id="contact-list"></ul>
+        <h2 id="contact-title">Let's talk</h2>
+        <p class="lead">Looking for a Unity / C# gameplay programmer? I reply to every email.</p>
+        <div data-contact></div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <p>&copy; <span id="year">2026</span> Jaemin Cho · Portfolio</p>
+    <div class="container footer-inner">
+      <p><b>Jaemin Cho</b> · Unity / C# Game Developer</p>
+      <p>Email: <a href="mailto:mangocareer030624@gmail.com">mangocareer030624@gmail.com</a></p>
+      <p><a href="https://mangocareer.itch.io">itch.io</a> · <a href="https://github.com/shinmango99">GitHub</a> · <a href="https://www.linkedin.com/in/jaemin-cho-a26674267/">LinkedIn</a> · <a href="https://www.instagram.com/jammini_._/">Instagram</a></p>
+      <p>&copy; <span class="year">2026</span> Jaemin Cho</p>
     </div>
   </footer>
 
