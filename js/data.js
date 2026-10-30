@@ -262,6 +262,10 @@
       video: null,
       poster: "assets/img/save-the-pig.jpg",
       award: "Exhibited at the World Food Forum 2023, Rome",
+      press: [
+        { label: "GMU article", href: "https://chss.gmu.edu/articles/19979" },
+        { label: "FAO event page", href: "https://www.fao.org/asiapacific/events/events-detail/World-Food-Forum-/en" }
+      ],
       summary: "ASF Prevention Farm: a farming sim about protecting pigs from African Swine Fever.",
       role: "Programmer (with Jiwon Bae)",
       tools: "Unity",
@@ -371,7 +375,7 @@
         "A Unity chess game where the board fights back. On top of classic online chess, Deckmate mode mixes in Uno-style cards: play a card to bend the rules, and 22 jokers can completely change the board mid-game.",
       role: "Game design, rules design, game feel/VFX direction, programming (AI-assisted)",
       tools: "Unity, C#, AI pair programming",
-      team: "1 (solo)",
+      team: "3",
       outcome: "Windows build downloadable on itch.io, with online multiplayer, a Classic mode, and a Deckmate card mode with 22 jokers."
     }
   ]
