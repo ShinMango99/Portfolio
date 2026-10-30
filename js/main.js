@@ -32,6 +32,12 @@
   function statusText(p) { return p.ongoing || pct(p) < 100 ? "In progress " + pct(p) + "%" : "Completed"; }
   // null hides the row; "TODO" shows a [TODO] marker
   function row(label, v) { return v === null || v === undefined ? "" : "<dt>" + label + "</dt><dd>" + val(v) + "</dd>"; }
+  function pressRow(p) {
+    if (!p.press || !p.press.length) return "";
+    return "<dt>Press</dt><dd>" + p.press.map(function (a) {
+      return '<a href="' + esc(a.href) + '" target="_blank" rel="noopener">' + esc(a.label) + "</a>";
+    }).join(" · ") + "</dd>";
+  }
   function teamText(t) { return /^\d+$/.test(String(t)) ? t + (t === "1" ? " person" : " people") : t; }
   function bareUrl(u) { return String(u).replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""); }
 
@@ -346,7 +352,7 @@
       '<div class="project-grid' + (hasMedia ? "" : " project-grid--text") + '">' +
       (hasMedia ? '<div class="media media--lg"></div>' : "") +
       '<aside class="facts"><dl>' + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) +
-      row("Team", p.team == null ? null : teamText(p.team)) + "</dl>" +
+      row("Team", p.team == null ? null : teamText(p.team)) + pressRow(p) + "</dl>" +
       (linkHtml ? '<div class="actions">' + linkHtml + "</div>" : "") + "</aside>" +
       "</div>" +
       '<div class="project-text"><p>' + val(p.summary) + "</p>" + (p.description ? "<p>" + esc(p.description) + "</p>" : "") + "</div>" +
@@ -463,7 +469,7 @@
         '<h3 class="tl-preview-title">' + esc(p.title) + "</h3>" +
         '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date) + " · " + statusText(p) + "</p>" +
         "<p>" + val(p.summary) + "</p>" +
-        "<dl>" + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) + "</dl>" +
+        "<dl>" + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) + pressRow(p) + "</dl>" +
         '<p><a href="' + projUrl(p) + '">Full details</a></p>';
     }
     function previewMilestone(m) {
