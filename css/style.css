@@ -509,3 +509,56 @@ button { font: inherit; }
 .site-footer { padding: 24px 0 40px; color: var(--muted); font-size: 1rem; }
 .footer-inner { display: flex; flex-direction: column; gap: 4px; }
 .site-footer a { color: var(--muted); }
+
+/* Home: big banner for my studio site, iamnnd.com (studio navy + gold) */
+.studio { --navy: #1e2840; --navy-2: #2b3758; --gold: #f3c33b; --on-navy: #f5f5f3; --on-navy-muted: #b8bfd2; }
+.studio-card {
+  display: grid;
+  background: var(--navy);
+  color: var(--on-navy);
+  border: 1px solid var(--text);
+  box-shadow: 6px 6px 0 var(--gold);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+@media (min-width: 900px) { .studio-card { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); } }
+.studio-card:hover, .studio-card:focus-visible { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--gold); }
+.studio-body { display: flex; flex-direction: column; gap: 14px; padding: 32px 24px; }
+@media (min-width: 768px) { .studio-body { padding: 48px 40px; } }
+.studio-eyebrow { color: var(--gold); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.studio-brand { display: flex; align-items: center; gap: 16px; }
+.studio-mark { width: clamp(56px, 9vw, 84px); height: auto; image-rendering: pixelated; }
+.studio-name { font-family: "Pixelify Sans", var(--font); font-variant-ligatures: none; font-size: clamp(3rem, 2rem + 4vw, 5rem); font-weight: 700; line-height: 1; }
+.studio-tagline { font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.7rem); font-style: italic; }
+.studio-text { color: var(--on-navy-muted); max-width: 46ch; }
+.studio-go {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border: 1px solid var(--text);
+  background: var(--gold);
+  color: var(--text);
+  box-shadow: 4px 4px 0 var(--on-navy);
+  font-size: 1.2rem;
+  font-weight: 700;
+  transition: transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out);
+}
+.studio-card:hover .studio-go, .studio-card:focus-visible .studio-go { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--on-navy); }
+.studio-games { display: grid; gap: 1px; background: var(--text); border-top: 1px solid var(--text); }
+@media (min-width: 900px) { .studio-games { border-top: 0; border-left: 1px solid var(--text); } }
+.studio-game { position: relative; display: block; min-height: 200px; overflow: hidden; background: var(--navy-2); }
+.studio-game img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.4s var(--ease-out); }
+.studio-card:hover .studio-game img, .studio-card:focus-visible .studio-game img { transform: scale(1.04); }
+.studio-game-label {
+  position: absolute; left: 12px; bottom: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--text);
+  background: var(--on-navy);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.studio-game-label b { font-family: "Pixelify Sans", var(--font); font-variant-ligatures: none; margin-right: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  .studio-card, .studio-go, .studio-game img { transition: none; }
+}
