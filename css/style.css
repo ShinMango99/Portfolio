@@ -22,6 +22,12 @@ html { scroll-padding-top: 72px; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
+/* mouse wheel snaps to each section, just under the sticky header (not on touch screens) */
+@media (hover: hover) and (pointer: fine) {
+  html { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
+  .section { scroll-snap-align: start; }
+  .site-footer { scroll-snap-align: end; }
+}
 
 body {
   margin: 0;
