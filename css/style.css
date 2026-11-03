@@ -282,31 +282,90 @@ button { font: inherit; }
 .skill-top { display: flex; justify-content: space-between; gap: 8px; }
 .skill-top b { font-weight: 700; }
 .skill-top span { color: var(--muted); }
-.bar { display: block; height: 6px; margin: 4px 0 4px; background: #ecebe7; }
-.bar i { display: block; height: 100%; background: var(--yellow-strong); box-shadow: 0 0 0 1px var(--text); transform-origin: left; }
-/* bars fill up once the card scrolls into view (main.js adds .in-view) */
-@media (prefers-reduced-motion: no-preference) {
-  .js-anim .bar i { transform: scaleX(0); transition: transform 0.9s var(--ease-out); transition-delay: calc(var(--i, 0) * 90ms + 100ms); }
-  .js-anim .skill-group.in-view .bar i { transform: scaleX(1); }
-}
+.skill-top .lv { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.skill-top .lv b { display: inline-block; min-width: 1.2em; text-align: right; color: var(--text); }
+/* 10-block gauge, like a level meter */
+.bar { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin: 5px 0 4px; }
+.bar i { height: 8px; background: #ecebe7; }
+.bar i.on { background: var(--yellow-strong); box-shadow: 0 0 0 1px var(--text); }
+/* blocks light up one at a time once the card scrolls into view (main.js adds .in-view and ticks the LV number) */
+.js-anim .skill-group:not(.in-view) .bar i.on { background: #ecebe7; box-shadow: none; }
+.js-anim .skill-group.in-view .bar i.on { animation: seg-on 0.2s steps(2) backwards; animation-delay: calc(var(--base, 0ms) + (var(--k) + 1) * 90ms); }
+.lv.lvup b { animation: lv-pop 0.45s steps(3); }
+@keyframes seg-on { 0% { background: #ecebe7; box-shadow: none; } 50% { background: #fffbe0; box-shadow: 0 0 0 1px var(--text); transform: scaleY(1.6); } }
+@keyframes lv-pop { 40% { transform: scale(1.5); color: #a37a00; } }
 .skill p { color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
 
 /* timeline */
 .tl-year { font-size: 1.3rem; margin: 32px 0 12px; }
 .tl-year:first-child { margin-top: 0; }
 .tl-list { border-left: 2px solid var(--line); margin-left: 6px; }
-.tl-item { position: relative; padding: 0 0 18px 24px; }
+/* ---- timeline gauge (main.js fills the spine and marks .reached) ----
+   geometry: spine centre sits 9px from the left of #timeline-list; squares are centred on it */
+#timeline-list { position: relative; --spine-x: 9px; }
+#timeline-list .tl-list { border-left-color: transparent; }
+#timeline-list .tl-spine { position: absolute; left: calc(var(--spine-x) - 3px); width: 6px; background: #e4e2dc; z-index: 2; pointer-events: none; }
+#timeline-list .tl-spine-fill { position: absolute; inset: 0; background: var(--yellow-strong); box-shadow: 1px 0 0 var(--text), -1px 0 0 var(--text); transform-origin: top; transform: scaleY(0); }
+
+/* entries: square checkpoint on the spine */
+.tl-item { position: relative; padding: 12px 0 14px 24px; }
 .tl-item::before {
   content: "";
   position: absolute;
-  left: -7px; top: 8px;
-  width: 12px; height: 12px;
-  border-radius: 50%;
+  z-index: 3;
+  left: calc(var(--spine-x) - 8px - 7px); /* item starts 8px in (6px margin + 2px border) */
+  top: 19px; /* 12px padding + 7px */
+  width: 14px; height: 14px;
   background: var(--bg);
-  border: 2px solid var(--text);
+  border: 3px solid var(--text);
 }
-.tl-item--milestone::before { background: var(--yellow-strong); }
-.tl-item--now::before { background: var(--yellow-strong); box-shadow: 0 0 0 4px var(--yellow); }
+.tl-item--milestone::before, .tl-item--now::before { background: var(--yellow-strong); }
+.tl-gauge .tl-item::before { background: var(--bg); border-color: #b9b6ae; }
+.tl-gauge .tl-item.reached::before { background: var(--yellow-strong); border-color: var(--text); box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text); animation: checkpoint 0.4s steps(4); }
+@keyframes checkpoint {
+  0% { transform: scale(0.6); background: #fff; box-shadow: 0 0 0 0 var(--yellow-strong); }
+  50% { transform: scale(1.5); background: #fff; box-shadow: 0 0 0 3px var(--bg), 0 0 0 9px var(--yellow-strong); }
+}
+/* in-progress work keeps pulsing once reached */
+@media (prefers-reduced-motion: no-preference) {
+  .tl-gauge .tl-item--now.reached::before { animation: checkpoint 0.4s steps(4), now-pulse 1.4s 0.4s steps(2) infinite; }
+}
+@keyframes now-pulse { 50% { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text), 0 0 0 10px var(--yellow); } }
+
+/* dashed divider between entries; it sweeps in yellow when the entry is reached */
+.tl-item::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 16px; right: 0; bottom: -1px; /* sits exactly on the edge shared by two entries */
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 10px);
+}
+.tl-item:last-child::after { display: none; }
+.tl-gauge .tl-item.reached::after { background: repeating-linear-gradient(90deg, var(--yellow-strong) 0 6px, transparent 6px 10px); animation: sweep 0.5s steps(8) backwards 0.1s; }
+@keyframes sweep { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* year headers: big square on the spine and a solid rule to the right */
+#timeline-list .tl-year { position: relative; display: flex; align-items: center; gap: 14px; padding-left: 32px; margin: 36px 0 6px; }
+#timeline-list .tl-year:first-of-type { margin-top: 0; }
+#timeline-list .tl-year::before { content: ""; position: absolute; z-index: 3; left: calc(var(--spine-x) - 10px); top: 50%; width: 20px; height: 20px; margin-top: -10px; background: var(--text); border: 4px solid var(--text); }
+#timeline-list .tl-year::after { content: ""; flex: 1; height: 4px; background: repeating-linear-gradient(90deg, var(--yellow-strong) 0 12px, var(--yellow) 12px 16px); }
+#timeline-list.tl-gauge .tl-year::before { background: var(--bg); }
+#timeline-list.tl-gauge .tl-year.reached::before { background: var(--yellow-strong); animation: checkpoint 0.4s steps(4); }
+/* rule = grey blocks; once reached, black blocks fill over them one at a time (main.js sets --blocks) */
+#timeline-list.tl-gauge .tl-year::after {
+  background:
+    repeating-linear-gradient(90deg, var(--text) 0 12px, transparent 12px 16px) 0 0 / 0 100% no-repeat,
+    repeating-linear-gradient(90deg, var(--line) 0 12px, transparent 12px 16px);
+}
+#timeline-list.tl-gauge .tl-year.reached::after {
+  background-size: 100% 100%, auto;
+  animation: rule-fill calc(var(--blocks, 30) * 28ms) steps(var(--blocks, 30), end) backwards 0.15s;
+}
+@keyframes rule-fill { from { background-size: 0 100%, auto; } to { background-size: calc(var(--blocks, 30) * 16px) 100%, auto; } }
+@media (prefers-reduced-motion: reduce) {
+  .tl-gauge .tl-item.reached::before, .tl-gauge .tl-item.reached::after, .tl-gauge .tl-year.reached::before, .tl-gauge .tl-year.reached::after { animation: none; }
+}
 .tl-date { display: inline-block; min-width: 6.5em; color: var(--muted); }
 .tl-title { font-weight: 700; }
 .tl-title a { color: var(--text); }
@@ -323,6 +382,14 @@ button { font: inherit; }
   border: 1px solid var(--line);
   border-radius: 50%;
 }
+
+/* timeline tabs: All / Game Jam / Personal (main.js) */
+.tl-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 28px; }
+.tl-tab { padding: 6px 14px; border: 1px solid var(--text); background: var(--surface); color: inherit; font: inherit; font-size: 1rem; cursor: pointer; box-shadow: 2px 2px 0 var(--text); transition: background 0.12s, transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out); }
+.tl-tab span { color: var(--muted); font-size: 0.85rem; }
+.tl-tab:hover, .tl-tab:focus-visible { background: var(--yellow); }
+.tl-tab[aria-pressed="true"] { background: var(--yellow-strong); }
+.tl-tab:active { transform: translate(2px, 2px); box-shadow: none; transition-duration: 0.05s; }
 
 /* timeline preview panel: right column on wide screens, hidden on small ones */
 .tl-layout { display: block; }
@@ -356,7 +423,7 @@ button { font: inherit; }
 @keyframes tl-swap { from { opacity: 0; transform: translateY(6px); } }
 @keyframes tl-zoom { from { transform: scale(1.08); } }
 .tl-item { transition: background 0.15s; }
-.tl-item.is-active { background: linear-gradient(90deg, var(--yellow), transparent 70%); }
+.tl-item.is-active { background: linear-gradient(90deg, var(--yellow), transparent 70%) 16px 0 / calc(100% - 16px) 100% no-repeat; }
 .tl-item:focus-visible { outline-offset: -2px; }
 .tl-preview .media { border-width: 0 0 1px; margin: -16px -16px 4px; border-bottom: 1px solid var(--line); border-top: 0; }
 .tl-preview-title { font-size: 1.25rem; }
@@ -442,6 +509,33 @@ button { font: inherit; }
   transition: transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out);
 }
 .tile-body:hover .tile-go, .tile-body:focus-visible .tile-go { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--text); }
+
+/* category pages: mouse wheel snaps to each row of project tiles */
+@media (hover: hover) and (pointer: fine) {
+  body[data-page="category"] .tile,
+  body[data-page="category"] .more-link { scroll-snap-align: start; scroll-margin-top: 16px; }
+  /* the tall project section must not be a snap target itself, or the browser may stop anywhere inside it */
+  body[data-page="category"] main > .section:first-child { scroll-snap-align: none; }
+  body[data-page="category"] .page-title { scroll-snap-align: start; scroll-margin-top: 200px; }
+}
+/* desktop: 2 tiles per row, one row per screen (main.js pageTiles sets each row's bottom margin) */
+@media (min-width: 900px) { .tiles--lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tiles-paged .tile { height: auto; } /* auto height so the tile stretches to its row minus the margin */
+/* juice: tiles pop in once, hover lifts the card (main.js adds the classes) */
+@media (prefers-reduced-motion: no-preference) {
+  .tiles-juicy .tile { opacity: 0; }
+  .tiles-juicy .tile.tile-in { opacity: 1; animation: tile-pop 0.6s var(--ease-out) backwards; animation-delay: calc(var(--col, 0) * 110ms); }
+  .tiles-juicy .tile:hover { transform: translate(-3px, -3px); box-shadow: 7px 7px 0 var(--text); }
+  .tiles-juicy .tile .tile-media img { transition: transform 0.4s var(--ease-out); }
+  .tiles-juicy .tile:hover .tile-media img { transform: scale(1.05); }
+  .tiles-juicy .tile:hover .tile-go { animation: go-nudge 0.6s steps(3) infinite alternate; }
+}
+@keyframes tile-pop {
+  0% { opacity: 0; transform: translateY(48px) scale(0.92) rotate(-1deg); box-shadow: 0 0 0 var(--text); }
+  60% { opacity: 1; transform: translateY(-8px) scale(1.02) rotate(0.4deg); box-shadow: 8px 8px 0 var(--text); }
+  80% { transform: translateY(2px) scale(0.995); }
+}
+@keyframes go-nudge { to { transform: translate(3px, -1px); box-shadow: 4px 4px 0 var(--text); } }
 
 /* "More projects" banner at the bottom of Solo / Team pages */
 .more-link {

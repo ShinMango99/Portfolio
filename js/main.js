@@ -47,7 +47,7 @@
 
   // solo / team / teaching, from category and team size
   function groupOf(p) {
-    if (p.category === "Teaching") return "teaching";
+    if (p.category === "Communication") return "teaching";
     return /^1\b/.test(String(p.team)) ? "solo" : "team";
   }
   var catById = {};
@@ -304,6 +304,8 @@
     $("#cat-blurb").textContent = c.blurb;
     $("#cat-list").innerHTML = inGroup(c.id).map(tile).join("");
     mountAll($("#cat-list"));
+    juiceTiles($("#cat-list"));
+    pageTiles($("#cat-list"));
 
     // banner to the sibling category (solo <-> team)
     var m = catById[c.more];
@@ -316,6 +318,62 @@
       '<span class="more-title">' + esc(m.title) + ' <span class="portal-count">' + inGroup(m.id).length + " projects</span></span>" +
       '<span class="portal-text">' + esc(m.blurb) + "</span>" +
       '<span class="tile-go">See ' + esc(m.title) + " &rarr;</span></span></a>");
+  }
+
+  /* tiles pop in the first time they scroll into view */
+  function juiceTiles(list) {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var tiles = $$(".tile", list);
+    if (!tiles.length) return;
+    list.classList.add("tiles-juicy");
+
+    function cols() { return Math.max(1, getComputedStyle(list).gridTemplateColumns.split(" ").length); }
+    var perRow = cols();
+    tiles.forEach(function (t, i) { t.style.setProperty("--col", i % perRow); });
+
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("tile-in"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      tiles.forEach(function (t) { io.observe(t); });
+    } else {
+      tiles.forEach(function (t) { t.classList.add("tile-in"); });
+    }
+
+    window.addEventListener("resize", function () {
+      perRow = cols();
+      tiles.forEach(function (t, i) { t.style.setProperty("--col", i % perRow); });
+    });
+  }
+
+  /* desktop: every row of 2 tiles is one screen. Each row gets bottom space so the next row
+     starts just below the fold, and the wheel snap then moves exactly one row at a time. */
+  function pageTiles(list) {
+    var mq = window.matchMedia && matchMedia("(hover: hover) and (pointer: fine) and (min-width: 900px)");
+    if (!mq) return;
+    function fit() {
+      var tiles = $$(".tile", list);
+      tiles.forEach(function (t) { t.style.marginBottom = ""; });
+      list.classList.toggle("tiles-paged", mq.matches);
+      if (!mq.matches) return;
+      var line = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      var gap = parseFloat(getComputedStyle(list).rowGap) || 0;
+      var avail = window.innerHeight - line - 16; // 16 = tile scroll-margin-top
+      var rows = {};
+      tiles.forEach(function (t) { (rows[t.offsetTop] = rows[t.offsetTop] || []).push(t); });
+      Object.keys(rows).forEach(function (top) {
+        var row = rows[top];
+        var h = Math.max.apply(null, row.map(function (t) { return t.offsetHeight; }));
+        var extra = Math.max(0, Math.floor(avail - h - gap));
+        row.forEach(function (t) { t.style.marginBottom = extra + "px"; });
+      });
+    }
+    fit();
+    window.addEventListener("load", fit);
+    window.addEventListener("resize", fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   }
 
   /* ================= Project page ================= */
@@ -379,23 +437,52 @@
 
   /* ================= About: abilities + timeline ================= */
 
+  // 10 blocks; the first `level` of them light up
+  function segs(level) {
+    var out = "";
+    for (var k = 0; k < 10; k++) out += '<i class="' + (k < level ? "on" : "") + '" style="--k:' + k + '"></i>';
+    return out;
+  }
+
+  // light the blocks one by one and tick the LV number up with them, like levelling up
+  var SEG_MS = 90, SKILL_GAP_MS = 220, START_MS = 150;
+  function levelUp(group) {
+    $$(".skill", group).forEach(function (b, i) {
+      var lv = b.querySelector(".lv"), num = lv.querySelector("b"), target = +lv.dataset.level;
+      var base = START_MS + i * SKILL_GAP_MS;
+      b.style.setProperty("--base", base + "ms");
+      num.textContent = "0";
+      for (var n = 1; n <= target; n++) {
+        (function (n) {
+          setTimeout(function () {
+            num.textContent = n;
+            if (n === target) lv.classList.add("lvup");
+          }, base + n * SEG_MS);
+        })(n);
+      }
+    });
+    group.classList.add("in-view");
+  }
+
   function renderAbout() {
     $("#skills").innerHTML = D.skills.map(function (g) {
       return '<article class="skill-group"><header><h3>' + esc(g.group) + "</h3></header>" +
         '<div class="skill-list">' + g.items.map(function (s, si) {
           return '<button type="button" class="skill" style="--i:' + si + '" aria-pressed="false" data-name="' + esc(s.name) + '" data-desc="' + esc(s.desc) + '">' +
-            '<span class="skill-top"><b>' + esc(s.name) + "</b><span>" + s.level + " / 10</span></span>" +
-            '<span class="bar" role="img" aria-label="' + esc(s.name) + " level " + s.level + ' of 10"><i style="width:' + s.level * 10 + '%"></i></span></button>';
+            '<span class="skill-top"><b>' + esc(s.name) + '</b><span class="lv" data-level="' + s.level + '">LV <b>' + s.level + "</b> / 10</span></span>" +
+            '<span class="bar" role="img" aria-label="' + esc(s.name) + " level " + s.level + ' of 10">' + segs(s.level) + "</span></button>";
         }).join("") + "</div>" +
         '<p class="skill-info" aria-live="polite"></p></article>';
     }).join("");
 
     // fill each card's bars once, the first time it scrolls into view
-    if ("IntersectionObserver" in window) {
+    var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if ("IntersectionObserver" in window && !reduce) {
       document.documentElement.classList.add("js-anim");
+      $$(".skill .lv b").forEach(function (b) { b.textContent = "0"; });
       var barIO = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
-          if (e.isIntersecting) { e.target.classList.add("in-view"); barIO.unobserve(e.target); }
+          if (e.isIntersecting) { levelUp(e.target); barIO.unobserve(e.target); }
         });
       }, { threshold: 0.35 });
       $$(".skill-group").forEach(function (g) { barIO.observe(g); });
@@ -429,10 +516,40 @@
 
   /* ---------- timeline (newest first) ---------- */
 
+  // tabs above the timeline: null = everything (life milestones included), otherwise one project category
+  var TL_TABS = [
+    { label: "All", cat: null },
+    { label: "Game Jam", cat: "GameJam" },
+    { label: "Personal", cat: "Personal" },
+    { label: "Competition", cat: "Competition" },
+    { label: "Class", cat: "Class" },
+    { label: "Club", cat: "Club" },
+    { label: "Communication", cat: "Communication" }
+  ];
+
   function renderTimeline() {
-    var events = D.projects.map(function (p) {
+    var tabs = $("#tl-tabs");
+    if (tabs) {
+      tabs.innerHTML = TL_TABS.map(function (t, i) {
+        var n = t.cat ? D.projects.filter(function (p) { return p.category === t.cat; }).length : null;
+        return '<button type="button" class="tl-tab" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' +
+          esc(t.label) + (n != null ? " <span>" + n + "</span>" : "") + "</button>";
+      }).join("");
+      $$(".tl-tab", tabs).forEach(function (b) {
+        b.addEventListener("click", function () {
+          $$(".tl-tab", tabs).forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+          fillTimeline(TL_TABS[+b.dataset.i].cat);
+        });
+      });
+    }
+    fillTimeline(null);
+  }
+
+  var gaugeRefresh = null;
+  function fillTimeline(cat) {
+    var events = D.projects.filter(function (p) { return !cat || p.category === cat; }).map(function (p) {
       return { date: p.date, project: p };
-    }).concat((D.milestones || []).map(function (m) {
+    }).concat(cat ? [] : (D.milestones || []).map(function (m) {
       return { date: m.date, milestone: m };
     })).sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
 
@@ -463,49 +580,129 @@
     }).join("");
 
     var preview = $("#tl-preview");
-    function previewProject(p) {
-      var poster = thumbOf(p);
-      return (poster ? '<div class="media"><img src="' + esc(poster) + '" alt=""></div>' : "") +
-        '<h3 class="tl-preview-title">' + esc(p.title) + "</h3>" +
-        '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date) + " · " + statusText(p) + "</p>" +
-        "<p>" + val(p.summary) + "</p>" +
-        "<dl>" + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) + pressRow(p) + "</dl>" +
-        '<p><a href="' + projUrl(p) + '">Full details</a></p>';
-    }
-    function previewMilestone(m) {
-      return (m.image ? '<img class="tl-preview-logo" src="' + esc(m.image) + '" alt="">' : "") +
-        '<h3 class="tl-preview-title">' + esc(m.title) + "</h3>" +
-        '<p class="card-meta">' + fmtDate(m.date) + (m.end ? " - " + fmtDate(m.end) : "") + "</p>" +
-        (m.note ? "<p>" + esc(m.note) + "</p>" : "");
-    }
-    var hideTimer = null;
-    function showPreview(li) {
-      clearTimeout(hideTimer);
-      $$(".tl-item").forEach(function (o) { o.classList.remove("is-active"); });
-      li.classList.add("is-active");
-      // fresh wrapper each time so the swap animation replays
-      preview.innerHTML = '<div class="tl-preview-inner">' +
-        (li.dataset.id ? previewProject(byId[li.dataset.id]) : previewMilestone(D.milestones[li.dataset.m])) + "</div>";
-      preview.classList.add("is-open");
-    }
-    // short delay so the pointer can travel from an entry to the panel (e.g. its link)
-    function hidePreview() {
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(function () {
-        preview.classList.remove("is-open");
-        $$(".tl-item").forEach(function (o) { o.classList.remove("is-active"); });
-      }, 150);
-    }
+    preview.classList.remove("is-open");
     $$(".tl-item").forEach(function (li) {
       li.addEventListener("mouseenter", function () { showPreview(li); });
       li.addEventListener("mouseleave", hidePreview);
       li.addEventListener("focusin", function () { showPreview(li); });
       li.addEventListener("focusout", hidePreview);
     });
+    if (preview.dataset.bound) { gaugeRefresh(); return; }
+    preview.dataset.bound = "1";
     preview.addEventListener("mouseenter", function () { clearTimeout(hideTimer); });
     preview.addEventListener("mouseleave", hidePreview);
     preview.addEventListener("focusin", function () { clearTimeout(hideTimer); });
     preview.addEventListener("focusout", hidePreview);
+    gaugeRefresh = timelineGauge();
+  }
+
+  // preview panel helpers (shared by every tab render)
+  var hideTimer = null;
+  function previewProject(p) {
+    var poster = thumbOf(p);
+    return (poster ? '<div class="media"><img src="' + esc(poster) + '" alt=""></div>' : "") +
+      '<h3 class="tl-preview-title">' + esc(p.title) + "</h3>" +
+      '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date) + " · " + statusText(p) + "</p>" +
+      "<p>" + val(p.summary) + "</p>" +
+      "<dl>" + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) + pressRow(p) + "</dl>" +
+      '<p><a href="' + projUrl(p) + '">Full details</a></p>';
+  }
+  function previewMilestone(m) {
+    return (m.image ? '<img class="tl-preview-logo" src="' + esc(m.image) + '" alt="">' : "") +
+      '<h3 class="tl-preview-title">' + esc(m.title) + "</h3>" +
+      '<p class="card-meta">' + fmtDate(m.date) + (m.end ? " - " + fmtDate(m.end) : "") + "</p>" +
+      (m.note ? "<p>" + esc(m.note) + "</p>" : "");
+  }
+  function showPreview(li) {
+    var preview = $("#tl-preview");
+    clearTimeout(hideTimer);
+    $$(".tl-item").forEach(function (o) { o.classList.remove("is-active"); });
+    li.classList.add("is-active");
+    // fresh wrapper each time so the swap animation replays
+    preview.innerHTML = '<div class="tl-preview-inner">' +
+      (li.dataset.id ? previewProject(byId[li.dataset.id]) : previewMilestone(D.milestones[li.dataset.m])) + "</div>";
+    preview.classList.add("is-open");
+  }
+  // short delay so the pointer can travel from an entry to the panel (e.g. its link)
+  function hidePreview() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(function () {
+      $("#tl-preview").classList.remove("is-open");
+      $$(".tl-item").forEach(function (o) { o.classList.remove("is-active"); });
+    }, 150);
+  }
+
+  /* ---------- timeline gauge: the spine fills as you scroll, each dot lights up when reached ---------- */
+
+  // returns refresh(), called again after a tab re-renders the list
+  function timelineGauge() {
+    var list = $("#timeline-list");
+    var spine = document.createElement("span");
+    spine.className = "tl-spine";
+    spine.setAttribute("aria-hidden", "true");
+    spine.innerHTML = '<span class="tl-spine-fill"></span>';
+    var fill = spine.firstChild;
+    var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var dots = [];
+
+    // centre of each checkpoint square: year squares are vertically centred, entry squares sit 26px down
+    var top = 0, height = 0, dotY = [];
+    function measure() {
+      if (!dots.length) return;
+      var base = list.getBoundingClientRect().top;
+      dotY = dots.map(function (d) {
+        var r = d.getBoundingClientRect();
+        return r.top - base + (d.classList.contains("tl-year") ? r.height / 2 : 26);
+      });
+      top = dotY[0];
+      height = Math.max(1, dotY[dotY.length - 1] - top);
+      spine.style.top = top + "px";
+      spine.style.height = height + "px";
+      // how many 16px blocks fit in each year's rule (the space right of the year text)
+      dots.forEach(function (d) {
+        if (!d.classList.contains("tl-year")) return;
+        var range = document.createRange();
+        range.selectNodeContents(d);
+        var textRight = range.getBoundingClientRect().right;
+        var w = d.getBoundingClientRect().right - textRight - 14;
+        d.style.setProperty("--blocks", Math.max(1, Math.ceil(w / 16)));
+      });
+    }
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      if (!dots.length) return;
+      var line = innerHeight * 0.6 - list.getBoundingClientRect().top; // reading line, in list coordinates
+      var f = Math.min(1, Math.max(0, (line - top) / height));
+      fill.style.transform = "scaleY(" + f.toFixed(4) + ")";
+      dots.forEach(function (d, i) {
+        var on = dotY[i] <= line;
+        if (on !== d.classList.contains("reached")) d.classList.toggle("reached", on);
+      });
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+
+    function refresh() {
+      dots = $$(".tl-year, .tl-item", list); // checkpoints in reading order
+      list.insertBefore(spine, list.firstChild);
+      measure();
+      if (reduce) {
+        fill.style.transform = "scaleY(1)";
+        dots.forEach(function (d) { d.classList.add("reached"); });
+      } else {
+        update();
+      }
+    }
+
+    if (!reduce) {
+      list.classList.add("tl-gauge");
+      window.addEventListener("scroll", onScroll, { passive: true });
+    }
+    window.addEventListener("resize", function () { measure(); onScroll(); });
+    window.addEventListener("load", function () { measure(); onScroll(); }); // logos change heights once loaded
+    refresh();
+    return refresh;
   }
 
   /* ---------- boot ---------- */

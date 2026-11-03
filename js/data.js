@@ -14,7 +14,7 @@
     reel: "assets/video/reel.mp4",
     reelPoster: "assets/img/reel-poster.jpg",
     // shown big on the Home page, in this order
-    featured: ["shh", "save-the-pig", "this-is-not-chess", "catastrophe"],
+    featured: ["shh", "save-the-pig", "this-is-not-chess", "toast-to-the-past"],
     // evidence for the claims above; each links to the page that proves it
     proof: [
       { title: "1st Place", text: "Mason Korea Game Jam Fall 2025, solo", href: "project.html?id=shh" },
@@ -85,10 +85,10 @@
     },
     {
       id: "teaching",
-      title: "Teaching",
+      title: "Communication",
       page: "teaching.html",
       cover: "learning-assistant",
-      blurb: "Teaching Unity and C# as a lecturer and as a Learning Assistant at George Mason University."
+      blurb: "Explaining games and code to other people: teaching Unity and C# as a lecturer and as a Learning Assistant at George Mason University."
     },
     {
       id: "about",
@@ -150,7 +150,7 @@
     {
       id: "mk-mentoring",
       title: "MK Mentoring",
-      category: "Teaching",
+      category: "Communication",
       date: "2023-09-16",
       ongoing: false,
       completion: 1,
@@ -329,7 +329,7 @@
     {
       id: "learning-assistant",
       title: "Learning Assistant (LA)",
-      category: "Teaching",
+      category: "Communication",
       date: "2026-06-22",
       ongoing: false,
       completion: 1,
