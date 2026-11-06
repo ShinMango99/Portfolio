@@ -372,7 +372,7 @@
       poster: "assets/img/this-is-not-chess.webp",
       summary: "Chess, but nothing stays still.",
       description:
-        "A Unity chess game where the board fights back. On top of classic online chess, Deckmate mode mixes in Uno-style cards: play a card to bend the rules, and 22 jokers can completely change the board mid-game.",
+        "An online multiplayer chess game made for people who don't know chess. It fuses chess with entirely different genres, so the other genre does half the teaching. The first is Deckmate, a card game mode with Uno-style cards: play a card to bend the rules, and 22 jokers can completely change the board mid-game.",
       role: "Game design, rules design, game feel/VFX direction, programming (AI-assisted)",
       tools: "Unity, C#, AI pair programming",
       team: "3",
