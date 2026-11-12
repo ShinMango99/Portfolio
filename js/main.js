@@ -66,7 +66,7 @@
     var yt = ytId(p.links && p.links.youtube);
     var poster = thumbOf(p);
     var playable = p.video || yt;
-    label = label || "Play trailer";
+    label = label || p.mediaLabel || "Play trailer";
 
     if (!poster && !playable) {
       box.innerHTML = '<span class="media-empty">no trailer yet</span>';
@@ -394,7 +394,9 @@
     var prev = siblings[i - 1];
     var next = siblings[i + 1];
     var hasMedia = thumbOf(p) || p.video;
-    var gallery = (p.gallery || []).filter(function (src) { return src !== p.poster; });
+    // gallery items are a path or { src, caption }
+    var gallery = (p.gallery || []).map(function (g) { return typeof g === "string" ? { src: g } : g; })
+      .filter(function (g) { return g.src !== p.poster; });
     var l = p.links || {};
 
     var linkHtml =
@@ -409,13 +411,26 @@
       '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date, true) + " · " + statusText(p) + "</p></header>" +
       '<div class="project-grid' + (hasMedia ? "" : " project-grid--text") + '">' +
       (hasMedia ? '<div class="media media--lg"></div>' : "") +
-      '<aside class="facts"><dl>' + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) +
+      '<aside class="facts"><dl>' + row("My role", p.role) + row("When", p.period) + row("Result", p.outcome) + row("Tools", p.tools) +
       row("Team", p.team == null ? null : teamText(p.team)) + pressRow(p) + "</dl>" +
       (linkHtml ? '<div class="actions">' + linkHtml + "</div>" : "") + "</aside>" +
       "</div>" +
+      (p.stats && p.stats.length ? '<ul class="stats">' + p.stats.map(function (s) {
+        return "<li><b>" + esc(s.value) + "</b><span>" + esc(s.label) + "</span></li>";
+      }).join("") + "</ul>" : "") +
       '<div class="project-text"><p>' + val(p.summary) + "</p>" + (p.description ? "<p>" + esc(p.description) + "</p>" : "") + "</div>" +
-      (gallery.length ? '<ul class="gallery">' + gallery.map(function (src) {
-        return '<li><img src="' + esc(src) + '" alt="' + esc(p.title) + ' photo" loading="lazy"></li>';
+      (p.sections || []).map(function (sec) {
+        return '<section class="project-section"><h2>' + esc(sec.heading) + "</h2>" +
+          (sec.text ? "<p>" + esc(sec.text) + "</p>" : "") +
+          (sec.items ? "<ul>" + sec.items.map(function (it) { return "<li>" + esc(it) + "</li>"; }).join("") + "</ul>" : "") +
+          "</section>";
+      }).join("") +
+      (p.quote ? '<figure class="project-quote"><blockquote>' + esc(p.quote) + "</blockquote>" +
+        (p.quoteSource ? "<figcaption>" + esc(p.quoteSource) + "</figcaption>" : "") + "</figure>" : "") +
+      (gallery.length ? '<ul class="gallery">' + gallery.map(function (g) {
+        var alt = g.caption || p.title + " photo";
+        return '<li><figure><img src="' + esc(g.src) + '" alt="' + esc(alt) + '" loading="lazy">' +
+          (g.caption ? "<figcaption>" + esc(g.caption) + "</figcaption>" : "") + "</figure></li>";
       }).join("") + "</ul>" : "") +
       '<nav class="pager" aria-label="More in ' + esc(c.title) + '">' +
       (prev ? '<a class="button" href="' + projUrl(prev) + '">&larr; ' + esc(prev.title) + "</a>" : "<span></span>") +

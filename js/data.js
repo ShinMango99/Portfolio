@@ -330,18 +330,78 @@
       id: "learning-assistant",
       title: "Learning Assistant (LA)",
       category: "Communication",
-      date: "2026-06-22",
+      date: "2026-06-20",
+      period: "Mar - Jun 2026 (Spring semester, 16 weeks)",
       ongoing: false,
       completion: 1,
       links: { itch: null, instagram: null, youtube: null },
-      video: null,
+      // my UNIV 333 video post on asking questions instead of handing over answers
+      video: "assets/video/la-questions.mp4",
+      mediaLabel: "Play video",
       poster: "assets/img/la.webp",
       summary:
-        "Provided code reviews and technical guidance for Unity & C# projects (e.g., Isometric Camera, Physics/Collision, Health Systems). Helped students bridge the gap between game design concepts and practical C# implementation.",
-      role: "Learning Assistant",
-      tools: "Unity, C#",
+        "Learning Assistant for GAME 140 and GAME 240 at George Mason University Korea, supporting Prof. John P. Doran. Over 16 weeks and about 180 hours, I helped students turn game design ideas into working Unity and C# code, from isometric cameras and collision matrices to health systems and build errors.",
+      description:
+        "In the LA program, a student who has already taken a course works beside its professor: in the classroom, in office hours and online. Alongside the job I took UNIV 333, the LA seminar on peer teaching, where I set a SMART goal, presented a semester plan, and gave a midterm and a final report on what worked.",
+      stats: [
+        { value: "180+", label: "hours over 16 weeks" },
+        { value: "2", label: "courses: GAME 140 & 240" },
+        { value: "6 h", label: "of office hours every week" },
+        { value: "100%", label: "of build errors brought to me fixed" }
+      ],
+      sections: [
+        {
+          heading: "What I did",
+          items: [
+            "Sat in on every GAME 140 and GAME 240 class (about 5.5 hours a week) and debugged C# live while students worked in Unity.",
+            "Held office hours on Tuesdays 2-5 PM and Wednesdays 1-4 PM, plus open lab and online sessions before deadlines.",
+            "Answered questions on Discord, KakaoTalk and email, on weekends and up to midnight, so nobody was stuck alone with a broken build.",
+            "Gave code reviews on projects such as Pong and projectile mechanics, and wrote feedback on graded assignments.",
+            "When a bug was hard to explain in text, I recorded short video tutorials for common Unity problems that students could rewatch any time.",
+            "Acted as the bridge to Prof. Doran: we talked through assignment structure, grading and course flow, and when I wasn't sure of an answer, I asked him and shared it with the whole class."
+          ]
+        },
+        {
+          heading: "Questions, not answers",
+          text: "My goal was to grow students' own debugging, so I pointed to the exact line and asked why it fails instead of rewriting the code for them.",
+          items: [
+            "Probing: \"Is the script not running, or is the physics engine not responding?\"",
+            "Leading: \"If the Ground Check is at the waist instead of the feet, what happens to the boolean?\"",
+            "Comparing: \"How does Input.GetAxis compare to the New Input System's CallbackContext?\""
+          ]
+        },
+        {
+          heading: "Results",
+          items: [
+            "Every student who came to me with a build error ended up with a working, exported build.",
+            "Guided struggling students to finish and submit working Unity games, many of them non-programmers who were afraid of C# at the start.",
+            "Prof. Doran praised how clear and actionable my messages to students were, and encouraged me to organize student feedback logs."
+          ]
+        },
+        {
+          heading: "What I learned",
+          items: [
+            "Empathy comes before debugging. My job wasn't to be a \"human compiler\"; when a student was frustrated, understanding what they meant to design came first.",
+            "Make asking easy and early. At the midterm, most students only reached out the night before the deadline, so in the second half I pushed for earlier contact to avoid emergency debugging.",
+            "Be kind and fair at once: enforcing late-submission rules and rubrics while keeping a supportive relationship.",
+            "Next time, I'd write structured debugging guides for common physics and collision-matrix issues instead of solving each case one by one."
+          ]
+        }
+      ],
+      quote: "You don't need to know everything. \"This is a tricky bug, let's read the docs and figure it out together\" builds real trust. Be their guide, not their answer sheet.",
+      quoteSource: "My message to future LAs, UNIV 333 final report",
+      gallery: [
+        { src: "assets/img/la-semester-plan.webp", caption: "Semester plan: roles, goals, and my weekly class and office-hour schedule." },
+        { src: "assets/img/la-channels.webp", caption: "Midterm report: added video tutorials to Kakao, email and Discord support." },
+        { src: "assets/img/la-csharp-barrier.webp", caption: "Midterm report: lowering the C# barrier for non-programmers." },
+        { src: "assets/img/la-questions.webp", caption: "Questioning techniques that guide thinking without giving the answer away." },
+        { src: "assets/img/la-concept-map.webp", caption: "Concept map of Computer Game Design as a triathlon of art, coding and design." },
+        { src: "assets/img/la-discord-code.webp", caption: "A Discord guide I shared: how to paste code so I can read and review it." }
+      ],
+      role: "Learning Assistant to Prof. John P. Doran",
+      tools: "Unity, C#, Discord, KakaoTalk",
       team: null,
-      outcome: "Helped students bridge the gap between game design concepts and practical C# implementation."
+      outcome: "About 180 hours of class, office-hour and online support; every student who brought me a build error left with a working build."
     },
     {
       id: "ohmycod",
