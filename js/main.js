@@ -39,6 +39,24 @@
     }).join(" · ") + "</dd>";
   }
   function teamText(t) { return /^\d+$/.test(String(t)) ? t + (t === "1" ? " person" : " people") : t; }
+  // engine label: p.engine if set, otherwise the first entry of tools ("Unreal Engine" -> "Unreal")
+  function engineOf(p) {
+    var e = p.engine || String(p.tools || "").split(",")[0].trim();
+    return e.replace(/ Engine$/, "");
+  }
+  // "Solo" / "Team of 6"; teaching entries skip it (their number is students, not a dev team)
+  function teamLabel(p) {
+    if (p.team == null || p.category === "Communication") return "";
+    var t = String(p.team);
+    if (/^1\b/.test(t)) return "Solo";
+    return /^\d+$/.test(t) ? "Team of " + t : t;
+  }
+  function tagsHtml(p) {
+    var e = engineOf(p), t = teamLabel(p);
+    if (!e && !t) return "";
+    return '<span class="tile-tags">' + (e ? '<span class="tag tag--engine">' + esc(e) + "</span>" : "") +
+      (t ? '<span class="tag">' + esc(t) + "</span>" : "") + "</span>";
+  }
   function bareUrl(u) { return String(u).replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""); }
 
   var projects = D.projects.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
@@ -109,6 +127,38 @@
     }
   }
 
+  /* ---------- hover preview: like an itch.io cover GIF, a silent gameplay loop plays while the cursor is on it ---------- */
+
+  var canHover = window.matchMedia && matchMedia("(hover: hover) and (pointer: fine)").matches;
+  // hoverEl: what the cursor enters; host: the positioned picture box the loop covers
+  function hoverPreview(hoverEl, host, p) {
+    if (!p || !p.preview || !canHover || reduced || !hoverEl || !host) return;
+    var v = null;
+    hoverEl.addEventListener("mouseenter", function () {
+      // a trailer is already playing in this box: leave it alone
+      if (host.querySelector("iframe, video:not(.hover-preview)")) return;
+      if (!v) {
+        v = document.createElement("video");
+        v.className = "hover-preview";
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.setAttribute("playsinline", "");
+        v.setAttribute("aria-hidden", "true");
+        v.preload = "auto";
+        v.src = p.preview;
+        host.insertBefore(v, host.querySelector(".media-play"));
+      }
+      host.classList.add("is-previewing");
+      var pr = v.play();
+      if (pr && pr.catch) pr.catch(function () {});
+    });
+    hoverEl.addEventListener("mouseleave", function () {
+      host.classList.remove("is-previewing");
+      if (v) { v.pause(); v.currentTime = 0; }
+    });
+  }
+
   /* ---------- project thumbnail: the picture plays the trailer, the text below opens the page ---------- */
 
   function tile(p) {
@@ -116,6 +166,7 @@
       '<div class="media tile-media" data-mount="' + esc(p.id) + '"></div>' +
       '<a class="tile-body" href="' + projUrl(p) + '">' +
       '<span class="tile-title">' + esc(p.title) + "</span>" +
+      tagsHtml(p) +
       (p.award ? '<span class="badge">' + esc(p.award) + "</span>" : "") +
       '<span class="tile-meta">' + esc(p.category) + " · " + String(p.date).slice(0, 4) + " · " + statusText(p) + "</span>" +
       '<span class="tile-text">' + val(p.summary) + "</span>" +
@@ -128,6 +179,7 @@
   function mountAll(root, label) {
     Array.prototype.forEach.call(root.querySelectorAll("[data-mount]"), function (box) {
       var p = byId[box.dataset.mount];
+      hoverPreview(box.closest(".tile") || box, box, p);
       if (p.video || ytId(p.links && p.links.youtube)) { mountMedia(box, p, label); return; }
       var img = thumbOf(p);
       box.innerHTML = '<a class="media-link" href="' + projUrl(p) + '" tabindex="-1" aria-hidden="true">' +
@@ -177,8 +229,9 @@
   function renderHome() {
     var prof = D.profile;
     $("#hero-name").textContent = prof.name + " · " + prof.title;
-    $("#hero-lead").textContent = prof.heroLead;
-    $("#hero-tail").textContent = prof.heroTail || "";
+    // plain headline lines, if the page has them (the code-card hero writes its own lines in index.html)
+    if ($("#hero-lead")) $("#hero-lead").textContent = prof.heroLead;
+    if ($("#hero-tail")) $("#hero-tail").textContent = prof.heroTail || "";
     $("#hero-sr").textContent = prof.heroLead + " " + prof.typedPhrases.join(", ") + (prof.heroTail ? ", " + prof.heroTail : ".");
     typeHero(prof);
 
@@ -209,7 +262,38 @@
       function select(btn) {
         Array.prototype.forEach.call(thumbs, function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
       }
-      mountMedia(player, reel, "Play reel");
+      // the reel plays on its own like a GIF: a silent loop (profile.reelLoop), with a chip to switch to
+      // the full reel with sound. Reduced motion or data saver: poster + play button instead.
+      var saveData = navigator.connection && navigator.connection.saveData;
+      var canLoop = prof.reelLoop && !reduced && !saveData;
+      function showReel() {
+        if (!canLoop) { mountMedia(player, reel, "Play reel"); return; }
+        player.innerHTML = '<video class="reel-loop" muted loop autoplay playsinline preload="auto" aria-hidden="true"' +
+          (prof.reelPoster ? ' poster="' + esc(prof.reelPoster) + '"' : "") + "></video>" +
+          '<button type="button" class="button button--sm reel-sound">&#9654; Watch with sound</button>';
+        var v = player.querySelector("video");
+        v.muted = true; // the property, not just the attribute, is what lets autoplay start
+        v.addEventListener("error", function () { mountMedia(player, reel, "Play reel"); }, { once: true });
+        v.src = prof.reelLoop;
+        var pr = v.play();
+        if (pr && pr.catch) pr.catch(function () {});
+        player.querySelector(".reel-sound").addEventListener("click", function () { play(player, reel); });
+      }
+      // pause the loop while it is scrolled out of view
+      if (canLoop && "IntersectionObserver" in window) {
+        new IntersectionObserver(function (entries) {
+          var v = player.querySelector("video.reel-loop");
+          if (!v) return;
+          if (entries[0].isIntersecting) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+          else v.pause();
+        }).observe(player);
+      }
+      showReel();
+      // every small game card under the reel previews its game on hover
+      Array.prototype.forEach.call(feature.querySelectorAll(".hero-thumb"), function (t) {
+        var id = t.dataset.id || (t.getAttribute("href") || "").split("id=")[1];
+        hoverPreview(t, t, byId[decodeURIComponent(id || "")]);
+      });
       Array.prototype.forEach.call(thumbs, function (b) {
         var p = byId[b.dataset.id];
         b.setAttribute("aria-pressed", "false");
@@ -223,7 +307,7 @@
       now.querySelector("button").addEventListener("click", function () {
         select(null);
         now.hidden = true;
-        play(player, reel);
+        showReel();
       });
       $("#featured-list").innerHTML = featured.map(tile).join("");
       mountAll($("#featured-list"));
@@ -251,6 +335,11 @@
         '<span class="portal-text">' + esc(c.blurb) + "</span>" +
         '<span class="portal-go">Open &rarr;</span></span></a></li>';
     }).join("");
+    // category covers preview the game they show
+    $$("#portal .portal-item").forEach(function (a, i) {
+      var c = D.categories[i];
+      hoverPreview(a, a.querySelector(".portal-media"), c && c.cover ? byId[c.cover] : null);
+    });
   }
 
   function typeHero(prof) {
@@ -305,7 +394,6 @@
     $("#cat-list").innerHTML = inGroup(c.id).map(tile).join("");
     mountAll($("#cat-list"));
     juiceTiles($("#cat-list"));
-    pageTiles($("#cat-list"));
 
     // banner to the sibling category (solo <-> team)
     var m = catById[c.more];
@@ -348,34 +436,6 @@
     });
   }
 
-  /* desktop: every row of 2 tiles is one screen. Each row gets bottom space so the next row
-     starts just below the fold, and the wheel snap then moves exactly one row at a time. */
-  function pageTiles(list) {
-    var mq = window.matchMedia && matchMedia("(hover: hover) and (pointer: fine) and (min-width: 900px)");
-    if (!mq) return;
-    function fit() {
-      var tiles = $$(".tile", list);
-      tiles.forEach(function (t) { t.style.marginBottom = ""; });
-      list.classList.toggle("tiles-paged", mq.matches);
-      if (!mq.matches) return;
-      var line = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-      var gap = parseFloat(getComputedStyle(list).rowGap) || 0;
-      var avail = window.innerHeight - line - 16; // 16 = tile scroll-margin-top
-      var rows = {};
-      tiles.forEach(function (t) { (rows[t.offsetTop] = rows[t.offsetTop] || []).push(t); });
-      Object.keys(rows).forEach(function (top) {
-        var row = rows[top];
-        var h = Math.max.apply(null, row.map(function (t) { return t.offsetHeight; }));
-        var extra = Math.max(0, Math.floor(avail - h - gap));
-        row.forEach(function (t) { t.style.marginBottom = extra + "px"; });
-      });
-    }
-    fit();
-    window.addEventListener("load", fit);
-    window.addEventListener("resize", fit);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-  }
-
   /* ================= Project page ================= */
 
   function renderProject() {
@@ -407,6 +467,7 @@
     box.innerHTML =
       '<nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / <a href="' + esc(c.page) + '">' + esc(c.title) + "</a> / <span>" + esc(p.title) + "</span></nav>" +
       '<header class="project-head"><h1 class="page-title">' + esc(p.title) + "</h1>" +
+      tagsHtml(p) +
       (p.award ? '<p><span class="badge badge--lg">' + esc(p.award) + "</span></p>" : "") +
       '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date, true) + " · " + statusText(p) + "</p></header>" +
       '<div class="project-grid' + (hasMedia ? "" : " project-grid--text") + '">' +
@@ -438,7 +499,10 @@
       (next ? '<a class="button" href="' + projUrl(next) + '">' + esc(next.title) + " &rarr;</a>" : "<span></span>") +
       "</nav>";
 
-    if (hasMedia) mountMedia(box.querySelector(".media"), p);
+    if (hasMedia) {
+      mountMedia(box.querySelector(".media"), p);
+      hoverPreview(box.querySelector(".media"), box.querySelector(".media"), p);
+    }
 
     // other highlights, so a visitor always has somewhere to go next
     var more = (D.profile.featured || []).map(function (fid) { return byId[fid]; })
@@ -725,5 +789,34 @@
   var pages = { home: renderHome, category: renderCategory, project: renderProject, about: renderAbout };
   if (pages[body.dataset.page]) pages[body.dataset.page]();
   renderContact();
+  themeToggle();
+
+  /* light / dark switch at the end of the header. Dark is the default; a click stores the choice
+     (the inline script in <head> applies it before paint). */
+  function themeToggle() {
+    var bar = $(".header-inner");
+    if (!bar) return;
+    var root = document.documentElement;
+    function current() { return root.dataset.theme === "light" ? "light" : "dark"; }
+    var moon = '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6 1h4v1H8v1H7v2H6v6h1v1h1v1h2v1h3v1h-1v1H5v-1H3v-1H2v-2H1V5h1V3h1V2h3z"/></svg>';
+    var sun = '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M7 0h2v2H7zM7 14h2v2H7zM0 7h2v2H0zM14 7h2v2h-2zM2 2h2v2H2zM12 2h2v2h-2zM2 12h2v2H2zM12 12h2v2h-2zM6 4h4v1h1v1h1v4h-1v1h-1v1H6v-1H5v-1H4V6h1V5h1z"/></svg>';
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-toggle";
+    function paint() {
+      var dark = current() === "dark";
+      btn.innerHTML = dark ? sun : moon;
+      btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+      btn.title = btn.getAttribute("aria-label");
+    }
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      try { localStorage.setItem("theme", next); } catch (e) {}
+      paint();
+    });
+    paint();
+    bar.appendChild(btn);
+  }
   $$(".year").forEach(function (y) { y.textContent = new Date().getFullYear(); });
 })();

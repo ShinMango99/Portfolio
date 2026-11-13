@@ -13,6 +13,8 @@
     // While null, the Home hero shows the featured project thumbnails instead.
     reel: "assets/video/reel.mp4",
     reelPoster: "assets/img/reel-poster.jpg",
+    // silent 960x540 copy of the reel that autoplays on loop in the Home hero, like a GIF
+    reelLoop: "assets/video/reel-loop.mp4",
     // shown big on the Home page, in this order
     featured: ["shh", "save-the-pig", "this-is-not-chess", "toast-to-the-past"],
     // evidence for the claims above; each links to the page that proves it
@@ -141,6 +143,7 @@
       },
       video: null,
       poster: null,
+      preview: "assets/video/preview/digdigmole.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Help a baby mole dig across platforms, defeat enemies and dodge obstacles to find his family.",
       role: "Programming, level design",
       tools: "Unity",
@@ -221,6 +224,7 @@
       },
       video: null,
       poster: null,
+      preview: "assets/video/preview/doodling.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Defend the castle against the paper army!",
       role: "Programming, level design",
       tools: "Unity",
@@ -241,6 +245,7 @@
       },
       video: null,
       poster: null,
+      preview: "assets/video/preview/lost.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "A maze escape game: run from monsters and find a way out of a maze that seems to repeat forever.",
       role: "Producer, programming",
       tools: "Unreal Engine",
@@ -261,6 +266,7 @@
       },
       video: null,
       poster: "assets/img/save-the-pig.jpg",
+      preview: "assets/video/preview/save-the-pig.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       award: "Exhibited at the World Food Forum 2023, Rome",
       press: [
         { label: "GMU article", href: "https://chss.gmu.edu/articles/19979" },
@@ -288,6 +294,7 @@
       },
       video: null,
       poster: null,
+      preview: "assets/video/preview/shh.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Trapped in an abandoned subway tunnel, you escape using a flashlight while mysterious voices guide or mislead you.",
       role: "Solo developer: programming, art, sound and voice acting",
       tools: "Unity, 3ds Max, Aseprite",
@@ -320,6 +327,7 @@
       links: { itch: "https://mangocareer.itch.io/toast-to-the-past", instagram: null, youtube: "https://youtu.be/NUGwvdhcQ6I" },
       video: null,
       poster: "https://img.itch.zone/aW1nLzI3NDYyNDI5LnBuZw==/original/85QetF.png",
+      preview: "assets/video/preview/toast-to-the-past.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Time is your most precious resource: every action that speeds up or pauses time leaves an echo in the environment.",
       role: "Programming, pixel art",
       tools: "Unity",
@@ -413,6 +421,7 @@
       links: { itch: null, instagram: "https://www.instagram.com/p/DdB52fcKDRq/", youtube: "https://youtu.be/MTsg2eIMW3U" },
       video: null,
       poster: "assets/img/ohmycod.webp",
+      preview: "assets/video/preview/ohmycod.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "A desperate flopping journey of a fish out of water!",
       description: "I'm currently developing OhmyCod, a 2D pixel platformer packed with unique physics and fun mechanics!",
       role: "Programming, art",
@@ -430,6 +439,7 @@
       links: { itch: "https://mangocareer.itch.io/this-is-not-chess", instagram: "https://www.instagram.com/reel/DenDmP3Kjz-/", youtube: "https://youtu.be/M9X4RftFP8I" },
       video: null,
       poster: "assets/img/this-is-not-chess.webp",
+      preview: "assets/video/preview/this-is-not-chess.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Chess, but nothing stays still.",
       description:
         "An online multiplayer chess game made for people who don't know chess. It fuses chess with entirely different genres, so the other genre does half the teaching. The first is Deckmate, a card game mode with Uno-style cards: play a card to bend the rules, and 22 jokers can completely change the board mid-game.",

@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- theme chosen with the header toggle, applied before paint so the page never flashes the other theme -->
+  <script>try { var t = localStorage.getItem("theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
   <title>Jaemin Cho · Game Developer</title>
   <meta name="description" content="Jaemin Cho: Unity / C# game developer and pixel artist. Solo and team games, communication, and contact details.">
   <meta property="og:type" content="website">
@@ -12,7 +14,7 @@
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Pixelify+Sans:wght@500;700&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/data.js" defer></script>
   <script src="js/main.js" defer></script>
@@ -42,9 +44,20 @@
       <div class="container hero-grid">
         <div>
           <p class="eyebrow" id="hero-name"></p>
-          <h1 id="hero-title">
+          <!-- the one place the site speaks in code: who I am as a tiny C# class, the typed skill is the string value -->
+          <h1 id="hero-title" class="hero-code">
             <span class="sr-only" id="hero-sr"></span>
-            <span aria-hidden="true"><span class="hero-line" id="hero-lead"></span><span class="hero-line hero-line--typed"><em id="phrase"></em><span class="caret"></span></span><span class="hero-line" id="hero-tail"></span></span>
+            <span class="code-card" aria-hidden="true">
+              <span class="code-tab">JaeminCho.cs</span>
+              <span class="code-body">
+                <span class="code-line"><span class="tok-kw">public class</span> <span class="tok-type">JaeminCho</span> : <span class="tok-type">GameDeveloper</span></span>
+                <span class="code-line">{</span>
+                <span class="code-line code-in"><span class="tok-cm">// I'm confident in</span></span>
+                <span class="code-line code-in hero-line--typed"><span class="tok-kw">string</span> skill = <span class="tok-str">"<em id="phrase"></em><span class="caret"></span>"</span>;</span>
+                <span class="code-line code-in"><span class="tok-kw">bool</span> shipsWhatIStart = <span class="tok-lit">true</span>;</span>
+                <span class="code-line">}</span>
+              </span>
+            </span>
           </h1>
           <ul class="proof" id="proof"></ul>
           <p class="hero-contact">Email: <a href="mailto:mangocareer030624@gmail.com">mangocareer030624@gmail.com</a></p>
@@ -97,7 +110,7 @@
     <section class="section" id="featured-section" aria-labelledby="featured-title" hidden>
       <div class="container">
         <h2 id="featured-title">Featured games</h2>
-        <ul class="tiles" id="featured-list"></ul>
+        <ul class="tiles tiles--lg" id="featured-list"></ul>
       </div>
     </section>
 
