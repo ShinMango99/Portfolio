@@ -461,10 +461,22 @@ button { font: inherit; }
 /* negative side margin keeps the text aligned with the card heading while the highlight bleeds out */
 .skill { display: block; width: calc(100% + 16px); margin: 0 -8px; padding: 6px 8px; border: 1px solid transparent; background: none; color: inherit; font-size: 1.05rem; text-align: left; cursor: pointer; }
 .skill { transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap); }
-.skill:hover, .skill:focus-visible { background: var(--hover); border-color: var(--line); }
-.skill[aria-pressed="true"] { background: var(--yellow-strong); color: var(--on-yellow); border-color: var(--text); box-shadow: 2px 2px 0 var(--text); }
+/* hover lifts the row like a sticker being picked up */
+.skill:hover, .skill:focus-visible { background: var(--hover); border-color: var(--line); transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--line); }
+/* pinned row is a yellow fill: every colour inside (name, LV, gauge) switches to dark ink so it reads in both themes */
+.skill[aria-pressed="true"] {
+  --text: var(--on-yellow); --muted: #5e5642; --placeholder: rgba(28, 28, 28, 0.16);
+  background: var(--yellow-strong); color: var(--on-yellow); border-color: var(--on-yellow);
+  box-shadow: 2px 2px 0 var(--sticker, var(--on-yellow));
+}
+:root:not([data-theme="light"]) .skill[aria-pressed="true"] { --sticker: #ece7dc; border-color: #ece7dc; }
+.skill[aria-pressed="true"] .bar i.on { background: var(--on-yellow); box-shadow: none; }
+.skill[aria-pressed="true"] .bar i.next { outline-color: var(--on-yellow); }
 .skill:active { transform: translate(2px, 2px); box-shadow: none; transition-duration: 0.05s; }
 .skill-info { padding-top: 12px; border-top: 1px solid var(--line); min-height: calc(4.2em + 12px); font-size: 0.95rem; line-height: 1.4; }
+/* description pops in each time it changes, like a dialogue box line */
+.skill-info.say { animation: say-in 0.24s steps(3); }
+@keyframes say-in { 0% { opacity: 0; transform: translateY(6px); } }
 .skill-top { display: flex; justify-content: space-between; gap: 8px; }
 .skill-top b { font-weight: 700; }
 .skill-top span { color: var(--muted); }
@@ -476,10 +488,24 @@ button { font: inherit; }
 .bar i.on { background: var(--yellow-strong); box-shadow: 0 0 0 1px var(--text); }
 /* blocks light up one at a time once the card scrolls into view (main.js adds .in-view and ticks the LV number) */
 .js-anim .skill-group:not(.in-view) .bar i.on { background: var(--placeholder); box-shadow: none; }
-.js-anim .skill-group.in-view .bar i.on { animation: seg-on 0.2s steps(2) backwards; animation-delay: calc(var(--base, 0ms) + (var(--k) + 1) * 90ms); }
+.js-anim .skill-group.in-view:not(.filled) .bar i.on { animation: seg-on 0.2s steps(2) backwards; animation-delay: calc(var(--base, 0ms) + (var(--k) + 1) * 90ms); }
 .lv.lvup b { animation: lv-pop 0.45s steps(3); }
 @keyframes seg-on { 0% { background: var(--placeholder); box-shadow: none; } 50% { background: #fffbe0; box-shadow: 0 0 0 1px var(--text); transform: scaleY(1.6); } }
-@keyframes lv-pop { 40% { transform: scale(1.5); color: #a37a00; } }
+@keyframes lv-pop { 40% { transform: scale(1.5); color: var(--lv-pop, #a37a00); } }
+:root:not([data-theme="light"]) { --lv-pop: var(--yellow-strong); }
+/* the block right after the last lit one is "next level": an outline that blinks while the row is hovered */
+.bar i.next { outline: 1px dashed transparent; outline-offset: -1px; }
+@media (prefers-reduced-motion: no-preference) {
+  /* hover: a light wave runs along the lit blocks, then the next-level block blinks */
+  .skill:hover .bar i.on, .skill:focus-visible .bar i.on { animation: seg-wave 0.36s steps(3); animation-delay: calc(var(--k) * 40ms); }
+  .skill:hover .bar i.next, .skill:focus-visible .bar i.next { animation: next-blink 0.8s steps(1) infinite; animation-delay: 0.3s; }
+  .skill:hover .lv b, .skill:focus-visible .lv b { animation: lv-pop 0.36s steps(3); }
+  /* pinning a skill makes its gauge jump once */
+  .skill[aria-pressed="true"] .bar i.on { animation: seg-jump 0.3s steps(3); animation-delay: calc(var(--k) * 30ms); }
+}
+@keyframes seg-wave { 50% { background: #fffbe0; transform: scaleY(1.6); } }
+@keyframes seg-jump { 50% { transform: translateY(-3px); } }
+@keyframes next-blink { 0% { outline-color: var(--text); } 50% { outline-color: transparent; } }
 .skill p { color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
 
 /* timeline */

@@ -549,14 +549,16 @@
   // 10 blocks; the first `level` of them light up
   function segs(level) {
     var out = "";
-    for (var k = 0; k < 10; k++) out += '<i class="' + (k < level ? "on" : "") + '" style="--k:' + k + '"></i>';
+    for (var k = 0; k < 10; k++) out += '<i class="' + (k < level ? "on" : k === level ? "next" : "") + '" style="--k:' + k + '"></i>';
     return out;
   }
 
   // light the blocks one by one and tick the LV number up with them, like levelling up
   var SEG_MS = 90, SKILL_GAP_MS = 220, START_MS = 150;
   function levelUp(group) {
+    var end = 0;
     $$(".skill", group).forEach(function (b, i) {
+      end = Math.max(end, START_MS + i * SKILL_GAP_MS + 10 * SEG_MS + 500);
       var lv = b.querySelector(".lv"), num = lv.querySelector("b"), target = +lv.dataset.level;
       var base = START_MS + i * SKILL_GAP_MS;
       b.style.setProperty("--base", base + "ms");
@@ -571,6 +573,11 @@
       }
     });
     group.classList.add("in-view");
+    // once filled, drop the intro animations so hover / pin effects can't replay them
+    setTimeout(function () {
+      group.classList.add("filled");
+      $$(".lv.lvup", group).forEach(function (lv) { lv.classList.remove("lvup"); });
+    }, end);
   }
 
   function renderAbout() {
@@ -601,7 +608,12 @@
     $$(".skill-group").forEach(function (group) {
       var info = group.querySelector(".skill-info");
       var btns = Array.prototype.slice.call(group.querySelectorAll(".skill"));
-      function show(b) { info.innerHTML = "<b>" + esc(b.dataset.name) + ":</b> " + esc(b.dataset.desc); }
+      function show(b) {
+        var html = "<b>" + esc(b.dataset.name) + ":</b> " + esc(b.dataset.desc);
+        if (info.innerHTML === html) return;
+        info.innerHTML = html;
+        info.classList.remove("say"); void info.offsetWidth; info.classList.add("say");
+      }
       function reset() {
         var pinned = group.querySelector('.skill[aria-pressed="true"]');
         if (pinned) show(pinned); else info.textContent = "";
