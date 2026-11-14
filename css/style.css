@@ -764,7 +764,11 @@ button { font: inherit; }
     --card: min(calc(var(--view) - 64px), 640px);
     --card-portal: min(calc(var(--view) - 64px), 540px);
   }
-  html:not(.free-scroll) body[data-page="home"] .hero { scroll-snap-align: start; }
+  /* the hero is often taller than the screen, and a snap area taller than the screen lets the browser stop anywhere
+     inside it, so scrolling back up stopped at its bottom edge and hid the name line. Two small stops instead:
+     the very top of the page (the huge margin pushes the stop above 0, which clamps to 0) and the buttons row. */
+  html:not(.free-scroll) body[data-page="home"] .hero .eyebrow { scroll-snap-align: start; scroll-margin-top: 100vh; }
+  html:not(.free-scroll) body[data-page="home"] .hero .actions { scroll-snap-align: end; scroll-margin-bottom: 56px; }
   html:not(.free-scroll) body[data-page="home"] .studio { scroll-snap-align: center; }
   /* no stop on the section titles: the first row's stop already shows its title above it */
   html:not(.free-scroll) body[data-page="home"] #portal { row-gap: calc(var(--view) - var(--card-portal)); }
