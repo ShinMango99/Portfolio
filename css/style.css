@@ -352,9 +352,10 @@ button { font: inherit; }
   }
   .hero .proof { grid-column: 1 / 3; }
   .hero .hero-thumbs { grid-column: 4 / 6; }
-  .hero .hero-contact { grid-row: 5; grid-column: 1 / 3; margin: 12px 0 8px; }
+  /* email sits on the name line, top right above the reel, so the hero spends one row less and fits on one screen */
+  .hero .hero-contact { grid-row: 1; grid-column: 4 / 6; justify-self: end; align-self: end; margin: 0 0 2px; font-size: 0.95rem; }
   .hero .hero-caption { grid-row: 5; grid-column: 4 / 6; margin: 12px 0 0; }
-  .hero .actions { grid-row: 6; grid-column: 1 / 3; }
+  .hero .actions { grid-row: 5; grid-column: 1 / 3; margin-top: 12px; }
   /* game cards lie on their side to match the proof cards: picture on the left half, title on the right.
      The picture is absolutely placed so it never decides the row height; the proof card text does. */
   .hero .hero-thumb { display: block; min-height: 84px; padding-left: 50%; }
@@ -764,18 +765,27 @@ button { font: inherit; }
     --card: min(calc(var(--view) - 64px), 640px);
     --card-portal: min(calc(var(--view) - 64px), 540px);
   }
-  /* the hero is often taller than the screen, and a snap area taller than the screen lets the browser stop anywhere
-     inside it, so scrolling back up stopped at its bottom edge and hid the name line. Two small stops instead:
-     the very top of the page (the huge margin pushes the stop above 0, which clamps to 0) and the buttons row. */
+  /* the hero is one stop and must fit on one screen: tighter padding here, and main.js (fitHero) narrows it
+     on short windows. The stop is the very top of the page (the huge margin pushes it above 0, which clamps to 0),
+     so coming back up always shows the name line. */
+  /* hero and studio are each exactly one screen tall, so the next section never peeks in */
+  html:not(.free-scroll) body[data-page="home"] .hero { padding: 24px 0; min-height: var(--view); }
   html:not(.free-scroll) body[data-page="home"] .hero .eyebrow { scroll-snap-align: start; scroll-margin-top: 100vh; }
-  html:not(.free-scroll) body[data-page="home"] .hero .actions { scroll-snap-align: end; scroll-margin-bottom: 56px; }
-  html:not(.free-scroll) body[data-page="home"] .studio { scroll-snap-align: center; }
-  /* no stop on the section titles: the first row's stop already shows its title above it */
-  html:not(.free-scroll) body[data-page="home"] #portal { row-gap: calc(var(--view) - var(--card-portal)); }
+  html:not(.free-scroll) body[data-page="home"] .studio { display: flex; align-items: center; min-height: var(--view); padding: 24px 0; scroll-snap-align: start; }
+  /* card sections: the first stop is the section title, with the first row right under it. main.js measures the
+     title block into --head and marks the first row .first-row (no stop of its own); the cards shrink by --head so
+     title + first row fit on one screen. Later rows stop centred, one screen apart. */
+  html:not(.free-scroll) body[data-page="home"] #work-title,
+  html:not(.free-scroll) body[data-page="home"] #featured-title { scroll-snap-align: start; scroll-margin-top: 32px; }
+  html:not(.free-scroll) body[data-page="home"] #portal { --card-portal: min(calc(var(--view) - 64px - var(--head, 0px)), 540px); row-gap: calc(var(--view) - var(--card-portal)); }
   html:not(.free-scroll) body[data-page="home"] #portal .portal-item { height: var(--card-portal); scroll-snap-align: center; }
   html:not(.free-scroll) body[data-page="home"] #portal .portal-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
-  html:not(.free-scroll) body[data-page="home"] #featured-list { row-gap: calc(var(--view) - var(--card)); }
+  html:not(.free-scroll) body[data-page="home"] #featured-list { --card: min(calc(var(--view) - 64px - var(--head, 0px)), 640px); row-gap: calc(var(--view) - var(--card)); }
   html:not(.free-scroll) body[data-page="home"] #featured-list .tile { height: var(--card); scroll-snap-align: center; }
+  html:not(.free-scroll) body[data-page="home"] #portal > .first-row .portal-item,
+  html:not(.free-scroll) body[data-page="home"] #portal > .first-row.portal-item,
+  html:not(.free-scroll) body[data-page="home"] #featured-list > .first-row .tile,
+  html:not(.free-scroll) body[data-page="home"] #featured-list > .first-row.tile { scroll-snap-align: none; }
   html:not(.free-scroll) body[data-page="home"] #featured-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
   html:not(.free-scroll) body[data-page="home"] .site-footer { scroll-snap-align: end; }
 }

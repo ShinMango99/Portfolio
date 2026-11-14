@@ -890,5 +890,46 @@
   }
   freeScrollOnTouchpad();
 
+  /* Home with snapping on: the hero is one stop, so it has to fit on one screen. Its height follows its width
+     (the reel is 16:9), so on short windows narrow the hero until it fits under the header. */
+  function fitHero() {
+    var hero = $('body[data-page="home"] .hero');
+    if (!hero) return;
+    var box = hero.querySelector(".container"), header = $(".site-header");
+    var snapMQ = matchMedia("(hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px)");
+    // card sections: title block height into --head, and mark the first row (its stop is the title instead)
+    function measureSections() {
+      [["#work-title", "#portal"], ["#featured-title", "#featured-list"]].forEach(function (p) {
+        var title = $(p[0]), list = $(p[1]);
+        if (!title || !list || !list.children.length) return;
+        var head = list.getBoundingClientRect().top - title.getBoundingClientRect().top;
+        list.style.setProperty("--head", Math.max(0, Math.round(head)) + "px");
+        var top0 = list.children[0].offsetTop;
+        Array.prototype.forEach.call(list.children, function (c) { c.classList.toggle("first-row", c.offsetTop === top0); });
+      });
+    }
+    function fit() {
+      box.style.maxWidth = "";
+      measureSections();
+      if (!snapMQ.matches || document.documentElement.classList.contains("free-scroll")) return;
+      var room = innerHeight - (header ? header.offsetHeight : 0);
+      var w = box.offsetWidth;
+      // the hero has min-height of one screen now, so measure its content (grid + 24px padding top and bottom)
+      while (box.offsetHeight + 48 > room && w > 760) {
+        w -= 20;
+        box.style.maxWidth = w + "px";
+      }
+    }
+    var t;
+    function later() { clearTimeout(t); t = setTimeout(fit, 100); }
+    fit();
+    addEventListener("resize", later);
+    addEventListener("load", fit);
+    if (document.fonts) document.fonts.ready.then(fit);
+    // the touchpad switch turns snapping off, so the hero can go back to full width
+    new MutationObserver(later).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  }
+  fitHero();
+
   $$(".year").forEach(function (y) { y.textContent = new Date().getFullYear(); });
 })();
