@@ -364,7 +364,6 @@ button { font: inherit; }
   box-shadow: 4px 4px 0 var(--text);
 }
 .mosaic-item .media { border-width: 0 0 1px; border-color: var(--text); }
-.mosaic-item .media-play span { padding: 4px 10px; font-size: 0.95rem; }
 /* bottom bar opens the project page */
 .mosaic-label {
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 8px;
@@ -406,20 +405,30 @@ button { font: inherit; }
 /* hover preview (main.js hoverPreview): a silent gameplay loop swaps in over the cover at once, like an itch.io GIF */
 .hover-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; opacity: 0; }
 .is-previewing .hover-preview { opacity: 1; }
-/* while it plays, the play chip steps aside to the corner so the gameplay shows */
-.is-previewing .media-play span { left: 12px; top: auto; bottom: 12px; transform: none; }
 /* small cards under the reel: the loop covers only the picture part */
 .hero-thumb { position: relative; }
 .hero-thumb .hover-preview { bottom: auto; height: auto; aspect-ratio: 16 / 9; }
+/* play chip: the same sticker button as the reel's "Watch with sound", bottom right so the cover stays clear */
 .media-play span {
   position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  padding: 8px 14px;
-  background: rgba(0, 0, 0, 0.75);
-  color: #fff;
+  right: 12px; bottom: 12px;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid var(--text);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 3px 3px 0 var(--text);
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
 }
-.media-play:hover span, .media-play:focus-visible span { background: var(--yellow); color: var(--on-yellow); }
+.media-play:hover span, .media-play:focus-visible span { background: var(--hover); transform: translate(-3px, -3px); box-shadow: 6px 6px 0 var(--text); }
+.media-play:active span { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+/* with a mouse the chip only shows on hover (or keyboard focus); touch screens keep it so there is still a cue to tap */
+@media (hover: hover) and (pointer: fine) {
+  .media-play span { opacity: 0; }
+  .media:hover .media-play span, .tile:hover .media-play span, .mosaic-item:hover .media-play span,
+  .is-previewing .media-play span, .media-play:focus-visible span { opacity: 1; }
+}
 .media-empty {
   position: absolute;
   inset: 0;
