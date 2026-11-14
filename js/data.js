@@ -83,7 +83,7 @@
       page: "team.html",
       cover: "save-the-pig",
       more: "solo",
-      blurb: "Club, class and competition projects with teams of 2 to 14, including Save the Pig for FAO Korea and the mobile platformer Cat'astrophe."
+      blurb: "Club, class and competition projects with teams of 2 to 14, including Save the Pig for FAO Korea and the mobile shooter Cat'astrophe."
     },
     {
       id: "teaching",
@@ -273,6 +273,25 @@
         { label: "FAO event page", href: "https://www.fao.org/asiapacific/events/events-detail/World-Food-Forum-/en" }
       ],
       summary: "ASF Prevention Farm: a farming sim about protecting pigs from African Swine Fever.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A farming game that teaches how to protect pigs from African Swine Fever, a deadly pig disease. My club made it with FAO Korea, part of the UN's food and farming agency, and it was shown at the World Food Forum in Rome. I was one of the two programmers.",
+      sections: [
+        {
+          heading: "What I built",
+          text: "The inventory, drag and drop into the world, level-ups and the zoomable map camera were all new to me here.",
+          items: [
+            "Core farm-sim systems for raising and protecting the pigs.",
+            "An inventory system.",
+            "Drag and drop: an item dragged out of the menu turns into an object placed on the farm.",
+            "A level-up system.",
+            "A map camera you can zoom in and out and drag around, like in mobile strategy games.",
+            "The UI, including the screens that teach how to prevent the disease.",
+            "The HTML5 and Android builds.",
+            "Working with FAO Korea to fit their requests and prepare the version shown in Rome."
+          ]
+        }
+      ],
       role: "Programmer (with Jiwon Bae)",
       tools: "Unity",
       team: "7",
@@ -296,6 +315,28 @@
       poster: null,
       preview: "assets/video/preview/shh.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Trapped in an abandoned subway tunnel, you escape using a flashlight while mysterious voices guide or mislead you.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A short horror game: you are lost in a dark subway tunnel with only a flashlight, and voices tell you where to go, but some of them lie. I made all of it alone, from the code to the art, sound and voices, and it won 1st place at a game jam (a short game-making contest).",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "The whole game, alone, from the first idea to the submitted build: programming, art, sound and voice acting.",
+            "Flashlight and darkness: the tunnel is lit only by your flashlight, so you never see more than a few steps ahead.",
+            "A voice guide that can lie: recorded voices point the way, and some of them lead you wrong.",
+            "A 3D tunnel and monsters built mostly from simple cubes to fit my modeling skills. The centipede came out especially well.",
+            "Sound and horror pacing that keep the tension up from start to end."
+          ]
+        },
+        {
+          heading: "What I learned",
+          items: [
+            "Procedural animation: I learned it for the first time to make the centipede crawl, and I'm happy with how it moves.",
+            "Adding animated cutscenes caused a bug I couldn't fully fix during the jam, so cutscenes are the next thing I want to study."
+          ]
+        }
+      ],
       role: "Solo developer: programming, art, sound and voice acting",
       tools: "Unity, 3ds Max, Aseprite",
       team: "1 (solo)",
@@ -312,6 +353,24 @@
       video: null,
       poster: "https://img.itch.zone/aW1nLzIzNjk5NDEwLnBuZw==/original/I5gLm1.png",
       summary: "Simon the cat is on a mission to find his missing Granny.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A 2D vertical-scrolling shooter for phones: the screen scrolls upward as Simon the cat fights waves of enemies on his way to find his missing Granny. I wrote all of the code and led the team of six as producer.",
+      sections: [
+        {
+          heading: "What I built",
+          text: "Infinite scrolling, parallax, object pooling and data-driven waves were all new to me on this project.",
+          items: [
+            "All of the game's code, as coding lead, including bringing my teammates' work together into one project.",
+            "The whole game flow, designed from start to finish, and carrying it all the way to a shipped Android build.",
+            "An endless scrolling background with parallax layers for depth.",
+            "Enemy waves driven by data, so new waves can be added without writing new code.",
+            "Object pooling: bullets and enemies are reused instead of destroyed, so no leftover garbage slows the phone down.",
+            "Touch controls, tuned again and again from playtest feedback.",
+            "Level design, and as producer, running the team of six."
+          ]
+        }
+      ],
       role: "Producer, main programmer, level design",
       tools: "Unity",
       team: "6",
@@ -329,6 +388,25 @@
       poster: "https://img.itch.zone/aW1nLzI3NDYyNDI5LnBuZw==/original/85QetF.png",
       preview: "assets/video/preview/toast-to-the-past.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Time is your most precious resource: every action that speeds up or pauses time leaves an echo in the environment.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A 2D jumping game where you can speed up, slow down or stop time, and every choice changes the world around you. I made the code, the pixel art and the levels alone in a two-day game jam.",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "Time controls: speeding up, slowing down and stopping time, and the puzzles built around them.",
+            "Level design around those time puzzles.",
+            "A countdown timer set to tense music. When you slow or stop time, the music slows and stops with it.",
+            "Several endings, each with a small surprise to find.",
+            "The platformer controls and all of the pixel art."
+          ]
+        },
+        {
+          heading: "How I worked",
+          text: "I spent the first of the two jam days only on design. That gave the game a solid base and a clear direction, so the second day went into building it."
+        }
+      ],
       role: "Programming, pixel art",
       tools: "Unity",
       team: "1 (solo)",
@@ -443,6 +521,21 @@
       summary: "Chess, but nothing stays still.",
       description:
         "An online multiplayer chess game made for people who don't know chess. It fuses chess with entirely different genres, so the other genre does half the teaching. The first is Deckmate, a card game mode with Uno-style cards: play a card to bend the rules, and 22 jokers can completely change the board mid-game.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "Chess for people who don't know chess. It mixes chess with completely different kinds of games, starting with a card mode where cards change the rules mid-game, and you can play it online against a friend. I design the rules and build it with two teammates.",
+      sections: [
+        {
+          heading: "What I focused on",
+          items: [
+            "Fusing chess with different genres, and stretching one idea into many modes. Deckmate, the card mode with 22 jokers, is the first.",
+            "Online multiplayer, so two players can face each other from different computers.",
+            "Game feel and VFX: making every move, card and joker feel punchy on screen.",
+            "AI pair programming: using AI tools, skills and plugins to build faster, while checking that the game never feels AI-made and actually gives players a good experience.",
+            "Testing the limits of AI: finding where it helps and where I still need to design and fix things myself."
+          ]
+        }
+      ],
       role: "Game design, rules design, game feel/VFX direction, programming (AI-assisted)",
       tools: "Unity, C#, AI pair programming",
       team: "3",

@@ -93,8 +93,7 @@ button { font: inherit; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; }
 .logo { color: var(--text); font-weight: 700; letter-spacing: -0.01em; text-decoration: none; white-space: nowrap; }
 .site-header nav { min-width: 0; }
-.nav { display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none; }
-.nav::-webkit-scrollbar { display: none; }
+.nav { display: flex; flex-wrap: wrap; gap: 0 16px; }
 .nav a {display: block; padding: 8px 0; color: var(--text); text-decoration: none; white-space: nowrap; }
 .nav a:hover, .nav a:focus-visible, .nav a[aria-current="page"] {text-decoration: underline; text-decoration-thickness: 2px;}
 .nav a[aria-current="page"] { font-weight: 700; }
@@ -104,7 +103,8 @@ button { font: inherit; }
   .header-email { display: block; }
 }
 @media (max-width: 480px) {
-  .nav { gap: 12px; font-size: 1rem; }
+  .nav { gap: 0 14px; font-size: 1rem; }
+  .nav a { padding: 6px 0; }
 }
 /* light / dark switch (main.js adds it): a small pixel sun or moon sticker */
 .theme-toggle {
@@ -121,8 +121,8 @@ button { font: inherit; }
 .theme-toggle:hover, .theme-toggle:focus-visible { background: var(--hover); transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--text); }
 .theme-toggle:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
 @media (prefers-reduced-motion: reduce) { .theme-toggle { transition: none; } }
-/* small phones: logo and switch on the first line, menu scrolls below them */
-@media (max-width: 420px) {
+/* phones and narrow windows: logo and switch on the first line, the whole menu wraps below them so no tab is hidden */
+@media (max-width: 699px) {
   .header-inner { flex-wrap: wrap; gap: 0 16px; padding-top: 6px; }
   .theme-toggle { order: 1; margin-left: auto; width: 30px; height: 30px; }
   .site-header nav { order: 2; width: 100%; }
@@ -689,41 +689,44 @@ button { font: inherit; }
    Category pages: every snap shows exactly one row of project cards, centred under the header.
    All cards have one fixed height (--card), the picture takes whatever the text leaves, and the gap between
    rows is the rest of the screen, so the row above and below sit just outside the view.
-   Every snap area fits on screen, which is what keeps mandatory snapping from getting stuck. */
+   Every snap area fits on screen, which is what keeps mandatory snapping from getting stuck.
+   Touchpads (Mac trackpad, precision touchpads) fight mandatory snapping: their smooth, inertial scroll gets yanked
+   to the next stop. main.js adds .free-scroll to <html> on the first touchpad-like wheel event, which turns the snap
+   and the screen-tall gaps off so the page scrolls freely like a normal page. */
 @media (hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px) {
-  html:has(body[data-page="category"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
-  body[data-page="category"] {
+  html:not(.free-scroll):has(body[data-page="category"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
+  html:not(.free-scroll) body[data-page="category"] {
     --view: calc(100svh - 57px);                     /* screen below the sticky header */
     --card: min(calc(var(--view) - 64px), 640px);    /* at least 32px of air above and below a row */
   }
-  body[data-page="category"] #cat-list { row-gap: calc(var(--view) - var(--card)); }
-  body[data-page="category"] #cat-list .tile { height: var(--card); scroll-snap-align: center; }
-  body[data-page="category"] #cat-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
-  body[data-page="category"] .page-title { scroll-snap-align: start; scroll-margin-top: 48px; }
-  body[data-page="category"] .more-link { scroll-snap-align: center; }
-  body[data-page="category"] .site-footer { scroll-snap-align: end; }
+  html:not(.free-scroll) body[data-page="category"] #cat-list { row-gap: calc(var(--view) - var(--card)); }
+  html:not(.free-scroll) body[data-page="category"] #cat-list .tile { height: var(--card); scroll-snap-align: center; }
+  html:not(.free-scroll) body[data-page="category"] #cat-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
+  html:not(.free-scroll) body[data-page="category"] .page-title { scroll-snap-align: start; scroll-margin-top: 48px; }
+  html:not(.free-scroll) body[data-page="category"] .more-link { scroll-snap-align: center; }
+  html:not(.free-scroll) body[data-page="category"] .site-footer { scroll-snap-align: end; }
   /* the space between rows is now a full screen, so the banner after the last row needs no extra margin */
-  body[data-page="category"] .more-link { margin-top: calc(var(--view) - var(--card)); }
+  html:not(.free-scroll) body[data-page="category"] .more-link { margin-top: calc(var(--view) - var(--card)); }
 }
 /* Home: same rule, every stop fits on screen. Short sections are one stop each (hero, studio, contact);
    the two long ones (category portal, featured games) stop once per row of cards. */
 @media (hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px) {
-  html:has(body[data-page="home"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
-  body[data-page="home"] {
+  html:not(.free-scroll):has(body[data-page="home"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
+  html:not(.free-scroll) body[data-page="home"] {
     --view: calc(100svh - 57px);
     --card: min(calc(var(--view) - 64px), 640px);
     --card-portal: min(calc(var(--view) - 64px), 540px);
   }
-  body[data-page="home"] .hero { scroll-snap-align: start; }
-  body[data-page="home"] .studio { scroll-snap-align: center; }
+  html:not(.free-scroll) body[data-page="home"] .hero { scroll-snap-align: start; }
+  html:not(.free-scroll) body[data-page="home"] .studio { scroll-snap-align: center; }
   /* no stop on the section titles: the first row's stop already shows its title above it */
-  body[data-page="home"] #portal { row-gap: calc(var(--view) - var(--card-portal)); }
-  body[data-page="home"] #portal .portal-item { height: var(--card-portal); scroll-snap-align: center; }
-  body[data-page="home"] #portal .portal-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
-  body[data-page="home"] #featured-list { row-gap: calc(var(--view) - var(--card)); }
-  body[data-page="home"] #featured-list .tile { height: var(--card); scroll-snap-align: center; }
-  body[data-page="home"] #featured-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
-  body[data-page="home"] .site-footer { scroll-snap-align: end; }
+  html:not(.free-scroll) body[data-page="home"] #portal { row-gap: calc(var(--view) - var(--card-portal)); }
+  html:not(.free-scroll) body[data-page="home"] #portal .portal-item { height: var(--card-portal); scroll-snap-align: center; }
+  html:not(.free-scroll) body[data-page="home"] #portal .portal-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
+  html:not(.free-scroll) body[data-page="home"] #featured-list { row-gap: calc(var(--view) - var(--card)); }
+  html:not(.free-scroll) body[data-page="home"] #featured-list .tile { height: var(--card); scroll-snap-align: center; }
+  html:not(.free-scroll) body[data-page="home"] #featured-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
+  html:not(.free-scroll) body[data-page="home"] .site-footer { scroll-snap-align: end; }
 }
 /* juice: tiles hop up into place once, in 4 hard steps, one column after another (main.js adds the classes) */
 @media (prefers-reduced-motion: no-preference) {
@@ -767,6 +770,10 @@ button { font: inherit; }
 .crumbs { margin-bottom: 16px; color: var(--muted); font-size: 1rem; }
 .project-head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
 .project-head .page-title { margin-bottom: 0; align-self: flex-start; }
+/* "In plain words" summary above the trailer */
+.plain { max-width: 760px; margin: 0 0 24px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--text); border-left-width: 4px; }
+.plain p { margin: 0; font-size: 1.1rem; }
+.plain .plain-label { margin-bottom: 4px; color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .project-grid { display: grid; gap: 24px; align-items: start; }
 @media (min-width: 900px) { .project-grid { grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); } }
 .project-grid--text { grid-template-columns: 1fr; max-width: 640px; }
@@ -793,7 +800,26 @@ button { font: inherit; }
 .project-quote figcaption { margin-top: 10px; color: var(--muted); font-size: 1rem; }
 .gallery figure { margin: 0; }
 .gallery figcaption { margin-top: 10px; color: var(--muted); font-size: 1rem; }
-.pager { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 40px; }
+.pager { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 24px; }
+/* big "Next project" banner at the end of a project page (same look as the "More projects" banner) */
+.next-link { margin-top: 56px; }
+.next-link .portal-text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+/* floating "Back to top" button on project pages (main.js adds it) */
+.to-top {
+  position: fixed; right: 16px; bottom: 16px; z-index: 6;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--text); background: var(--surface); color: var(--text);
+  font: inherit; font-size: 0.95rem; font-weight: 700;
+  box-shadow: 3px 3px 0 var(--text); cursor: pointer;
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
+}
+.to-top[hidden] { display: none; }
+.to-top svg { image-rendering: pixelated; shape-rendering: crispEdges; }
+.to-top:hover, .to-top:focus-visible { background: var(--hover); transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--text); }
+.to-top:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+@media (min-width: 768px) { .to-top { right: 24px; bottom: 24px; } }
+@media (prefers-reduced-motion: reduce) { .to-top { transition: none; } }
 
 /* about page */
 .about-grid { display: grid; gap: 24px; align-items: start; }

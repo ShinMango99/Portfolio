@@ -453,6 +453,9 @@
     var i = siblings.indexOf(p);
     var prev = siblings[i - 1];
     var next = siblings[i + 1];
+    // the big "Next project" banner never dead-ends: after the last one it moves on to the other category
+    var upNext = next || (c.more && inGroup(c.more)[0]) || (siblings[0] !== p ? siblings[0] : null);
+    var upCover = upNext ? thumbOf(upNext) : null;
     var hasMedia = thumbOf(p) || p.video;
     // gallery items are a path or { src, caption }
     var gallery = (p.gallery || []).map(function (g) { return typeof g === "string" ? { src: g } : g; })
@@ -470,6 +473,8 @@
       tagsHtml(p) +
       (p.award ? '<p><span class="badge badge--lg">' + esc(p.award) + "</span></p>" : "") +
       '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date, true) + " · " + statusText(p) + "</p></header>" +
+      // plain words first, for readers who don't make games (recruiters, HR)
+      (p.plain ? '<div class="plain"><p class="plain-label">In plain words</p><p>' + esc(p.plain) + "</p></div>" : "") +
       '<div class="project-grid' + (hasMedia ? "" : " project-grid--text") + '">' +
       (hasMedia ? '<div class="media media--lg"></div>' : "") +
       '<aside class="facts"><dl>' + row("My role", p.role) + row("When", p.period) + row("Result", p.outcome) + row("Tools", p.tools) +
@@ -493,11 +498,17 @@
         return '<li><figure><img src="' + esc(g.src) + '" alt="' + esc(alt) + '" loading="lazy">' +
           (g.caption ? "<figcaption>" + esc(g.caption) + "</figcaption>" : "") + "</figure></li>";
       }).join("") + "</ul>" : "") +
+      (upNext ? '<a class="more-link next-link" href="' + projUrl(upNext) + '">' +
+        (upCover ? '<span class="more-media"><img src="' + esc(upCover) + '" alt="" loading="lazy"></span>' : "") +
+        '<span class="more-body"><span class="more-eyebrow">' + (next ? "Next project" : "Next: " + esc(catById[groupOf(upNext)].title)) + "</span>" +
+        '<span class="more-title">' + esc(upNext.title) + "</span>" +
+        (upNext.summary ? '<span class="portal-text">' + esc(upNext.summary) + "</span>" : "") +
+        '<span class="tile-go">Open project &rarr;</span></span></a>' : "") +
       '<nav class="pager" aria-label="More in ' + esc(c.title) + '">' +
       (prev ? '<a class="button" href="' + projUrl(prev) + '">&larr; ' + esc(prev.title) + "</a>" : "<span></span>") +
       '<a class="button" href="' + esc(c.page) + '">All ' + esc(c.title) + "</a>" +
-      (next ? '<a class="button" href="' + projUrl(next) + '">' + esc(next.title) + " &rarr;</a>" : "<span></span>") +
       "</nav>";
+    backToTop();
 
     if (hasMedia) {
       mountMedia(box.querySelector(".media"), p);
@@ -512,6 +523,25 @@
       mountAll($("#more-list"));
       $("#more-section").hidden = false;
     }
+  }
+
+  /* floating "Back to top" button for long project pages: shows once the reader is about a screen down */
+  function backToTop() {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "to-top";
+    btn.hidden = true;
+    btn.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M7 2h2v1h1v1h1v1h1v1h1v2h-3v6H6V8H3V6h1V5h1V4h1V3h1z"/></svg><span>Top</span>';
+    btn.setAttribute("aria-label", "Back to top");
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0 });
+      var h = $("#project .page-title");
+      if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+    });
+    document.body.appendChild(btn);
+    function onScroll() { btn.hidden = window.scrollY < innerHeight * 0.8; }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
   }
 
   /* ================= About: abilities + timeline ================= */
@@ -818,5 +848,35 @@
     paint();
     bar.appendChild(btn);
   }
+  /* Row-by-row scroll snap (css "scroll snap") is meant for a mouse wheel. A touchpad sends many small,
+     smooth wheel steps plus inertia, and mandatory snapping keeps yanking that to the next stop, which feels
+     rough on a Mac. On the first touchpad-like wheel event we switch to free scrolling (.free-scroll) and
+     remember it for the rest of the visit. A notched mouse wheel sends steps of about 100px and no sideways
+     part, so it keeps the snap. */
+  function freeScrollOnTouchpad() {
+    var root = document.documentElement, KEY = "free-scroll";
+    try { if (sessionStorage.getItem(KEY)) root.classList.add("free-scroll"); } catch (e) {}
+    if (root.classList.contains("free-scroll")) return;
+    function onWheel(e) {
+      if (e.ctrlKey) return;                                   // pinch zoom, not a scroll
+      var touchpad = e.deltaMode === 0 && (e.deltaX !== 0 || Math.abs(e.deltaY) < 40);
+      if (!touchpad) return;
+      window.removeEventListener("wheel", onWheel);
+      // keep the card under the middle of the screen where it is while the layout drops its big gaps
+      var mid = innerHeight / 2, anchor = null, best = Infinity;
+      $$(".tile, .portal-item, .more-link, section").forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var d = Math.abs(r.top + r.height / 2 - mid);
+        if (r.height && d < best) { best = d; anchor = el; }
+      });
+      var before = anchor && anchor.getBoundingClientRect().top;
+      root.classList.add("free-scroll");
+      if (anchor) window.scrollBy({ top: anchor.getBoundingClientRect().top - before, behavior: "instant" });
+      try { sessionStorage.setItem(KEY, "1"); } catch (e2) {}
+    }
+    window.addEventListener("wheel", onWheel, { passive: true });
+  }
+  freeScrollOnTouchpad();
+
   $$(".year").forEach(function (y) { y.textContent = new Date().getFullYear(); });
 })();
