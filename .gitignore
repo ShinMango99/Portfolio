@@ -6,3 +6,6 @@
 .claude/
 .DS_Store
 Thumbs.db
+
+# Personal drafts: internship mail, interview scripts
+private/
