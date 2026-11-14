@@ -124,6 +124,24 @@
       video: null,
       poster: "https://img.itch.zone/aW1nLzEyMjUyMzEwLnBuZw==/347x500/KOc5S%2B.png",
       summary: "Sweet Sixteen is an original game that uses a metaphor of a girl collecting sweets to highlight the dangers of drug addiction.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A game about the dangers of drug addiction, told through a girl who collects sweets. I was one of the programmers in a 14-person club team and built the enemies and part of the on-screen interface.",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "Enemy AI built as a state machine, with separate ranges for noticing, chasing and attacking the player. It was my first enemy AI.",
+            "UI, which gave me a much deeper understanding of how game interfaces work.",
+            "An opening camera shot made with Cinemachine that focuses on the scene before play starts.",
+            "Fitting my code together with the other programmers in a 14-person team."
+          ]
+        },
+        {
+          heading: "What I learned",
+          text: "How a serious game, a game made to teach or raise awareness, balances fun with its message. Finishing and releasing it with the club meant a lot to me."
+        }
+      ],
       role: "Programmer: enemy and UI",
       tools: "Unity",
       team: "14",
@@ -145,6 +163,20 @@
       poster: null,
       preview: "assets/video/preview/digdigmole.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Help a baby mole dig across platforms, defeat enemies and dodge obstacles to find his family.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A 2D pixel-art game where a baby mole digs through the ground, jumps across platforms and dodges enemies to find his family. I programmed it and designed the levels in a team of three.",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "Digging: a pixel tilemap where tiles can be dug away. It was my first time building this, and it got me comfortable with tilemaps.",
+            "Simple enemy AI.",
+            "Level design, which taught me how to shape the flow of a game.",
+            "Platformer controls, tuned again and again to feel better in the player's hands."
+          ]
+        }
+      ],
       role: "Programming, level design",
       tools: "Unity",
       team: "3",
@@ -164,6 +196,20 @@
       gallery: ["assets/img/mentoring-1.webp", "assets/img/mentoring-2.webp", "assets/img/mentoring-3.webp"],
       summary:
         "Lectured for 9 hours in total (3 sessions of 3 hours each over 21 days) on \"How to Recreate the Game Pong\", and successfully recreated the Pong game with students during the program.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "I taught a short coding class where students built the classic game Pong step by step, in three classes of three hours each. By the end, the students had a working Pong game.",
+      sections: [
+        {
+          heading: "What I did",
+          items: [
+            "Designed the curriculum and class materials, splitting Pong into three classes.",
+            "Studied the topics again even though I already knew them, so my examples were easier for beginners to follow.",
+            "Explained coding to students who were learning it for the first time.",
+            "Fixed problems on the spot when students hit errors or fell behind."
+          ]
+        }
+      ],
       role: "Lecturer",
       tools: "Unity",
       team: "5",
@@ -183,8 +229,24 @@
       },
       video: null,
       poster: "assets/img/ccc-challenge.png",
+      preview: "assets/video/preview/ccc-challenge.mp4", // 4 s silent loop of the AR filter preview, plays on hover
       summary:
         "Created a TikTok AR filter for the Clear Code Challenge in collaboration with Purito. Players have to catch falling serum ingredients with a bottle.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A TikTok camera filter game made for a competition with the skincare brand Purito: you move a bottle to catch falling serum ingredients. Our team of three was called MileStone, and I was the producer and programmer and handled marketing.",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "My first augmented reality (AR) filter, built in TikTok's Effect House.",
+            "The catching gameplay: ingredients fall, and the bottle catches them.",
+            "Effect House uses visual scripting much like Unreal's Blueprints, so my Unreal experience carried over.",
+            "There were very few examples online, so debugging took hundreds of tries. Just as we were about to settle for less, it worked the way we wanted.",
+            "Marketing through our presentation, showing what we built and why it stands out."
+          ]
+        }
+      ],
       role: "Producer, programming, marketing",
       tools: "Effect House",
       team: "3",
@@ -205,6 +267,23 @@
       video: null,
       poster: null,
       summary: "A story about a loaf of bread escaping from the oven",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A short game about a loaf of bread escaping from the oven, made for The Figment, a small retro game console. I programmed it and designed the levels in a team of three.",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "Gameplay and levels that fit the limits of a retro console.",
+            "The bread's escape, and the way its story is shown as you play.",
+            "Level design."
+          ]
+        },
+        {
+          heading: "What I learned",
+          text: "This project taught me the most about teamwork. Feedback came slowly, plans slipped and the results weren't what we hoped, but I took responsibility, pushed through and shipped on time. It also taught me to whitebox early: build a working version with simple shapes first, then add the art."
+        }
+      ],
       role: "Programming, level design",
       tools: "Unity",
       team: "3",
@@ -226,6 +305,21 @@
       poster: null,
       preview: "assets/video/preview/doodling.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Defend the castle against the paper army!",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A side-scrolling defense game where you protect your castle from an army of paper soldiers, made to run on a Nintendo DS. I programmed it and designed the levels in a team of three.",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "Touch controls for the DS touch screen. It has its own functions, different from the phone touch input I knew, which made it fresh and fun to learn.",
+            "Castle defense gameplay and waves of enemies.",
+            "Level design.",
+            "Whiteboxing first, so the working game was in place early and the schedule barely slipped.",
+            "Fixing balance, hitboxes and button response after playtests so the game feels fair."
+          ]
+        }
+      ],
       role: "Programming, level design",
       tools: "Unity",
       team: "3",
@@ -247,6 +341,26 @@
       poster: null,
       preview: "assets/video/preview/lost.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "A maze escape game: run from monsters and find a way out of a maze that seems to repeat forever.",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A 3D horror game where you run from monsters through a maze that seems to repeat forever, looking for the way out. I made it alone, and it was my first game in Unreal Engine.",
+      sections: [
+        {
+          heading: "What I built",
+          items: [
+            "My first Unreal Engine project, and my first time using Blueprints, Unreal's visual scripting.",
+            "Monster AI that hunts you by sound, and a statue that reacts to light, like the Weeping Angels: it only moves when you can't see it.",
+            "Doors and drawers that swing open with animation, and a cabinet you can hide inside.",
+            "Triggers that set off scares and events as you move through the maze.",
+            "Lighting and sound tuned to build fear.",
+            "The maze level design, which was the hardest part."
+          ]
+        },
+        {
+          heading: "What I learned",
+          text: "Playtest feedback showed me where players got confused or bored, and I changed the game to make their experience better."
+        }
+      ],
       role: "Producer, programming",
       tools: "Unreal Engine",
       team: "1 (solo)",
@@ -484,6 +598,9 @@
         { src: "assets/img/la-concept-map.webp", caption: "Concept map of Computer Game Design as a triathlon of art, coding and design." },
         { src: "assets/img/la-discord-code.webp", caption: "A Discord guide I shared: how to paste code so I can read and review it." }
       ],
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "For one semester I worked beside a professor in two game programming classes, helping students turn their game ideas into working code in class, in office hours and online: about 180 hours in all.",
       role: "Learning Assistant to Prof. John P. Doran",
       tools: "Unity, C#, Discord, KakaoTalk",
       team: null,
@@ -502,6 +619,20 @@
       preview: "assets/video/preview/ohmycod.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "A desperate flopping journey of a fish out of water!",
       description: "I'm currently developing OhmyCod, a 2D pixel platformer packed with unique physics and fun mechanics!",
+      // plain-language summary for readers outside games (shown at the top of the project page)
+      plain:
+        "A 2D pixel game about a fish out of water, flopping its way across land. Two of us are making it: I do the programming and the art. It is about 30% done.",
+      sections: [
+        {
+          heading: "What I'm focusing on",
+          items: [
+            "The fish's flop and the slosh of water: the feel that sets this game apart from other platformers.",
+            "Juice: squishy, bouncy animation for the player and enemies, and a book that turns its pages on the title screen.",
+            "Enemy AI built as a state machine, with every case split apart so bugs are easier to predict and fix.",
+            "Particle effects, which I'm still learning."
+          ]
+        }
+      ],
       role: "Programming, art",
       tools: "Unity, Aseprite",
       team: "2",

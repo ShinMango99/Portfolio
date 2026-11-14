@@ -141,6 +141,11 @@ button { font: inherit; }
 .lead { color: var(--muted); max-width: none; margin-bottom: 32px; }
 .eyebrow { color: var(--muted); font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.02em; margin: 16px 0 8px; }
 .about .bio { max-width: 760px; margin: 16px 0 24px; }
+/* "Why I make games": a short personal story under the bio */
+.about .why { max-width: 760px; margin: 0 0 24px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--text); border-left-width: 4px; }
+.about .why h2 { font-size: 1.3rem; margin: 0 0 8px; }
+.about .why p { margin: 0 0 10px; }
+.about .why p:last-child { margin-bottom: 0; }
 .todo { color: var(--todo); font-style: italic; }
 
 /* hard "sticker" shadow means "you can press this": buttons, cards that link, players.
