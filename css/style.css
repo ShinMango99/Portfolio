@@ -46,7 +46,8 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-padding-top: 72px; }
+/* keep the scrollbar's space even on short pages (Contact), so the header doesn't shift between pages */
+html { scroll-padding-top: 72px; scrollbar-gutter: stable; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
@@ -97,6 +98,12 @@ button { font: inherit; }
 .nav a {display: block; padding: 8px 0; color: var(--text); text-decoration: none; white-space: nowrap; }
 .nav a:hover, .nav a:focus-visible, .nav a[aria-current="page"] {text-decoration: underline; text-decoration-thickness: 2px;}
 .nav a[aria-current="page"] { font-weight: 700; }
+/* every tab reserves its bold width, so the current tab turning bold never pushes the others sideways */
+.nav a[data-label]::after {
+  content: attr(data-label);
+  display: block; height: 0; overflow: hidden; visibility: hidden;
+  font-weight: 700; pointer-events: none; user-select: none;
+}
 /* email always visible in the header on wide screens */
 .header-email { display: none; color: var(--text); font-size: 0.95rem; white-space: nowrap; }
 @media (min-width: 1000px) {
