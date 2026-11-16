@@ -297,22 +297,22 @@ button { font: inherit; }
   .hero-thumbs { grid-template-columns: 1fr 1fr; }
 }
 
-/* claims with links to the proof: small sticker cards */
-.proof { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 24px; }
+/* claims with links to the proof: plain text under a rule, not boxes, so the reel and the game cards
+   are the only stickers in the hero. Hover marks the title like a highlighter. */
+.proof { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin: 0 0 24px; }
 .proof-card {
-  display: flex; flex-direction: column; gap: 2px; height: 100%;
-  padding: 10px 12px;
-  background: var(--surface);
-  border: 1px solid var(--text);
-  box-shadow: 3px 3px 0 var(--text);
+  display: flex; flex-direction: column; gap: 4px; height: 100%;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--line);
   color: var(--text);
   text-decoration: none;
-  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
+  transition: border-color var(--snap-time) var(--snap);
 }
-.proof-card b { font-size: 1.1rem; line-height: 1.2; letter-spacing: -0.01em; }
+.proof-card b { align-self: flex-start; padding: 0 3px; margin-left: -3px; font-size: 1.1rem; line-height: 1.3; letter-spacing: -0.01em; transition: background-color var(--snap-time) var(--snap); }
 .proof-card span { color: var(--muted); font-size: 0.9rem; line-height: 1.35; }
-.proof-card:hover, .proof-card:focus-visible { background: var(--hover); transform: translate(-3px, -3px); box-shadow: 6px 6px 0 var(--text); }
-.proof-card:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+.proof-card:hover, .proof-card:focus-visible { border-top-color: var(--text); }
+.proof-card:hover b, .proof-card:focus-visible b { background: var(--hover); color: var(--on-yellow); }
+:root:not([data-theme="light"]) .proof-card:hover b, :root:not([data-theme="light"]) .proof-card:focus-visible b { background: var(--yellow-strong); }
 /* the claims are the proof: they unlock one by one on load, like achievements */
 @media (prefers-reduced-motion: no-preference) {
   .proof li { animation: unlock 0.36s steps(4, end) backwards; animation-delay: calc(0.25s + var(--i, 0) * 0.12s); }
@@ -750,6 +750,8 @@ button { font: inherit; }
   html:not(.free-scroll) body[data-page="category"] #cat-list { row-gap: calc(var(--view) - var(--card)); }
   html:not(.free-scroll) body[data-page="category"] #cat-list .tile { height: var(--card); scroll-snap-align: center; }
   html:not(.free-scroll) body[data-page="category"] #cat-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
+  /* the text keeps its own height, so all the spare room goes to the picture instead of a gap above the button */
+  html:not(.free-scroll) body[data-page="category"] #cat-list .tile-body { flex: none; }
   html:not(.free-scroll) body[data-page="category"] .page-title { scroll-snap-align: start; scroll-margin-top: 48px; }
   html:not(.free-scroll) body[data-page="category"] .more-link { scroll-snap-align: center; }
   html:not(.free-scroll) body[data-page="category"] .site-footer { scroll-snap-align: end; }
@@ -787,6 +789,9 @@ button { font: inherit; }
   html:not(.free-scroll) body[data-page="home"] #featured-list > .first-row .tile,
   html:not(.free-scroll) body[data-page="home"] #featured-list > .first-row.tile { scroll-snap-align: none; }
   html:not(.free-scroll) body[data-page="home"] #featured-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
+  /* same as category pages: the text keeps its own height and the picture takes the spare room */
+  html:not(.free-scroll) body[data-page="home"] #portal .portal-body,
+  html:not(.free-scroll) body[data-page="home"] #featured-list .tile-body { flex: none; }
   html:not(.free-scroll) body[data-page="home"] .site-footer { scroll-snap-align: end; }
 }
 /* juice: tiles hop up into place once, in 4 hard steps, one column after another (main.js adds the classes) */

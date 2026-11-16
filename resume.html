@@ -60,8 +60,6 @@
     line-height: 1.15;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    /* solid band instead of a hard-stop gradient: gradients can show a seam line in some viewers */
-    box-shadow: inset 0 -0.34em 0 var(--yellow);
   }
   .role { margin-top: 4px; color: var(--accent); font-size: 12.5pt; font-weight: 700; }
   .summary { margin-top: 9px; }
@@ -83,29 +81,15 @@
   .meta { color: var(--muted); }
   .who { white-space: nowrap; }
 
-  /* timeline: newest first, line on the left, one dot per entry */
-  .timeline { position: relative; margin-left: 5px; padding-left: 15px; border-left: 2px solid var(--accent); }
-  .tl { position: relative; margin-bottom: 8px; break-inside: avoid; }
-  .tl:last-child { margin-bottom: 0; }
-  .tl::before {
-    content: "";
-    position: absolute;
-    left: -21px;
-    top: 4px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--surface);
-    border: 2px solid var(--accent);
-  }
-  .tl.now::before { background: var(--yellow-strong); }
+  /* entries: newest first, no timeline line or dots; a thin rule and air between entries keep each one its own block.
+     Work still going says "present" in the date. */
+  .tl { break-inside: avoid; }
+  .tl + .tl { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--line); }
   /* Projects are the most important section: larger type */
   .projects { font-size: 11pt; line-height: 1.25; }
-  .projects .tl { margin-bottom: 5px; }
   .projects .when { font-size: 10pt; }
   .projects .row b { font-size: 12.5pt; }
   .projects .lk img, .projects .lk .ic { width: 12px; height: 12px; }
-  .legend { margin-top: 6px; color: var(--muted); font-size: 8.5pt; }
-  .legend i { display: inline-block; width: 7px; height: 7px; margin-right: 3px; border-radius: 50%; border: 2px solid var(--accent); background: var(--yellow-strong); vertical-align: -1px; box-sizing: content-box; }
 
   .row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
   .when { color: var(--muted); white-space: nowrap; font-size: 9pt; }
@@ -172,50 +156,49 @@
 
     <div class="timeline projects">
 
-      <div class="tl now">
-        <div class="row"><span><b>This Is Not Chess</b> <span class="meta who"><svg class="ic"><use href="#i-users"/></svg> Team of 3 &middot; Unity, C#</span></span><span class="when">Oct 2026</span></div>
-        <p>Online multiplayer chess fused with other genres, starting with a card game of 22 rule-bending jokers, so even non-chess players can enjoy it. Built with AI pair programming on purpose, to learn to use AI well.
+      <div class="tl">
+        <div class="row"><span><b>This Is Not Chess</b> <span class="meta who">Team of 3 &middot; Unity, C#</span></span><span class="when">Oct 2026 - present</span></div>
+        <p>Online multiplayer chess fused with other genres, starting with a card game of 22 rule-bending jokers, so even non-chess players can enjoy it. Built with AI pair programming, while making sure the game never feels AI-made.
           <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/this-is-not-chess">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/M9X4RftFP8I">trailer</a></span></p>
       </div>
 
       <div class="tl">
-        <div class="row"><span><b>Toast to the Past</b> <span class="meta who"><svg class="ic"><use href="#i-user"/></svg> Solo &middot; Unity, Aseprite</span></span><span class="when">May 2026</span></div>
+        <div class="row"><span><b>Toast to the Past</b> <span class="meta who">Solo &middot; Unity, Aseprite</span></span><span class="when">May 2026</span></div>
         <p>2D platformer where you speed up, slow or stop time (programming, pixel art, levels), made in two days for the 2026 GMU Spring GameJam.
           <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/toast-to-the-past">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/NUGwvdhcQ6I">trailer</a></span></p>
       </div>
 
-      <div class="tl now">
-        <div class="row"><span><b>Cat&rsquo;astrophe</b> <span class="meta who"><svg class="ic"><use href="#i-users"/></svg> Team of 6 &middot; Unity</span></span><span class="when">Nov 2025</span></div>
+      <div class="tl">
+        <div class="row"><span><b>Cat&rsquo;astrophe</b> <span class="meta who">Team of 6 &middot; Unity</span></span><span class="when">Nov 2025 - present</span></div>
         <p>Producer and main programmer on a 2D vertical-scrolling shooter for phones, with data-driven enemy waves and object pooling; the Android build is 90% complete, aiming for Google Play.
           <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/catastrophe">itch.io</a></span></p>
       </div>
 
       <div class="tl">
-        <div class="row"><span><b>Shh</b> <span class="meta who"><svg class="ic"><use href="#i-user"/></svg> Solo &middot; Unity, 3ds Max, Aseprite</span></span><span class="when">Sep 2025</span></div>
-        <p>Horror escape game made alone (programming, art, sound, voice); 1st place overall at Mason Korea Game Jam Fall 2025. First time trying procedural animation.
+        <div class="row"><span><b>Shh</b> <span class="meta who">Solo &middot; Unity, 3ds Max, Aseprite</span></span><span class="when">Sep 2025</span></div>
+        <p>Horror escape game made alone (programming, art, sound, voice); 1st place overall at Mason Korea Game Jam Fall 2025. Learned procedural animation to make the centipede monster crawl.
           <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/shh">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/h2Kdwcp37r0">trailer</a></span></p>
       </div>
 
       <div class="tl">
-        <div class="row"><span><b>Save the Pig</b> <span class="meta who"><svg class="ic"><use href="#i-users"/></svg> Team of 7 &middot; Unity</span></span><span class="when">2023 - 2024</span></div>
+        <div class="row"><span><b>Save the Pig</b> <span class="meta who">Team of 7 &middot; Unity</span></span><span class="when">2023 - 2024</span></div>
         <p>Co-programmed a farming sim about African Swine Fever; shown at the World Food Forum in Rome and released for HTML5 and Android.
           <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://g-nonymous.itch.io/bio">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/xtaSFKIv6q4">trailer</a></span></p>
       </div>
 
       <div class="tl">
-        <div class="row"><span><b>Lost</b> <span class="meta who"><svg class="ic"><use href="#i-user"/></svg> Solo &middot; Unreal Engine</span></span><span class="when">Dec 2023</span></div>
+        <div class="row"><span><b>Lost</b> <span class="meta who">Solo &middot; Unreal Engine</span></span><span class="when">Dec 2023</span></div>
         <p>3D horror maze escape in Unreal Engine Blueprints, with monster AI that hunts by sound; shipped a Windows build.
           <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/lost">itch.io</a></span><span class="lk"><svg class="ic"><use href="#i-play"/></svg><a href="https://youtu.be/fpMcv02b-Ic">trailer</a></span></p>
       </div>
 
       <div class="tl">
-        <div class="row"><span><b>Sweet Sixteen</b> <span class="meta who"><svg class="ic"><use href="#i-users"/></svg> Team of 14 &middot; Unity</span></span><span class="when">May 2023</span></div>
+        <div class="row"><span><b>Sweet Sixteen</b> <span class="meta who">Team of 14 &middot; Unity</span></span><span class="when">May 2023</span></div>
         <p>Programmed the enemies and co-built the UI for a club game about drug addiction; Progress@Play Award.
           <span class="lk"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADO0lEQVR4Ac1XA7DkQBCds23btm1bSWbPVvFs27ZtW6Wzbdte3OX6/Uqq5vJns/v9u6prJ43Xk5nGhkU6cqpqAZeiFDPZrarV3A5HdZM9qlrfyXkLGUMn2sJXxAK218B6ixYxXZwvdWmaHsa8BLGswaORYiMMwoPdmrZNr1w5OjOJhAuhCFdW1fnmnWsQRARTbAVvfx8PEcT3sIFvEbiBb4wy/5YX5SU7eSj53GRuzodIsvQ5cQ1a/5HcWxM4SsBuQCeR/0FPILwXkjiDGMqBTmGRoHhIDaQcZWlpWncl/mnI3eQwlMDKOznPT89XBZ8rzrZt80FHvsNga8h/EnYXYEEHbMFn4X+lqGtaGnSqnw5HOgLZQQZfnJqmUo+ITyDFdUVJQkCdSf6DeJ3epk1yZ5s2uX9rWi6sSbbe0HUKsIUP5/GAASxgAhsxEItZid6uAhmeI3ZajglHd4r4teUIf1GQM2CsLTrYnqLgLy3y34iBWMxKBNTOJrm+kP4p/Xr8yGyPYfvFpgm1ZVYiRV+J8Vc0KvOujGuYYxN8Nmxga+QWl5Y5531kVzDUakj325BJ6JeiZMK96+3axQZjDZnM1qkojay4qLzAhpyPt9z9LhY6BOzdIjZiBTbStAmiEWa5HajOWBQcOR3nLKztbOmNq4rYiCXbwCThjj5gRPsIvliwX2TdhGTcv/e1gcnCLjcyGyL9DEkCTrX14XyD0E0nygymCGXSwevbOBzJKD/6I0fEfIEMOptNt5dsQJ4DP1u3zsB8EFquaY+1L3t0P7L9ayThGNkGRhmA15gfhPJDzYOx9sfHmB84seFWnTgVZ0gDduiQgHQn6HpWIWFhj2MHYw0ZdLDB/LDLHUxBmbKXkaGqzBkjFXp/GGXnJRG5kWM9AinR9aD0cF7XqjPa6nno/eRz8LHi4LsBevwG3p2iFDb/rYo17eQ8D8kO+xtcqPWDGNeW3rEgQOdwFJQ1i/ikdBkAb4gvUOBHeA4hPwSWgYlnJ/4nMBnRrvfCKCwZc4F5o9+KkiNg3HJ+jDL1GXYbCkGdwAImsBGDBYX09u1TkFNW5AhxMcrwSqgIjFnzoxRryKCDDWzhA18W2ekfEfm9rjV7szsAAAAASUVORK5CYII=" alt=""><a href="https://mangocareer.itch.io/sweet-sixteen">itch.io</a></span></p>
       </div>
 
     </div>
-    <div class="legend"><i></i>In progress</div>
 
     <h2><svg class="ic"><use href="#i-briefcase"/></svg>Experience</h2>
 

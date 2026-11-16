@@ -340,6 +340,8 @@
       var c = D.categories[i];
       hoverPreview(a, a.querySelector(".portal-media"), c && c.cover ? byId[c.cover] : null);
     });
+    evenRows($("#portal"), ".portal-body");
+    evenRows($("#featured-list"), ".tile-body");
   }
 
   function typeHero(prof) {
@@ -394,6 +396,7 @@
     $("#cat-list").innerHTML = inGroup(c.id).map(tile).join("");
     mountAll($("#cat-list"));
     juiceTiles($("#cat-list"));
+    evenRows($("#cat-list"), ".tile-body");
 
     // banner to the sibling category (solo <-> team)
     var m = catById[c.more];
@@ -406,6 +409,36 @@
       '<span class="more-title">' + esc(m.title) + ' <span class="portal-count">' + inGroup(m.id).length + " projects</span></span>" +
       '<span class="portal-text">' + esc(m.blurb) + "</span>" +
       '<span class="tile-go">See ' + esc(m.title) + " &rarr;</span></span></a>");
+  }
+
+  /* Snap mode gives every card one fixed height and the picture takes what the text leaves (style.css sets the
+     text to flex: none there). Cards side by side must leave the same room, or their pictures end at different
+     heights, so every text block in a row gets the height of the tallest one. Outside snap mode the text
+     stretches on its own (flex-grow is not 0), so nothing is set. */
+  function evenRows(list, bodySel) {
+    if (!list) return;
+    function run() {
+      var rows = {};
+      Array.prototype.forEach.call(list.children, function (c) {
+        var b = c.querySelector(bodySel);
+        if (!b) return;
+        b.style.minHeight = "";
+        if (getComputedStyle(b).flexGrow !== "0") return;
+        (rows[c.offsetTop] = rows[c.offsetTop] || []).push(b);
+      });
+      Object.keys(rows).forEach(function (top) {
+        var max = Math.max.apply(null, rows[top].map(function (b) { return b.offsetHeight; }));
+        rows[top].forEach(function (b) { b.style.minHeight = max + "px"; });
+      });
+    }
+    var t;
+    function later() { clearTimeout(t); t = setTimeout(run, 120); }
+    run();
+    addEventListener("resize", later);
+    addEventListener("load", run);
+    if (document.fonts) document.fonts.ready.then(run);
+    // the touchpad switch (.free-scroll on <html>) turns snap mode off
+    new MutationObserver(later).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   }
 
   /* tiles pop in the first time they scroll into view */
