@@ -352,24 +352,202 @@
     gameSelect($("#game-select"), games);
     $("#featured-section").hidden = false;
 
-    $("#portal").innerHTML = D.categories.map(function (c) {
+    browseRow($("#portal"), D.categories, $("#bw-ctrl"));
+  }
+
+  /* ---------- Home: browse row ----------
+     Every sub-page as one poster panel in a single row that runs from edge to edge of the window. One panel is
+     open: wide, in full colour, playing its cover game's loop, with its name set big on the picture. The others
+     are dim grey strips with a big outlined number and the name standing up. The open panel moves on by itself
+     (the bar along its top edge is the timer) and holds while the cursor is on the row, while keyboard focus is
+     inside, while the row is off screen, after Pause, and always with reduced motion. Passing over a strip only
+     hints at it; resting on it for 0.75 s, a click or a tap opens it, and a click on the open panel follows its link. Keyboard focus opens
+     what it lands on. Below 900px it is a plain sideways swipe of full posters (style.css). */
+  function browseRow(root, cats, ctrl) {
+    var n = cats.length;
+    if (!root || !n) return;
+    var saveData = navigator.connection && navigator.connection.saveData;
+    var wide = matchMedia("(min-width: 900px)");
+    function pad(x) { return (x < 10 ? "0" : "") + x; }
+
+    root.style.setProperty("--n", n);
+    root.innerHTML = cats.map(function (c, i) {
       var list = c.id === "about" ? null : inGroup(c.id);
-      var cover = c.coverImage || (c.cover && byId[c.cover] ? thumbOf(byId[c.cover]) : null);
-      return '<li><a class="portal-item" href="' + esc(c.page) + '">' +
-        '<span class="portal-media">' +
-        (cover ? '<img src="' + esc(cover) + '" alt="" loading="lazy">' : '<span class="tile-placeholder">Unity &amp; C#<br>taught to students</span>') +
+      var img = c.coverImage || (c.cover && byId[c.cover] ? thumbOf(byId[c.cover]) : null);
+      var meta = pad(i + 1) + " · " + (list ? list.length + (list.length === 1 ? " project" : " projects") : "Profile");
+      // YouTube thumbnails are 4:3 with black bars; .is-yt pushes the bars out of the frame.
+      // Each text line sits in its own mask (.bw-line) and slides up out of it when the panel opens.
+      return '<li class="bw-panel" style="--i:' + i + '">' +
+        '<a class="bw-link" href="' + esc(c.page) + '" draggable="false">' +
+        '<span class="bw-media">' + (img ? '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false"' +
+          (/ytimg\.com/.test(img) ? ' class="is-yt"' : "") + ">" : "") + "</span>" +
+        '<span class="bw-num" aria-hidden="true">' + pad(i + 1) + "</span>" +
+        '<span class="bw-side" aria-hidden="true">' + esc(c.title) + "</span>" +
+        '<span class="bw-body">' +
+        '<span class="bw-line" style="--l:0"><span class="bw-meta">' + esc(meta) + "</span></span>" +
+        '<span class="bw-line" style="--l:1"><span class="bw-title">' + esc(c.title) + "</span></span>" +
+        '<span class="bw-line" style="--l:2"><span class="bw-text">' + esc(c.blurb) + "</span></span>" +
+        '<span class="bw-line bw-line--go" style="--l:3"><span><span class="bw-go">Open <span aria-hidden="true">&rarr;</span></span></span></span>' +
         "</span>" +
-        '<span class="portal-body"><span class="portal-title">' + esc(c.title) +
-        (list ? ' <span class="portal-count">' + list.length + (list.length === 1 ? " project" : " projects") + "</span>" : "") + "</span>" +
-        '<span class="portal-text">' + esc(c.blurb) + "</span>" +
-        '<span class="portal-go">Open &rarr;</span></span></a></li>';
+        '<span class="bw-timer" aria-hidden="true"></span>' +
+        "</a></li>";
     }).join("");
-    // category covers preview the game they show
-    $$("#portal .portal-item").forEach(function (a, i) {
-      var c = D.categories[i];
-      hoverPreview(a, a.querySelector(".portal-media"), c && c.cover ? byId[c.cover] : null);
+    if (ctrl) {
+      ctrl.innerHTML = '<p class="bw-index" aria-hidden="true"><b></b><span> / ' + pad(n) + "</span></p>" +
+        (reduced ? "" : '<button type="button" class="bw-pause"></button>');
+    }
+
+    var panels = root.querySelectorAll(".bw-panel");
+    var index = ctrl && ctrl.querySelector(".bw-index b");
+    var pauseBtn = ctrl && ctrl.querySelector(".bw-pause");
+    var at = -1, playT = 0;
+    var held = { user: false, hover: false, focus: false, away: true };
+    function indexOf(panel) { return Array.prototype.indexOf.call(panels, panel); }
+
+    function open(i) {
+      i = (i % n + n) % n;
+      if (i === at) return;
+      at = i;
+      Array.prototype.forEach.call(panels, function (p, k) {
+        var on = k === at;
+        p.classList.toggle("is-open", on);
+        // a fresh <i> restarts the bar that times the next panel
+        p.querySelector(".bw-timer").innerHTML = on ? "<i></i>" : "";
+        if (!on) stopLoop(p);
+      });
+      if (index) {
+        // a fresh <b> replays the number's flip
+        var b = index.cloneNode(false);
+        b.textContent = pad(at + 1);
+        index.parentNode.replaceChild(b, index);
+        index = b;
+      }
+      // the gameplay loop starts once the panel has opened up
+      clearTimeout(playT);
+      playT = setTimeout(startLoop, reduced ? 0 : 400);
+    }
+
+    // the open panel plays the silent loop of the game on its cover, if it has one
+    function startLoop() {
+      var panel = panels[at], c = cats[at];
+      var p = c.cover && byId[c.cover];
+      if (!p || !p.preview || saveData || reduced || !wide.matches || held.away) return;
+      var box = panel.querySelector(".bw-media");
+      var v = box.querySelector("video");
+      if (!v) {
+        v = document.createElement("video");
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.setAttribute("playsinline", "");
+        v.setAttribute("aria-hidden", "true");
+        v.preload = "auto";
+        v.addEventListener("playing", function () { if (panel.classList.contains("is-open")) panel.classList.add("is-playing"); });
+        v.src = p.preview;
+        box.appendChild(v);
+      }
+      var pr = v.play();
+      if (pr && pr.catch) pr.catch(function () {});
+    }
+    function stopLoop(panel) {
+      panel.classList.remove("is-playing");
+      var v = panel.querySelector("video");
+      if (v) v.pause();
+    }
+
+    function hold(key, on) {
+      held[key] = on;
+      root.classList.toggle("is-held", held.user || held.hover || held.focus || held.away);
+    }
+    // the full bar is the cue for the next panel
+    root.addEventListener("animationend", function (e) {
+      if (e.animationName === "bw-fill") open(at + 1);
     });
-    evenRows($("#portal"), ".portal-body");
+
+    function paintPause() {
+      if (!pauseBtn) return;
+      pauseBtn.innerHTML = held.user ? PIX.play : PIX.pause;
+      pauseBtn.title = held.user ? "Play the slideshow" : "Pause the slideshow";
+      pauseBtn.setAttribute("aria-label", pauseBtn.title);
+    }
+    if (pauseBtn) pauseBtn.addEventListener("click", function () { hold("user", !held.user); paintPause(); });
+    paintPause();
+
+    // the cursor on the row holds the timer. Resting on a closed strip for 0.75 s opens it; just passing over
+    // it only hints (style.css), so the row never jumps because the cursor crossed it.
+    var hoverT = 0;
+    Array.prototype.forEach.call(panels, function (p, k) {
+      p.addEventListener("pointerenter", function (e) {
+        if (e.pointerType !== "mouse" || !wide.matches) return;
+        clearTimeout(hoverT);
+        hoverT = setTimeout(function () { open(k); }, 300);
+      });
+      p.addEventListener("pointerleave", function () { clearTimeout(hoverT); });
+    });
+    root.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") hold("hover", true); });
+    root.addEventListener("pointerleave", function (e) {
+      clearTimeout(hoverT);
+      if (e.pointerType === "mouse") hold("hover", false);
+    });
+    // mouse, touch and pen alike: a click on a closed strip opens it, a click on the open panel follows its link
+    root.addEventListener("click", function (e) {
+      var panel = e.target.closest(".bw-panel");
+      if (!panel || !wide.matches) return;
+      var k = indexOf(panel);
+      if (k !== at) { e.preventDefault(); open(k); }
+    });
+
+    // keyboard: focus opens the panel it lands on, the arrow keys walk the row. A mouse press also focuses the
+    // link, but that one waits for the click.
+    root.addEventListener("focusin", function (e) {
+      if (!e.target.matches(":focus-visible")) return;
+      var panel = e.target.closest(".bw-panel");
+      if (panel && wide.matches) open(indexOf(panel));
+      hold("focus", true);
+    });
+    root.addEventListener("focusout", function (e) { if (!root.contains(e.relatedTarget)) hold("focus", false); });
+    root.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      var from = e.target.closest(".bw-panel");
+      if (!from) return;
+      e.preventDefault();
+      var k = (indexOf(from) + (e.key === "ArrowLeft" ? -1 : 1) + n) % n;
+      panels[k].querySelector(".bw-link").focus();
+    });
+
+    // the open picture drifts a little against the cursor
+    if (canHover && !reduced) {
+      var mx = 0, my = 0, ticking = false;
+      root.addEventListener("pointermove", function (e) {
+        var r = root.getBoundingClientRect();
+        mx = (e.clientX - r.left) / r.width * 2 - 1;
+        my = (e.clientY - r.top) / r.height * 2 - 1;
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          ticking = false;
+          root.style.setProperty("--mx", mx.toFixed(3));
+          root.style.setProperty("--my", my.toFixed(3));
+        });
+      });
+    }
+
+    // the panels rise in one after another the first time the row comes into view; the loop pauses off screen
+    if ("IntersectionObserver" in window) {
+      if (!reduced) root.classList.add("bw-juicy");
+      new IntersectionObserver(function (entries) {
+        var seen = entries[0].isIntersecting;
+        if (seen) root.classList.add("is-in");
+        hold("away", !seen);
+        if (seen) startLoop(); else stopLoop(panels[at]);
+      }, { threshold: 0.4 }).observe(root);
+    } else {
+      hold("away", false);
+    }
+    // crossing 900px switches between the row and the swipe
+    wide.addEventListener("change", function () { if (wide.matches) startLoop(); else stopLoop(panels[at]); });
+
+    open(0);
   }
 
   /* ---------- Home: game select ----------
@@ -1107,7 +1285,7 @@
       window.removeEventListener("wheel", onWheel);
       // keep the card under the middle of the screen where it is while the layout drops its big gaps
       var mid = innerHeight / 2, anchor = null, best = Infinity;
-      $$(".tile, .portal-item, .more-link, section").forEach(function (el) {
+      $$(".tile, .more-link, section").forEach(function (el) {
         var r = el.getBoundingClientRect();
         var d = Math.abs(r.top + r.height / 2 - mid);
         if (r.height && d < best) { best = d; anchor = el; }
@@ -1128,20 +1306,8 @@
     if (!hero) return;
     var box = hero.querySelector(".container"), header = $(".site-header");
     var snapMQ = matchMedia("(hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px)");
-    // card sections: title block height into --head, and mark the first row (its stop is the title instead)
-    function measureSections() {
-      [["#work-title", "#portal"]].forEach(function (p) {
-        var title = $(p[0]), list = $(p[1]);
-        if (!title || !list || !list.children.length) return;
-        var head = list.getBoundingClientRect().top - title.getBoundingClientRect().top;
-        list.style.setProperty("--head", Math.max(0, Math.round(head)) + "px");
-        var top0 = list.children[0].offsetTop;
-        Array.prototype.forEach.call(list.children, function (c) { c.classList.toggle("first-row", c.offsetTop === top0); });
-      });
-    }
     function fit() {
       box.style.maxWidth = "";
-      measureSections();
       if (!snapMQ.matches || document.documentElement.classList.contains("free-scroll")) return;
       var room = innerHeight - (header ? header.offsetHeight : 0);
       var w = box.offsetWidth;

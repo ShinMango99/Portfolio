@@ -138,13 +138,17 @@
       </div>
     </section>
 
-    <!-- Portal: one big thumbnail per sub-page -->
-    <section class="section" id="work" aria-labelledby="work-title">
-      <div class="container">
-        <h2 id="work-title">Browse my work</h2>
-        <p class="lead">Pick a category. Every project has its own page with the trailer, my role and a playable link.</p>
-        <ul class="portal" id="portal"></ul>
+    <!-- Portal: every sub-page as one panel in a row that runs edge to edge; the open one is wide and plays its
+         cover game (main.js browseRow) -->
+    <section class="section browse" id="work" aria-labelledby="work-title">
+      <div class="container browse-head">
+        <div>
+          <h2 id="work-title">Browse my work</h2>
+          <p class="lead">Pick a category. Every project has its own page with the trailer, my role and a playable link.</p>
+        </div>
+        <div class="bw-ctrl" id="bw-ctrl"></div>
       </div>
+      <ul class="bw" id="portal"></ul>
     </section>
 
     <section class="section section--contact" aria-labelledby="contact-title">

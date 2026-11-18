@@ -662,9 +662,8 @@ button { font: inherit; }
 .tag { display: inline-block; padding: 0 7px; border: 1px solid var(--text); background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; line-height: 1.7; text-transform: uppercase; white-space: nowrap; }
 .tag--engine { background: var(--text); color: var(--bg); }
 
-/* Home portal: one big thumbnail per sub-page */
-.portal { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
-.portal-item, .tile {
+/* project card on category pages */
+.tile {
   display: flex; flex-direction: column; height: 100%;
   background: var(--surface);
   border: 1px solid var(--text);
@@ -673,18 +672,7 @@ button { font: inherit; }
   text-decoration: none;
   transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
 }
-.portal-item:hover, .portal-item:focus-visible, .tile:hover { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 var(--text); }
-.portal-item:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
-.portal-media {
-  position: relative;
-  display: block;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: var(--placeholder);
-  border-bottom: 1px solid var(--text);
-}
-.portal-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s var(--ease-out); }
-.portal-item:hover img, .portal-item:focus-visible img { transform: scale(1.05); }
+.tile:hover { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 var(--text); }
 /* picture that links to the project page (no trailer to play) */
 .media-link { position: absolute; inset: 0; display: block; }
 .tile-placeholder {
@@ -698,11 +686,10 @@ button { font: inherit; }
   font-weight: 700;
   line-height: 1.25;
 }
-.portal-body, .tile-body { display: flex; flex-direction: column; gap: 8px; padding: 16px; flex: 1; }
-.portal-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; }
+.tile-body { display: flex; flex-direction: column; gap: 8px; padding: 16px; flex: 1; }
+/* "5 projects" label (browse row, More projects banner) */
 .portal-count { display: inline-block; padding: 0 7px; margin-left: 6px; border: 1px solid var(--text); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; line-height: 1.7; text-transform: uppercase; white-space: nowrap; vertical-align: middle; }
 .portal-text { color: var(--muted); font-size: 1rem; }
-.portal-go { margin-top: auto; font-weight: 700; }
 
 /* project thumbnails on category pages */
 .tiles { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
@@ -758,14 +745,11 @@ button { font: inherit; }
   /* the space between rows is now a full screen, so the banner after the last row needs no extra margin */
   html:not(.free-scroll) body[data-page="category"] .more-link { margin-top: calc(var(--view) - var(--card)); }
 }
-/* Home: same rule, every stop fits on screen. Short sections are one stop each (hero, studio, contact);
-   the two long ones (category portal, featured games) stop once per row of cards. */
+/* Home: same rule, every stop fits on screen. Each section is one stop, one screen tall. */
 @media (hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px) {
   html:not(.free-scroll):has(body[data-page="home"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
   html:not(.free-scroll) body[data-page="home"] {
     --view: calc(100svh - 57px);
-    --card: min(calc(var(--view) - 64px), 640px);
-    --card-portal: min(calc(var(--view) - 64px), 540px);
   }
   /* the hero is one stop and must fit on one screen: tighter padding here, and main.js (fitHero) narrows it
      on short windows. The stop is the very top of the page (the huge margin pushes it above 0, which clamps to 0),
@@ -774,17 +758,9 @@ button { font: inherit; }
   html:not(.free-scroll) body[data-page="home"] .hero { padding: 24px 0; min-height: var(--view); }
   html:not(.free-scroll) body[data-page="home"] .hero .eyebrow { scroll-snap-align: start; scroll-margin-top: 100vh; }
   html:not(.free-scroll) body[data-page="home"] .studio { display: flex; align-items: center; min-height: var(--view); padding: 24px 0; scroll-snap-align: start; }
-  /* card section: the first stop is the section title, with the first row right under it. main.js measures the
-     title block into --head and marks the first row .first-row (no stop of its own); the cards shrink by --head so
-     title + first row fit on one screen. Later rows stop centred, one screen apart. */
-  html:not(.free-scroll) body[data-page="home"] #work-title { scroll-snap-align: start; scroll-margin-top: 32px; }
-  html:not(.free-scroll) body[data-page="home"] #portal { --card-portal: min(calc(var(--view) - 64px - var(--head, 0px)), 540px); row-gap: calc(var(--view) - var(--card-portal)); }
-  html:not(.free-scroll) body[data-page="home"] #portal .portal-item { height: var(--card-portal); scroll-snap-align: center; }
-  html:not(.free-scroll) body[data-page="home"] #portal .portal-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
-  html:not(.free-scroll) body[data-page="home"] #portal > .first-row .portal-item,
-  html:not(.free-scroll) body[data-page="home"] #portal > .first-row.portal-item { scroll-snap-align: none; }
-  /* same as category pages: the text keeps its own height and the picture takes the spare room */
-  html:not(.free-scroll) body[data-page="home"] #portal .portal-body { flex: none; }
+  /* the browse row takes the whole screen under its title and runs into the bottom edge */
+  html:not(.free-scroll) body[data-page="home"] .browse { display: flex; flex-direction: column; height: var(--view); padding: 24px 0 0; scroll-snap-align: start; }
+  html:not(.free-scroll) body[data-page="home"] .bw { flex: 1 1 0; height: auto; min-height: 0; border-bottom: 0; }
   /* the game select is one stop, one screen tall, like the studio */
   html:not(.free-scroll) body[data-page="home"] .games { display: flex; flex-direction: column; justify-content: center; min-height: var(--view); padding: 24px 0; scroll-snap-align: start; }
   html:not(.free-scroll) body[data-page="home"] .site-footer { scroll-snap-align: end; }
@@ -824,7 +800,7 @@ button { font: inherit; }
 .gallery { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); margin-top: 32px; }
 .gallery img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--text); }
 @media (prefers-reduced-motion: reduce) {
-  .button, .skill, .tile, .tile-go, .tile .tile-media img, .proof-card, .hero-thumb, .portal-item, .more-link, .mosaic-label, .portal-item img, .tl-tab { transition: none; }
+  .button, .skill, .tile, .tile-go, .tile .tile-media img, .proof-card, .hero-thumb, .more-link, .mosaic-label, .tl-tab { transition: none; }
 }
 
 /* project page */
@@ -1145,7 +1121,7 @@ html.is-booting main *, html.is-booting main *::before, html.is-booting main *::
   overflow: hidden;
 }
 .gs-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.gs-arrow, .gs-pause {
+.gs-arrow, .gs-pause, .bw-pause {
   display: grid; place-items: center;
   width: 40px; height: 40px;
   padding: 0;
@@ -1156,8 +1132,8 @@ html.is-booting main *, html.is-booting main *::before, html.is-booting main *::
   cursor: pointer;
   transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
 }
-.gs-arrow:hover, .gs-arrow:focus-visible, .gs-pause:hover, .gs-pause:focus-visible { background: var(--hover); transform: translate(-3px, -3px); box-shadow: 6px 6px 0 var(--text); }
-.gs-arrow:active, .gs-pause:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+.gs-arrow:hover, .gs-arrow:focus-visible, .gs-pause:hover, .gs-pause:focus-visible, .bw-pause:hover, .bw-pause:focus-visible { background: var(--hover); transform: translate(-3px, -3px); box-shadow: 6px 6px 0 var(--text); }
+.gs-arrow:active, .gs-pause:active, .bw-pause:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
 .gs-arrow[data-step="-1"] svg { transform: scaleX(-1); }
 /* one block per game, like the loading bar: the lit one fills up while its game is in the middle,
    and when it is full the next game slides in */
@@ -1180,4 +1156,155 @@ html.is-booting main *, html.is-booting main *::before, html.is-booting main *::
   .gs-dots button { width: 12px; }
   .gs-dots button[aria-current="true"] { width: 24px; }
   .gs-count { display: none; }
+}
+
+/* ---------- Home: browse row ----------
+   Every sub-page as one poster panel in a row that runs from edge to edge of the window, unlike the game
+   select's floating cards. Dark in both themes, like a strip of film posters: closed panels are dim and grey,
+   with a huge outlined number and the name standing up; the open one (main.js adds .is-open) takes about half
+   the row in full colour, drifts a little against the cursor, plays its cover game and has its name set big on
+   the picture, each line sliding up out of its own mask. Pointing at a closed strip only wakes it a little. */
+.browse-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 24px; }
+.browse-head .lead { margin-bottom: 0; }
+.bw-ctrl { display: flex; align-items: center; gap: 16px; }
+.bw-index { font-family: var(--font-pixel); font-size: 2.25rem; font-weight: 700; line-height: 1; white-space: nowrap; }
+.bw-index b { display: inline-block; font-weight: 700; animation: bw-flip 0.24s steps(3, end); }
+.bw-index span { color: var(--muted); font-size: 1.1rem; }
+@keyframes bw-flip { from { opacity: 0; transform: translateY(-60%); } }
+.bw {
+  --grow: 3.2;                 /* the open panel is this many strips wide */
+  --photo-ink: #f5f1e8;        /* text on pictures, the same in both themes */
+  --photo-muted: #d9d4c9;
+  --photo-dark: 12, 11, 10;
+  display: flex;
+  height: clamp(420px, 70vh, 680px);
+  border-block: 1px solid var(--text);
+  background: #0f0e0d;
+  overflow: hidden;
+}
+.bw-panel { position: relative; flex: 1 1 0; min-width: 0; border-left: 1px solid rgba(245, 241, 232, 0.28); transition: flex-grow 0.8s var(--ease-out); }
+.bw-panel:first-child { border-left: 0; }
+.bw-panel.is-open { flex-grow: var(--grow); }
+.bw-link { position: absolute; inset: 0; display: block; overflow: hidden; color: var(--photo-ink); text-decoration: none; }
+.bw-link:focus-visible { outline-color: var(--yellow-strong); outline-offset: -6px; }
+.bw-media {
+  position: absolute; inset: 0;
+  filter: grayscale(1) brightness(0.42);
+  transform: scale(1.16);
+  transition: transform 1s var(--ease-out), filter 0.7s var(--ease-out);
+}
+.bw-panel:not(.is-open) .bw-link:hover .bw-media { filter: grayscale(0.5) brightness(0.6); }
+.bw-panel.is-open .bw-media { filter: none; transform: translate(calc(var(--mx, 0) * -16px), calc(var(--my, 0) * -10px)) scale(1.06); }
+.bw-media img, .bw-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* YouTube thumbnails are 4:3 with black bars above and below a 16:9 picture: stretch the box so the bars fall outside */
+.bw-media img.is-yt { top: -16.67%; height: 133.33%; }
+.bw-media video { opacity: 0; transition: opacity 0.4s; }
+.bw-panel.is-playing .bw-media video { opacity: 1; }
+/* the open panel darkens toward the bottom so the big type reads on any picture */
+.bw-link::after {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(to top, rgba(var(--photo-dark), 0.94) 0%, rgba(var(--photo-dark), 0.6) 36%, rgba(var(--photo-dark), 0) 68%);
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
+  pointer-events: none;
+}
+.bw-panel.is-open .bw-link::after { opacity: 1; }
+.bw-num {
+  position: absolute; top: 14px; left: 18px; z-index: 2;
+  font-family: var(--font-pixel);
+  font-size: clamp(2.8rem, 5vw, 4.6rem);
+  font-weight: 700;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(245, 241, 232, 0.8);
+  transition: color var(--snap-time) var(--snap), -webkit-text-stroke-color var(--snap-time) var(--snap);
+}
+.bw-panel.is-open .bw-num { color: var(--yellow-strong); -webkit-text-stroke-color: var(--yellow-strong); }
+.bw-panel:not(.is-open) .bw-link:hover .bw-num { -webkit-text-stroke-color: var(--yellow-strong); }
+/* closed: the name stands up along the left edge, read from the bottom */
+.bw-side {
+  position: absolute; left: 20px; bottom: 26px; z-index: 2;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: clamp(1.3rem, 2.1vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  transition: opacity 0.25s var(--ease-out) 0.45s;
+}
+.bw-panel.is-open .bw-side { opacity: 0; transition: opacity 0.1s; }
+/* open: the text block is as wide as the open panel will be, so it never re-wraps while the panel widens */
+.bw-body {
+  position: absolute; left: clamp(20px, 3vw, 40px); bottom: clamp(26px, 5vh, 48px); z-index: 2;
+  width: min(560px, calc(100vw * var(--grow) / (var(--grow) + var(--n, 4) - 1) - 64px));
+  display: flex; flex-direction: column; gap: 12px;
+}
+.bw-line { display: block; overflow: hidden; }
+.bw-line > span { display: block; transform: translateY(calc(100% + 16px)); transition: transform 0.15s; }
+.bw-panel.is-open .bw-line > span { transform: none; transition: transform 0.6s var(--ease-out) calc(0.3s + var(--l, 0) * 80ms); }
+.bw-line--go { padding: 0 6px 6px 0; }   /* room for the button's shadow inside the mask */
+.bw-meta { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--yellow-strong); }
+.bw-title { font-size: clamp(2.4rem, 4.6vw, 4.4rem); font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; }
+.bw-text { max-width: 46ch; color: var(--photo-muted); }
+.bw-go {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid var(--photo-ink);
+  background: var(--yellow-strong);
+  color: var(--on-yellow);
+  box-shadow: 4px 4px 0 var(--photo-ink);
+  font-weight: 700;
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
+}
+.bw-panel.is-open .bw-link:hover .bw-go, .bw-link:focus-visible .bw-go { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--photo-ink); }
+.bw-panel.is-open .bw-link:active .bw-go { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--photo-ink); transition-duration: 0.05s; }
+/* along the top edge of the open panel: fills up, and when it is full the next panel opens */
+.bw-timer { position: absolute; left: 0; right: 0; top: 0; z-index: 3; height: 4px; }
+.bw-timer i { display: block; height: 100%; background: var(--yellow-strong); transform-origin: 0 50%; animation: bw-fill 6s linear forwards; }
+.bw.is-held .bw-timer i { animation-play-state: paused; }
+@keyframes bw-fill { from { transform: scaleX(0); } }
+/* the first time the row comes into view the panels rise out of its bottom edge, one after another */
+@media (prefers-reduced-motion: no-preference) {
+  .bw-juicy:not(.is-in) .bw-panel { opacity: 0; }
+  .bw-juicy.is-in .bw-panel { animation: bw-rise 0.4s steps(4, end) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
+}
+@keyframes bw-rise { from { opacity: 0; transform: translateY(56px); } }
+@media (prefers-reduced-motion: reduce) {
+  .bw-panel, .bw-media, .bw-link::after, .bw-side, .bw-line > span, .bw-panel.is-open .bw-line > span, .bw-media video, .bw-go { transition: none; }
+  .bw-timer { display: none; }
+  .bw-index b { animation: none; }
+}
+/* narrow windows and phones: a sideways swipe of full posters, each one open, no timer */
+@media (max-width: 899px) {
+  .bw {
+    gap: 14px;
+    height: auto;
+    padding: 4px var(--gutter) 12px;
+    border-block: 0;
+    background: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .bw::-webkit-scrollbar { display: none; }
+  .bw::after { content: ""; flex: 0 0 1px; }   /* keeps the right padding when scrolled to the end */
+  .bw-panel, .bw-panel:first-child, .bw-panel.is-open {
+    flex: 0 0 min(84vw, 400px);
+    height: clamp(400px, 64svh, 520px);
+    border: 1px solid var(--text);
+    background: #0f0e0d;
+    box-shadow: 4px 4px 0 var(--text);
+    scroll-snap-align: start;
+  }
+  .bw-media, .bw-panel.is-open .bw-media { filter: none; transform: none; }
+  .bw-link::after { opacity: 1; }
+  .bw-side, .bw-timer, .bw-ctrl { display: none; }
+  .bw-num { font-size: 2.6rem; color: var(--yellow-strong); -webkit-text-stroke-color: var(--yellow-strong); }
+  .bw-body { left: 16px; right: 16px; bottom: 18px; width: auto; gap: 10px; }
+  .bw-line > span, .bw-panel.is-open .bw-line > span { transform: none; transition: none; }
+  .bw-title { font-size: 2rem; }
+  .bw-text { font-size: 0.95rem; }
 }
