@@ -1308,3 +1308,183 @@ html.is-booting main *, html.is-booting main *::before, html.is-booting main *::
   .bw-title { font-size: 2rem; }
   .bw-text { font-size: 0.95rem; }
 }
+
+/* =================== About: 3D timeline =================== */
+/* About: the timeline as a 3D flight back through time.
+   The section pins (sticky stage) while you scroll through it; the scroll drives a camera down a corridor
+   where every entry is a real HTML card placed in depth. Colours come from the site tokens, so it follows
+   the light / dark switch. */
+
+.tl3d-section { padding: 0; }
+
+/* the track gives the section its scroll length (timeline3d.js sets the height) */
+.tl3d { position: relative; height: 1200vh; --persp: 1000px; }
+.tl3d-stage {
+  position: sticky; top: var(--hdr, 57px);
+  height: calc(100vh - var(--hdr, 57px));
+  height: calc(100dvh - var(--hdr, 57px));
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 62%, color-mix(in srgb, var(--yellow-strong) 7%, transparent), transparent 70%),
+    var(--bg);
+  isolation: isolate;
+}
+.tl3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.tl3d-viewport { position: absolute; inset: 0; z-index: 1; perspective: var(--persp); perspective-origin: 50% 50%; overflow: hidden; }
+.tl3d-world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.tl3d-fade {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, color-mix(in srgb, var(--bg) 80%, transparent));
+}
+
+/* every object sits at the centre of the stage, then JS places it at (x, y, z) */
+.t-obj { position: absolute; left: 50%; top: 50%; }
+
+/* ---------- project card ---------- */
+.t-card { width: 640px; font-size: 1.4rem; display: block; color: var(--text); text-decoration: none; }
+.t-card-in {
+  background: var(--surface); border: 1px solid var(--text); box-shadow: 6px 6px 0 var(--text);
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
+}
+.t-card:hover .t-card-in, .t-card:focus-visible .t-card-in { transform: translate(-4px, -4px); box-shadow: 10px 10px 0 var(--text); }
+.t-card:active .t-card-in { transform: translate(6px, 6px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+.t-card:focus-visible { outline: none; }
+.t-card:focus-visible .t-card-in { outline: 3px solid var(--accent); outline-offset: 4px; }
+
+.t-media { position: relative; aspect-ratio: 16 / 9; background: var(--placeholder); border-bottom: 1px solid var(--text); overflow: hidden; }
+.t-media video, .t-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.t-date {
+  position: absolute; left: 0.6em; top: 0.6em; z-index: 1;
+  padding: 0.15em 0.55em; background: var(--bg); color: var(--text); border: 1px solid var(--text);
+  font-family: var(--font-mono); font-size: 0.68em; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.t-now {
+  position: absolute; right: 0.6em; top: 0.6em; z-index: 1;
+  display: flex; align-items: center; gap: 0.5em;
+  padding: 0.15em 0.55em; background: var(--yellow-strong); color: var(--on-yellow); border: 1px solid var(--on-yellow);
+  font-family: var(--font-mono); font-size: 0.68em; letter-spacing: 0.06em; text-transform: uppercase;
+}
+/* 10 pixel blocks, lit up to the completion */
+.t-now i { display: inline-flex; gap: 2px; }
+.t-now i b { width: 0.45em; height: 0.8em; background: color-mix(in srgb, var(--on-yellow) 22%, transparent); }
+.t-now i b.on { background: var(--on-yellow); }
+@media (prefers-reduced-motion: no-preference) {
+  .t-now::before { content: ""; width: 0.5em; height: 0.5em; background: var(--on-yellow); animation: t-blink 1s steps(1) infinite; }
+}
+@keyframes t-blink { 50% { opacity: 0; } }
+
+.t-body { padding: 0.75em 0.9em 0.85em; display: grid; gap: 0.4em; }
+.t-body h3 { font-size: 1.45em; letter-spacing: -0.02em; line-height: 1.1; }
+.t-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.t-chips li { font-family: var(--font-mono); font-size: 0.66em; padding: 0.1em 0.6em; border: 1px solid var(--line); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.t-body p { color: var(--muted); font-size: 0.85em; line-height: 1.45; }
+.t-go { font-size: 0.8em; font-weight: 700; color: var(--accent); }
+
+/* ---------- life milestone: a smaller sign without media ---------- */
+.t-ms { width: 440px; font-size: 1.3rem; }
+.t-ms-in {
+  display: flex; gap: 0.8em; align-items: center;
+  padding: 0.85em 1em; background: var(--bg); border: 1px solid var(--text); border-left: 0.5em solid var(--yellow-strong);
+  box-shadow: 6px 6px 0 var(--text);
+}
+.t-ms img { width: 2.4em; height: 2.4em; flex-shrink: 0; object-fit: contain; background: var(--surface); border: 1px solid var(--line); border-radius: 50%; }
+.t-ms small { display: block; font-family: var(--font-mono); font-size: 0.6em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.t-ms h3 { font-size: 1.05em; font-style: italic; line-height: 1.25; margin-top: 0.15em; }
+
+/* ---------- year gate: a huge pixel number you fly through ---------- */
+.t-gate {
+  font-family: var(--font-pixel); font-weight: 700; font-size: 34rem; line-height: 0.8; letter-spacing: -0.02em;
+  color: color-mix(in srgb, var(--yellow-strong) 6%, transparent);
+  -webkit-text-stroke: 3px color-mix(in srgb, var(--yellow-strong) 38%, transparent);
+  white-space: nowrap; pointer-events: none; user-select: none;
+}
+
+/* ---------- start and end of the tape ---------- */
+.t-cap { width: 760px; text-align: center; font-size: 1.15rem; }
+.t-cap .t-kicker { font-family: var(--font-mono); font-size: 0.8em; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.t-cap h3 { font-family: var(--font-pixel); font-weight: 700; font-size: 7.5em; line-height: 0.9; letter-spacing: -0.01em; margin: 0.12em 0 0.18em; }
+.t-cap h3 em { font-style: normal; background: var(--yellow-strong); color: var(--on-yellow); padding: 0 0.12em; }
+.t-cap p { color: var(--muted); font-size: 1.05em; }
+.t-cap p b { color: var(--text); }
+.t-cap .actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.t-cap .button { font-size: 1.35rem; padding: 0.5em 1em; }
+
+/* ---------- HUD (flat, on top of the space) ---------- */
+.tl3d-head, .tl3d-years, .tl3d-clock, .tl3d-hint, .tl3d-skip { position: absolute; z-index: 4; }
+
+.tl3d-head { top: 20px; left: var(--gutter); right: var(--gutter); pointer-events: none; }
+.tl3d-head > * { pointer-events: auto; }
+.tl3d-head h2 { font-size: 1.75rem; margin: 0; }
+.tl3d-lead { color: var(--muted); margin: 2px 0 14px; }
+.tl3d-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tl3d-tabs .tl-tab { font-size: 0.92rem; padding: 4px 12px; }
+
+.tl3d-years { left: var(--gutter); top: 50%; transform: translateY(-50%); }
+.tl3d-years ol { display: grid; gap: 2px; border-left: 2px solid var(--line); }
+.tl3d-years button {
+  display: flex; gap: 10px; align-items: baseline; margin-left: -2px; padding: 3px 12px;
+  border: 0; border-left: 4px solid transparent; background: none; cursor: pointer; text-align: left;
+  font-family: var(--font-pixel); font-size: 1.15rem; color: var(--muted);
+}
+.tl3d-years button small { font-family: var(--font-mono); font-size: 0.72rem; }
+.tl3d-years button:hover { color: var(--text); }
+.tl3d-years button[aria-current="true"] { color: var(--text); border-left-color: var(--yellow-strong); }
+
+.tl3d-clock { left: var(--gutter); bottom: 22px; display: grid; gap: 4px; }
+.tl3d-clock-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.tl3d-clock-date { display: flex; align-items: baseline; gap: 10px; font-family: var(--font-pixel); line-height: 1; }
+.tl3d-clock-date b { font-size: 3rem; font-weight: 700; }
+.tl3d-clock-date i { font-style: normal; font-size: 1.5rem; color: var(--muted); width: 2.4em; }
+.tl3d-clock-bar { display: block; width: 180px; height: 6px; background: var(--placeholder); border: 1px solid var(--text); }
+.tl3d-clock-bar span { display: block; height: 100%; width: 0; background: var(--yellow-strong); }
+
+.tl3d-hint { left: 50%; bottom: 22px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: opacity 0.3s; }
+.tl3d-hint span { display: inline-block; color: var(--text); }
+@media (prefers-reduced-motion: no-preference) { .tl3d-hint span { animation: t-bob 1.2s steps(2) infinite; } }
+@keyframes t-bob { 50% { transform: translateY(4px); } }
+.tl3d-hint.is-gone { opacity: 0; }
+
+.tl3d-skip { right: var(--gutter); bottom: 22px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.tl3d-skip:hover, .tl3d-skip:focus-visible { color: var(--text); }
+
+/* ---------- phones: one entry at a time, swaying left and right ---------- */
+@media (max-width: 759px) {
+  .tl3d { --persp: 760px; }
+  .tl3d-head { top: 12px; }
+  .tl3d-head h2 { font-size: 1.4rem; }
+  .tl3d-lead { display: none; }
+  .tl3d-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 8px 0 6px; }
+  .tl3d-tabs .tl-tab { white-space: nowrap; flex-shrink: 0; }
+  .tl3d-years, .tl3d-hint { display: none; }
+  .tl3d-clock { bottom: 14px; }
+  .tl3d-clock-date b { font-size: 2rem; }
+  .tl3d-clock-date i { font-size: 1.1rem; }
+  .tl3d-clock-bar { width: 120px; }
+  .tl3d-skip { bottom: 14px; }
+  /* built wider than the screen: the camera stands 200px back, so they shrink to fit */
+  .t-card { width: 108vw; font-size: 1.45rem; }
+  .t-ms { width: 104vw; font-size: 1.55rem; }
+  .t-cap { width: 108vw; font-size: 1.2rem; }
+  .t-cap h3 { font-size: 5em; }
+  .t-gate { font-size: 17rem; }
+}
+
+/* ---------- reduced motion: the classic list instead ---------- */
+.tl-classic { display: none; }
+.tl3d-off .tl3d { display: none; }
+.tl3d-off .tl-classic { display: block; padding: 64px var(--gutter); }
+
+/* ---------- About scroll snap (mouse wheel only, same rule as Home and the category pages) ----------
+   Stops: the bio, the abilities, then every timeline entry (timeline3d.js puts a 1px
+   .tl3d-stop marker in the track at each entry), then the footer. The bio and abilities are one screen tall,
+   so the next section never peeks in. Touchpads get .free-scroll from main.js and scroll freely. */
+.tl3d-stop { position: absolute; left: 0; width: 1px; height: 1px; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px) {
+  html:not(.free-scroll):has(body[data-page="about"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
+  html:not(.free-scroll) body[data-page="about"] { --view: calc(100svh - 57px); }
+  html:not(.free-scroll) body[data-page="about"] .about,
+  html:not(.free-scroll) body[data-page="about"] #abilities { display: flex; align-items: center; min-height: var(--view); padding: 32px 0; scroll-snap-align: start; }
+  html:not(.free-scroll) body[data-page="about"] #abilities > .container { width: 100%; }
+  html:not(.free-scroll) body[data-page="about"] .tl3d-stop { scroll-snap-align: start; }
+  html:not(.free-scroll) body[data-page="about"] .site-footer { scroll-snap-align: end; }
+}
