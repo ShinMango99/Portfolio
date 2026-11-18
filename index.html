@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- theme chosen with the header toggle, applied before paint so the page never flashes the other theme -->
   <script>try { var t = localStorage.getItem("theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
+  <!-- first-visit loading screen with the master reel (js/boot.js): decided before paint so the page never flashes first.
+       Once per browser session, only when the visit starts here (not from another page of the site or a #section link),
+       never with reduced motion or data saver. If boot.js has not started within 4 s, the screen is dropped. -->
+  <script>
+    try {
+      var ref = document.referrer && new URL(document.referrer).origin === location.origin;
+      if (!sessionStorage.getItem("booted") && !ref && !location.hash &&
+          !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+          !(navigator.connection && navigator.connection.saveData)) {
+        sessionStorage.setItem("booted", "1");
+        document.documentElement.classList.add("is-booting");
+        setTimeout(function () { if (!window.BOOT) document.documentElement.classList.remove("is-booting"); }, 4000);
+      }
+    } catch (e) {}
+  </script>
   <title>Jaemin Cho · Game Developer</title>
   <meta name="description" content="Jaemin Cho: Unity / C# game developer and pixel artist. Solo and team games, communication, and contact details.">
   <meta property="og:type" content="website">
@@ -17,9 +32,25 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Pixelify+Sans:wght@500;700&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/data.js" defer></script>
+  <script src="js/boot.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
 <body data-page="home">
+  <!-- loading screen: the reel plays big while the bar fills, then flies into the hero (js/boot.js) -->
+  <div class="boot" aria-hidden="true">
+    <div class="boot-back">
+      <div class="boot-hud">
+        <div class="boot-load">
+          <p class="boot-status"><span class="boot-label">Loading</span> <span class="boot-pct">0%</span></p>
+          <div class="boot-bar"></div>
+        </div>
+        <p class="boot-skip"><span>Press any key to skip</span> <b>&#9656;</b></p>
+        <p class="boot-tip"></p>
+      </div>
+    </div>
+    <div class="boot-screen"><video muted loop playsinline preload="none"></video></div>
+  </div>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -70,6 +101,15 @@
       </div>
     </section>
 
+    <!-- every game as a character-select row that slides by itself (main.js gameSelect) -->
+    <section class="section games" id="featured-section" aria-labelledby="featured-title" hidden>
+      <div class="container">
+        <h2 id="featured-title">Pick a game</h2>
+        <p class="lead" id="games-lead"></p>
+      </div>
+      <div class="gs" id="game-select" role="region" aria-roledescription="carousel" aria-labelledby="featured-title"></div>
+    </section>
+
     <!-- Studio: my own indie studio site, iamnnd.com -->
     <section class="section studio" id="studio" aria-labelledby="studio-title">
       <div class="container">
@@ -104,13 +144,6 @@
         <h2 id="work-title">Browse my work</h2>
         <p class="lead">Pick a category. Every project has its own page with the trailer, my role and a playable link.</p>
         <ul class="portal" id="portal"></ul>
-      </div>
-    </section>
-
-    <section class="section" id="featured-section" aria-labelledby="featured-title" hidden>
-      <div class="container">
-        <h2 id="featured-title">Featured games</h2>
-        <ul class="tiles tiles--lg" id="featured-list"></ul>
       </div>
     </section>
 

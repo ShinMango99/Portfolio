@@ -15,6 +15,8 @@
     reelPoster: "assets/img/reel-poster.jpg",
     // silent 960x540 copy of the reel that autoplays on loop in the Home hero, like a GIF
     reelLoop: "assets/video/reel-loop.mp4",
+    // seconds of the reel's opening title card: on the first visit the loading bar fills while it plays
+    reelIntro: 4,
     // shown big on the Home page, in this order
     featured: ["shh", "save-the-pig", "this-is-not-chess", "toast-to-the-past"],
     // evidence for the claims above; each links to the page that proves it
@@ -116,7 +118,7 @@
     {
       id: "sweet-sixteen",
       title: "Sweet Sixteen",
-      category: "Competition",
+      category: ["Competition", "Club"],
       date: "2023-05-23",
       ongoing: false,
       completion: 1,

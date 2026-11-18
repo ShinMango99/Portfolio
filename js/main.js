@@ -46,7 +46,7 @@
   }
   // "Solo" / "Team of 6"; teaching entries skip it (their number is students, not a dev team)
   function teamLabel(p) {
-    if (p.team == null || p.category === "Communication") return "";
+    if (p.team == null || hasCat(p, "Communication")) return "";
     var t = String(p.team);
     if (/^1\b/.test(t)) return "Solo";
     return /^\d+$/.test(t) ? "Team of " + t : t;
@@ -57,6 +57,12 @@
     return '<span class="tile-tags">' + (e ? '<span class="tag tag--engine">' + esc(e) + "</span>" : "") +
       (t ? '<span class="tag">' + esc(t) + "</span>" : "") + "</span>";
   }
+  // category is one name or a list of names (a club project that was also a competition entry)
+  function catsOf(p) { return [].concat(p.category); }
+  function hasCat(p, c) { return catsOf(p).indexOf(c) !== -1; }
+  function catText(p) { return catsOf(p).join(" / "); }
+  // run fn once the first-visit loading screen (boot.js, Home only) has uncovered the page; right away when there is none
+  function afterBoot(fn) { if (window.BOOT) window.BOOT.after(fn); else fn(); }
   function bareUrl(u) { return String(u).replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""); }
 
   var projects = D.projects.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
@@ -65,7 +71,7 @@
 
   // solo / team / teaching, from category and team size
   function groupOf(p) {
-    if (p.category === "Communication") return "teaching";
+    if (hasCat(p, "Communication")) return "teaching";
     return /^1\b/.test(String(p.team)) ? "solo" : "team";
   }
   var catById = {};
@@ -168,7 +174,7 @@
       '<span class="tile-title">' + esc(p.title) + "</span>" +
       tagsHtml(p) +
       (p.award ? '<span class="badge">' + esc(p.award) + "</span>" : "") +
-      '<span class="tile-meta">' + esc(p.category) + " · " + String(p.date).slice(0, 4) + " · " + statusText(p) + "</span>" +
+      '<span class="tile-meta">' + esc(catText(p)) + " · " + String(p.date).slice(0, 4) + " · " + statusText(p) + "</span>" +
       '<span class="tile-text">' + val(p.summary) + "</span>" +
       '<span class="tile-role"><b>My role:</b> ' + val(p.role) + "</span>" +
       '<span class="tile-go">View project &rarr;</span>' +
@@ -271,13 +277,30 @@
         player.innerHTML = '<video class="reel-loop" muted loop autoplay playsinline preload="auto" aria-hidden="true"' +
           (prof.reelPoster ? ' poster="' + esc(prof.reelPoster) + '"' : "") + "></video>" +
           '<button type="button" class="button button--sm reel-sound">&#9654; Watch with sound</button>';
+        player.querySelector(".reel-sound").addEventListener("click", function () { play(player, reel); });
         var v = player.querySelector("video");
+        // first visit: the loading screen (boot.js) is already playing this loop full size. Its video lands here
+        // when the screen leaves, so the reel goes on from the same frame and the file loads only once.
+        // Until then the box stays plain (no poster), since the landing reel covers it.
+        if (window.BOOT && window.BOOT.land(v, function (bv) {
+          if (bv.error || v.parentNode !== player) { startLoop(v); return; }
+          bv.className = v.className;
+          bv.setAttribute("aria-hidden", "true");
+          player.replaceChild(bv, v);
+          var pr = bv.play();
+          if (pr && pr.catch) pr.catch(function () {});
+        })) {
+          v.removeAttribute("poster");
+          return;
+        }
+        startLoop(v);
+      }
+      function startLoop(v) {
         v.muted = true; // the property, not just the attribute, is what lets autoplay start
         v.addEventListener("error", function () { mountMedia(player, reel, "Play reel"); }, { once: true });
         v.src = prof.reelLoop;
         var pr = v.play();
         if (pr && pr.catch) pr.catch(function () {});
-        player.querySelector(".reel-sound").addEventListener("click", function () { play(player, reel); });
       }
       // pause the loop while it is scrolled out of view
       if (canLoop && "IntersectionObserver" in window) {
@@ -309,19 +332,25 @@
         now.hidden = true;
         showReel();
       });
-      $("#featured-list").innerHTML = featured.map(tile).join("");
-      mountAll($("#featured-list"));
-      $("#featured-section").hidden = false;
     } else {
       // no reel yet: lead with the best games; the picture plays the trailer, the bar below opens the page
       feature.innerHTML = '<ul class="mosaic">' + featured.map(function (p) {
         return '<li class="mosaic-item"><div class="media" data-mount="' + esc(p.id) + '"></div>' +
           '<a class="mosaic-label" href="' + projUrl(p) + '"><b>' + esc(p.title) + "</b>" +
-          "<small>" + esc(p.award || p.category) + "</small>" +
+          "<small>" + esc(p.award || catText(p)) + "</small>" +
           '<span class="mosaic-go">Open &rarr;</span></a></li>';
       }).join("") + "</ul>";
       mountAll(feature, "Play");
     }
+
+    // every game in a character-select row. It opens on the featured games: the first in the middle, the next
+    // ones to its right, the last one to its left, and every other game in between, oldest first.
+    var others = projects.filter(function (p) { return groupOf(p) !== "teaching" && featured.indexOf(p) === -1; }).reverse();
+    var right = featured.slice(0, Math.ceil((featured.length + 1) / 2));
+    var games = right.concat(others, featured.slice(right.length));
+    $("#games-lead").textContent = "All " + games.length + " games I have worked on. The middle card plays; open it for the trailer, my role and a playable link.";
+    gameSelect($("#game-select"), games);
+    $("#featured-section").hidden = false;
 
     $("#portal").innerHTML = D.categories.map(function (c) {
       var list = c.id === "about" ? null : inGroup(c.id);
@@ -341,7 +370,173 @@
       hoverPreview(a, a.querySelector(".portal-media"), c && c.cover ? byId[c.cover] : null);
     });
     evenRows($("#portal"), ".portal-body");
-    evenRows($("#featured-list"), ".tile-body");
+  }
+
+  /* ---------- Home: game select ----------
+     Every game in one row that slides past like a character select screen: the middle card is full size,
+     lifted and playing its gameplay loop; its neighbours shrink, fade and turn away; the rest wait off stage.
+     The row moves on by itself: the lit block in the bar below fills up, and when it is full the next game
+     slides in. It holds while the cursor is on the cards, while keyboard focus is inside, while the section
+     is off screen, after Pause, and always with reduced motion. A side card, a block, an arrow, the arrow
+     keys or a swipe bring a game to the middle; the middle card opens the project page. */
+  var PIX = {
+    arrow: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M5 2h2v2h2v2h2v4h-2v2h-2v2H5v-2h2v-2h2V6H7V4H5z"/></svg>',
+    pause: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M4 3h3v10H4zM9 3h3v10H9z"/></svg>',
+    play: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M5 2h2v2h2v2h2v4h-2v2h-2v2H5z"/></svg>'
+  };
+  function gameSelect(root, games) {
+    var n = games.length;
+    if (!root || !n) return;
+    var saveData = navigator.connection && navigator.connection.saveData;
+    function pad(x) { return (x < 10 ? "0" : "") + x; }
+
+    root.innerHTML =
+      '<ul class="gs-track">' + games.map(function (p, i) {
+        var img = thumbOf(p);
+        var meta = [engineOf(p), teamLabel(p), String(p.date).slice(0, 4)].filter(Boolean).join(" · ");
+        return '<li class="gs-card" data-pos="3" role="group" aria-roledescription="slide" aria-label="' + (i + 1) + " of " + n + '">' +
+          '<a class="gs-link" href="' + projUrl(p) + '" draggable="false">' +
+          '<span class="gs-media">' + (img ? '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' : "") +
+          (p.award ? '<span class="gs-award">' + esc(p.award) + "</span>" : "") + "</span>" +
+          '<span class="gs-body"><span class="gs-title">' + esc(p.title) + "</span>" +
+          '<span class="gs-meta">' + esc(meta) + "</span>" +
+          '<span class="gs-go" aria-hidden="true"><span class="gs-go-text">View project </span>&rarr;</span></span>' +
+          "</a></li>";
+      }).join("") + "</ul>" +
+      '<div class="container gs-foot">' +
+      '<p class="gs-summary"></p>' +
+      '<div class="gs-nav">' +
+      '<button type="button" class="gs-arrow" data-step="-1" aria-label="Previous game" title="Previous game">' + PIX.arrow + "</button>" +
+      '<ol class="gs-dots">' + games.map(function (p, i) {
+        return '<li><button type="button" data-i="' + i + '" aria-label="' + esc(p.title) + '" title="' + esc(p.title) + '"></button></li>';
+      }).join("") + "</ol>" +
+      '<button type="button" class="gs-arrow" data-step="1" aria-label="Next game" title="Next game">' + PIX.arrow + "</button>" +
+      '<span class="gs-count" aria-hidden="true"></span>' +
+      (reduced ? "" : '<button type="button" class="gs-pause"></button>') +
+      "</div></div>" +
+      '<p class="sr-only" aria-live="polite"></p>';
+
+    var track = root.querySelector(".gs-track");
+    var cards = root.querySelectorAll(".gs-card");
+    var dots = root.querySelectorAll(".gs-dots button");
+    var summary = root.querySelector(".gs-summary");
+    var count = root.querySelector(".gs-count");
+    var live = root.querySelector("[aria-live]");
+    var pauseBtn = root.querySelector(".gs-pause");
+    var at = 0, playT = 0;
+    var held = { user: false, hover: false, focus: false, away: true };
+
+    function go(i, byUser) {
+      at = (i % n + n) % n;
+      Array.prototype.forEach.call(cards, function (c, k) {
+        // shortest way round the ring: -n/2 .. n/2, and everything past 2 waits just off stage
+        var d = ((k - at) % n + n) % n;
+        if (d > n / 2) d -= n;
+        var pos = Math.max(-3, Math.min(3, d));
+        c.dataset.pos = pos;
+        c.setAttribute("aria-hidden", String(Math.abs(pos) > 2));
+        c.querySelector(".gs-link").tabIndex = Math.abs(pos) > 2 ? -1 : 0;
+        if (k !== at) stopPreview(c);
+      });
+      var p = games[at];
+      summary.textContent = isTodo(p.summary) ? "" : p.summary;
+      count.textContent = pad(at + 1) + " / " + pad(n);
+      Array.prototype.forEach.call(dots, function (b, k) {
+        // a fresh <i> restarts the fill that times the next slide
+        if (k === at) { b.setAttribute("aria-current", "true"); b.innerHTML = "<i></i>"; }
+        else { b.removeAttribute("aria-current"); b.innerHTML = ""; }
+      });
+      if (byUser) live.textContent = p.title + ", " + (at + 1) + " of " + n;
+      // the gameplay loop starts once the card has slid into the middle
+      clearTimeout(playT);
+      playT = setTimeout(function () { startPreview(cards[at], p); }, reduced ? 0 : 450);
+    }
+
+    function startPreview(card, p) {
+      if (!p.preview || saveData) return;
+      var box = card.querySelector(".gs-media");
+      var v = box.querySelector("video");
+      if (!v) {
+        v = document.createElement("video");
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.setAttribute("playsinline", "");
+        v.setAttribute("aria-hidden", "true");
+        v.preload = "auto";
+        v.addEventListener("playing", function () { if (card.dataset.pos === "0") card.classList.add("is-playing"); });
+        v.src = p.preview;
+        box.insertBefore(v, box.querySelector(".gs-award"));
+      }
+      var pr = v.play();
+      if (pr && pr.catch) pr.catch(function () {});
+    }
+    function stopPreview(card) {
+      card.classList.remove("is-playing");
+      var v = card.querySelector("video");
+      if (v) v.pause();
+    }
+
+    function hold(key, on) {
+      held[key] = on;
+      root.classList.toggle("is-held", held.user || held.hover || held.focus || held.away);
+    }
+    // the full block is the cue for the next slide
+    root.addEventListener("animationend", function (e) {
+      if (e.animationName === "gs-fill") go(at + 1);
+    });
+
+    function paintPause() {
+      if (!pauseBtn) return;
+      pauseBtn.innerHTML = held.user ? PIX.play : PIX.pause;
+      pauseBtn.title = held.user ? "Play the slideshow" : "Pause the slideshow";
+      pauseBtn.setAttribute("aria-label", pauseBtn.title);
+    }
+    if (pauseBtn) pauseBtn.addEventListener("click", function () { hold("user", !held.user); paintPause(); });
+    paintPause();
+
+    Array.prototype.forEach.call(root.querySelectorAll(".gs-arrow"), function (b) {
+      b.addEventListener("click", function () { go(at + Number(b.dataset.step), true); });
+    });
+    Array.prototype.forEach.call(dots, function (b) {
+      b.addEventListener("click", function () { go(Number(b.dataset.i), true); });
+    });
+    root.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        go(at + (e.key === "ArrowLeft" ? -1 : 1), true);
+      }
+    });
+
+    // a side card slides to the middle instead of opening; a sideways drag or swipe moves one step
+    var x0 = null, swiped = false;
+    track.addEventListener("pointerdown", function (e) { x0 = e.clientX; swiped = false; });
+    track.addEventListener("pointerup", function (e) {
+      if (x0 === null) return;
+      var dx = e.clientX - x0;
+      x0 = null;
+      if (Math.abs(dx) > 40) { swiped = true; go(at + (dx < 0 ? 1 : -1), true); }
+    });
+    track.addEventListener("click", function (e) {
+      var card = e.target.closest(".gs-card");
+      if (!card) return;
+      if (swiped) { e.preventDefault(); swiped = false; return; }
+      var k = Array.prototype.indexOf.call(cards, card);
+      if (k !== at) { e.preventDefault(); go(k, true); }
+    });
+
+    track.addEventListener("mouseenter", function () { hold("hover", true); });
+    track.addEventListener("mouseleave", function () { hold("hover", false); });
+    // keyboard focus holds the row; a mouse click on an arrow does not
+    root.addEventListener("focusin", function (e) { if (e.target.matches(":focus-visible")) hold("focus", true); });
+    root.addEventListener("focusout", function (e) { if (!root.contains(e.relatedTarget)) hold("focus", false); });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) { hold("away", !entries[0].isIntersecting); }, { threshold: 0.5 }).observe(track);
+    } else {
+      hold("away", false);
+    }
+
+    go(0);
   }
 
   function typeHero(prof) {
@@ -375,15 +570,18 @@
     }
     var n = phrase.textContent.length;
     var deleting = true;
-    setTimeout(function tick() {
-      var word = prof.typedPhrases[pi];
-      n += deleting ? -1 : 1;
-      phrase.textContent = word.slice(0, n);
-      var delay = deleting ? 35 : 75;
-      if (!deleting && n === word.length) { deleting = true; delay = 1800; }
-      else if (deleting && n === 0) { deleting = false; pi = (pi + 1) % prof.typedPhrases.length; delay = 350; }
-      setTimeout(tick, delay);
-    }, 1800);
+    // the first-visit loading screen covers the hero for a few seconds, so start typing once it has gone
+    afterBoot(function () {
+      setTimeout(function tick() {
+        var word = prof.typedPhrases[pi];
+        n += deleting ? -1 : 1;
+        phrase.textContent = word.slice(0, n);
+        var delay = deleting ? 35 : 75;
+        if (!deleting && n === word.length) { deleting = true; delay = 1800; }
+        else if (deleting && n === 0) { deleting = false; pi = (pi + 1) % prof.typedPhrases.length; delay = 350; }
+        setTimeout(tick, delay);
+      }, 1800);
+    });
   }
 
   /* ================= Category page ================= */
@@ -505,7 +703,7 @@
       '<header class="project-head"><h1 class="page-title">' + esc(p.title) + "</h1>" +
       tagsHtml(p) +
       (p.award ? '<p><span class="badge badge--lg">' + esc(p.award) + "</span></p>" : "") +
-      '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date, true) + " · " + statusText(p) + "</p></header>" +
+      '<p class="card-meta">' + esc(catText(p)) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date, true) + " · " + statusText(p) + "</p></header>" +
       // plain words first, for readers who don't make games (recruiters, HR)
       (p.plain ? '<div class="plain"><p class="plain-label">In plain words</p><p>' + esc(p.plain) + "</p></div>" : "") +
       '<div class="project-grid' + (hasMedia ? "" : " project-grid--text") + '">' +
@@ -685,7 +883,7 @@
     var tabs = $("#tl-tabs");
     if (tabs) {
       tabs.innerHTML = TL_TABS.map(function (t, i) {
-        var n = t.cat ? D.projects.filter(function (p) { return p.category === t.cat; }).length : null;
+        var n = t.cat ? D.projects.filter(function (p) { return hasCat(p, t.cat); }).length : null;
         return '<button type="button" class="tl-tab" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' +
           esc(t.label) + (n != null ? " <span>" + n + "</span>" : "") + "</button>";
       }).join("");
@@ -701,7 +899,7 @@
 
   var gaugeRefresh = null;
   function fillTimeline(cat) {
-    var events = D.projects.filter(function (p) { return !cat || p.category === cat; }).map(function (p) {
+    var events = D.projects.filter(function (p) { return !cat || hasCat(p, cat); }).map(function (p) {
       return { date: p.date, project: p };
     }).concat(cat ? [] : (D.milestones || []).map(function (m) {
       return { date: m.date, milestone: m };
@@ -728,7 +926,7 @@
         var p = e.project;
         return '<li class="tl-item' + (p.ongoing ? " tl-item--now" : "") + '" data-id="' + esc(p.id) + '"><span class="tl-date">' + fmtDate(p.date) + "</span> " +
           '<span class="tl-title"><a href="' + projUrl(p) + '">' + esc(p.title) + "</a></span> " +
-          '<span class="tl-kind">(' + esc(p.category) + (p.ongoing ? ", in progress " + pct(p) + "%" : "") + ")</span>" +
+          '<span class="tl-kind">(' + esc(catText(p)) + (p.ongoing ? ", in progress " + pct(p) + "%" : "") + ")</span>" +
           '<p class="tl-note">' + val(p.outcome) + "</p></li>";
       }).join("") + "</ol>";
     }).join("");
@@ -756,7 +954,7 @@
     var poster = thumbOf(p);
     return (poster ? '<div class="media"><img src="' + esc(poster) + '" alt=""></div>' : "") +
       '<h3 class="tl-preview-title">' + esc(p.title) + "</h3>" +
-      '<p class="card-meta">' + esc(p.category) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date) + " · " + statusText(p) + "</p>" +
+      '<p class="card-meta">' + esc(catText(p)) + " · " + (p.ongoing ? "Since " : "") + fmtDate(p.date) + " · " + statusText(p) + "</p>" +
       "<p>" + val(p.summary) + "</p>" +
       "<dl>" + row("My role", p.role) + row("Result", p.outcome) + row("Tools", p.tools) + pressRow(p) + "</dl>" +
       '<p><a href="' + projUrl(p) + '">Full details</a></p>';
@@ -932,7 +1130,7 @@
     var snapMQ = matchMedia("(hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px)");
     // card sections: title block height into --head, and mark the first row (its stop is the title instead)
     function measureSections() {
-      [["#work-title", "#portal"], ["#featured-title", "#featured-list"]].forEach(function (p) {
+      [["#work-title", "#portal"]].forEach(function (p) {
         var title = $(p[0]), list = $(p[1]);
         if (!title || !list || !list.children.length) return;
         var head = list.getBoundingClientRect().top - title.getBoundingClientRect().top;

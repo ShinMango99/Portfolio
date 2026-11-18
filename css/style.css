@@ -774,24 +774,19 @@ button { font: inherit; }
   html:not(.free-scroll) body[data-page="home"] .hero { padding: 24px 0; min-height: var(--view); }
   html:not(.free-scroll) body[data-page="home"] .hero .eyebrow { scroll-snap-align: start; scroll-margin-top: 100vh; }
   html:not(.free-scroll) body[data-page="home"] .studio { display: flex; align-items: center; min-height: var(--view); padding: 24px 0; scroll-snap-align: start; }
-  /* card sections: the first stop is the section title, with the first row right under it. main.js measures the
+  /* card section: the first stop is the section title, with the first row right under it. main.js measures the
      title block into --head and marks the first row .first-row (no stop of its own); the cards shrink by --head so
      title + first row fit on one screen. Later rows stop centred, one screen apart. */
-  html:not(.free-scroll) body[data-page="home"] #work-title,
-  html:not(.free-scroll) body[data-page="home"] #featured-title { scroll-snap-align: start; scroll-margin-top: 32px; }
+  html:not(.free-scroll) body[data-page="home"] #work-title { scroll-snap-align: start; scroll-margin-top: 32px; }
   html:not(.free-scroll) body[data-page="home"] #portal { --card-portal: min(calc(var(--view) - 64px - var(--head, 0px)), 540px); row-gap: calc(var(--view) - var(--card-portal)); }
   html:not(.free-scroll) body[data-page="home"] #portal .portal-item { height: var(--card-portal); scroll-snap-align: center; }
   html:not(.free-scroll) body[data-page="home"] #portal .portal-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
-  html:not(.free-scroll) body[data-page="home"] #featured-list { --card: min(calc(var(--view) - 64px - var(--head, 0px)), 640px); row-gap: calc(var(--view) - var(--card)); }
-  html:not(.free-scroll) body[data-page="home"] #featured-list .tile { height: var(--card); scroll-snap-align: center; }
   html:not(.free-scroll) body[data-page="home"] #portal > .first-row .portal-item,
-  html:not(.free-scroll) body[data-page="home"] #portal > .first-row.portal-item,
-  html:not(.free-scroll) body[data-page="home"] #featured-list > .first-row .tile,
-  html:not(.free-scroll) body[data-page="home"] #featured-list > .first-row.tile { scroll-snap-align: none; }
-  html:not(.free-scroll) body[data-page="home"] #featured-list .tile-media { aspect-ratio: auto; flex: 1 1 0; min-height: 180px; }
+  html:not(.free-scroll) body[data-page="home"] #portal > .first-row.portal-item { scroll-snap-align: none; }
   /* same as category pages: the text keeps its own height and the picture takes the spare room */
-  html:not(.free-scroll) body[data-page="home"] #portal .portal-body,
-  html:not(.free-scroll) body[data-page="home"] #featured-list .tile-body { flex: none; }
+  html:not(.free-scroll) body[data-page="home"] #portal .portal-body { flex: none; }
+  /* the game select is one stop, one screen tall, like the studio */
+  html:not(.free-scroll) body[data-page="home"] .games { display: flex; flex-direction: column; justify-content: center; min-height: var(--view); padding: 24px 0; scroll-snap-align: start; }
   html:not(.free-scroll) body[data-page="home"] .site-footer { scroll-snap-align: end; }
 }
 /* juice: tiles hop up into place once, in 4 hard steps, one column after another (main.js adds the classes) */
@@ -963,4 +958,226 @@ button { font: inherit; }
 .studio-game-label b { margin-right: 6px; }
 @media (prefers-reduced-motion: reduce) {
   .studio-card, .studio-go, .studio-game img { transition: none; }
+}
+
+/* ---------- first-visit loading screen (Home, js/boot.js) ----------
+   Dark in both themes, like a game booting: the reel big in the middle and a block bar under it, built
+   from the same blocks as the skill gauges. Shown only while <html> has .is-booting (.boot-leaving while
+   it goes). The frame and the bar share one size formula, so they line up before any script runs. */
+.boot { display: none; }
+.is-booting .boot, .boot-leaving .boot { display: block; }
+html.is-booting, html.boot-leaving { overflow: hidden; }
+/* hold the page's own load animations (the proof cards unlocking) until it is uncovered */
+html.is-booting main *, html.is-booting main *::before, html.is-booting main *::after { animation-play-state: paused !important; }
+.boot {
+  --boot-ink: #ece7dc;
+  --boot-dim: #a8a296;
+  --vh: 100vh;
+  --hud: 92px;   /* room under the reel for the bar */
+  --w: min(100vw - 2 * var(--gutter), (var(--vh) - var(--hud) - 64px) * 16 / 9);
+  --h: calc(var(--w) * 9 / 16);
+  --top: calc(50% - (var(--h) + var(--hud)) / 2);
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  color: var(--boot-ink);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  touch-action: none;
+}
+@supports (height: 100dvh) { .boot { --vh: 100dvh; } }
+.boot-back { position: absolute; inset: 0; background: #0d0c0b; }
+.boot-screen {
+  position: absolute;
+  top: var(--top);
+  left: calc(50% - var(--w) / 2);
+  width: var(--w);
+  height: var(--h);
+  background: #000;
+  transform-origin: 0 0;   /* boot.js flies it into the hero with translate + scale */
+}
+.boot-screen video { width: 100%; height: 100%; object-fit: cover; }
+.boot-hud {
+  position: absolute;
+  top: calc(var(--top) + var(--h) + 20px);
+  left: calc(50% - var(--w) / 2);
+  width: var(--w);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 32px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.boot-load { flex: 1 1 260px; max-width: 460px; }
+.boot-status { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; color: var(--boot-dim); letter-spacing: 0.14em; text-transform: uppercase; }
+.boot-pct { font-family: var(--font-pixel); font-size: 1.25rem; line-height: 1; letter-spacing: 0; color: var(--boot-ink); }
+.boot-bar { display: flex; gap: 3px; height: 14px; }
+.boot-bar i { flex: 1; background: rgba(236, 231, 220, 0.14); }
+/* a block lights with the same white flash as a skill gauge block; at 100% the whole bar flashes once */
+.boot-bar i.on { background: var(--yellow-strong); animation: boot-seg 0.2s steps(2, end); }
+.boot.is-ready .boot-bar i { animation: boot-ready 0.3s steps(2, end); }
+.boot.is-ready .boot-label { color: var(--yellow-strong); }
+@keyframes boot-seg { 0% { background: #fffbe0; transform: scaleY(1.6); } }
+@keyframes boot-ready { 0% { background: #fffbe0; } }
+.boot-tip { flex-basis: 100%; color: var(--boot-dim); }
+.boot-tip b { margin-right: 8px; color: var(--yellow-strong); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+.boot-skip { color: var(--boot-dim); }
+.boot-skip b { display: inline-block; margin-left: 4px; color: var(--yellow-strong); animation: caret-blink 1s steps(1) infinite; }
+
+/* ---------- Home: game select (main.js gameSelect) ----------
+   Every game in one row that slides past like a character select screen. The middle card is full size,
+   lifted with the sticker shadow and playing its gameplay loop; its neighbours shrink toward the same floor
+   line, fade into the paper and turn slightly away; the rest wait just off stage, invisible. main.js sets
+   data-pos (-3 to 3) on each card; the moves are in % of the card's own width, so the row scales with --cw. */
+.games .lead { margin-bottom: 16px; }
+.gs {
+  /* width of the middle card: small enough that the outer cards still show on a laptop, and short enough
+     that the title, the row and the controls fit on one screen */
+  --cw: clamp(260px, min(38vw, (100svh - 400px) * 16 / 9), 540px);
+  position: relative;
+  overflow: hidden;   /* side cards run off both edges of the window */
+}
+.gs-track {
+  position: relative;
+  height: calc(var(--cw) * 9 / 16 + 120px);
+  touch-action: pan-y;   /* a sideways swipe slides the row, an up/down one still scrolls the page */
+}
+/* soft light on the floor behind the middle card */
+.gs-track::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: calc(var(--cw) * 1.8);
+  height: 100%;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(241, 217, 107, 0.16), transparent);
+  pointer-events: none;
+}
+.gs-card {
+  --x: 0px; --s: 1; --ry: 0deg; --fade: 0;
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  width: var(--cw);
+  margin-left: calc(var(--cw) / -2);
+  transform-origin: 50% 100%;
+  transform: translateX(var(--x)) perspective(1400px) rotateY(var(--ry)) scale(var(--s));
+  transition: transform 0.6s var(--ease-out), opacity 0.4s var(--ease-out), visibility 0s;
+}
+/* the cards sit close and tuck a little behind each other, so even a laptop screen shows five */
+.gs-card[data-pos="0"] { z-index: 3; }
+.gs-card[data-pos="-1"], .gs-card[data-pos="1"] { z-index: 2; --s: 0.66; --fade: 0.35; }
+.gs-card[data-pos="-1"] { --x: -80%; --ry: 10deg; }
+.gs-card[data-pos="1"] { --x: 80%; --ry: -10deg; }
+.gs-card[data-pos="-2"], .gs-card[data-pos="2"] { z-index: 1; --s: 0.5; --fade: 0.6; }
+.gs-card[data-pos="-2"] { --x: -133%; --ry: 22deg; }
+.gs-card[data-pos="2"] { --x: 133%; --ry: -22deg; }
+/* off stage: fade out first, then hide, so a card going round the ring never crosses the row visibly */
+.gs-card[data-pos="-3"], .gs-card[data-pos="3"] {
+  --s: 0.4;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.6s var(--ease-out), opacity 0.4s var(--ease-out), visibility 0s 0.4s;
+}
+.gs-card[data-pos="-3"] { --x: -175%; --ry: 30deg; }
+.gs-card[data-pos="3"] { --x: 175%; --ry: -30deg; }
+.gs-link {
+  position: relative;
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--text);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
+}
+/* side cards fade into the paper: one overlay, so picture, text and frame fade together */
+.gs-link::after { content: ""; position: absolute; inset: -1px; background: var(--bg); opacity: var(--fade); transition: opacity 0.4s var(--ease-out); pointer-events: none; }
+.gs-card:not([data-pos="0"]) .gs-link:hover::after { opacity: calc(var(--fade) * 0.4); }
+.gs-card[data-pos="0"] .gs-link { box-shadow: 6px 6px 0 var(--text); }
+.gs-card[data-pos="0"] .gs-link:hover, .gs-card[data-pos="0"] .gs-link:focus-visible { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--text); }
+.gs-card[data-pos="0"] .gs-link:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+.gs-media { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--placeholder); border-bottom: 1px solid var(--text); }
+.gs-media img, .gs-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.gs-media video { opacity: 0; transition: opacity 0.3s; }
+.gs-card.is-playing .gs-media video { opacity: 1; }
+.gs-award {
+  position: absolute; left: 10px; bottom: 10px; z-index: 1;
+  max-width: calc(100% - 20px);
+  padding: 1px 8px;
+  border: 1px solid var(--text);
+  background: var(--yellow-strong);
+  color: var(--on-yellow);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 12px 16px 14px; }
+.gs-title { font-size: 1.3rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gs-meta { grid-column: 1; font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gs-go {
+  grid-column: 2; grid-row: 1 / 3;
+  padding: 6px 10px;
+  border: 1px solid var(--text);
+  background: var(--yellow-strong);
+  color: var(--on-yellow);
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  visibility: hidden;
+}
+.gs-card[data-pos="0"] .gs-go { visibility: visible; }
+/* under the row: what the middle game is, then the controls */
+.gs-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
+.gs-summary {
+  flex: 1 1 320px;
+  max-width: 62ch;
+  min-height: 3.2em;   /* two lines kept, so the controls never jump */
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gs-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.gs-arrow, .gs-pause {
+  display: grid; place-items: center;
+  width: 40px; height: 40px;
+  padding: 0;
+  border: 1px solid var(--text);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 3px 3px 0 var(--text);
+  cursor: pointer;
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
+}
+.gs-arrow:hover, .gs-arrow:focus-visible, .gs-pause:hover, .gs-pause:focus-visible { background: var(--hover); transform: translate(-3px, -3px); box-shadow: 6px 6px 0 var(--text); }
+.gs-arrow:active, .gs-pause:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
+.gs-arrow[data-step="-1"] svg { transform: scaleX(-1); }
+/* one block per game, like the loading bar: the lit one fills up while its game is in the middle,
+   and when it is full the next game slides in */
+.gs-dots { display: flex; gap: 3px; }
+.gs-dots button { position: relative; display: block; width: 14px; height: 14px; padding: 0; border: 0; background: var(--placeholder); cursor: pointer; overflow: hidden; }
+.gs-dots button:hover { background: var(--line); }
+.gs-dots button[aria-current="true"] { width: 32px; box-shadow: inset 0 0 0 1px var(--text); }
+.gs-dots i { position: absolute; inset: 0; background: var(--yellow-strong); transform-origin: 0 50%; animation: gs-fill 4s steps(8, end) forwards; }
+.gs.is-held .gs-dots i { animation-play-state: paused; }
+@keyframes gs-fill { from { transform: scaleX(0); } }
+.gs-count { min-width: 7ch; color: var(--muted); font-family: var(--font-mono); font-size: 0.85rem; }
+@media (prefers-reduced-motion: reduce) {
+  .gs-card, .gs-link, .gs-link::after, .gs-media video { transition: none; }
+  .gs-dots i { animation: none; }
+}
+/* phones: the middle card is narrow, so its button is just the arrow, and the bar loses the count to stay on one line */
+@media (max-width: 600px) {
+  .gs-go-text { display: none; }
+  .gs-nav { flex-wrap: nowrap; gap: 8px; }
+  .gs-dots button { width: 12px; }
+  .gs-dots button[aria-current="true"] { width: 24px; }
+  .gs-count { display: none; }
 }
