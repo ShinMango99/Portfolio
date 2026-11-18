@@ -1328,5 +1328,29 @@
   }
   fitHero();
 
+  /* About: the bio is one snap stop, so on short windows it shrinks (CSS zoom, same line breaks) until it fits
+     under the header. Only while snapping is on: free scrolling keeps the normal size. */
+  function fitAbout() {
+    var box = $('body[data-page="about"] .about > .container');
+    if (!box) return;
+    var header = $(".site-header");
+    var snapMQ = matchMedia("(hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px)");
+    function fit() {
+      box.style.zoom = "";
+      if (!snapMQ.matches || document.documentElement.classList.contains("free-scroll")) return;
+      var room = innerHeight - (header ? header.offsetHeight : 0) - 48; // 24px of air above and below
+      var h = box.offsetHeight;
+      if (h > room) box.style.zoom = Math.max(0.6, room / h).toFixed(3);
+    }
+    var t;
+    function later() { clearTimeout(t); t = setTimeout(fit, 100); }
+    fit();
+    addEventListener("resize", later);
+    addEventListener("load", fit);
+    if (document.fonts) document.fonts.ready.then(fit);
+    new MutationObserver(later).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  }
+  fitAbout();
+
   $$(".year").forEach(function (y) { y.textContent = new Date().getFullYear(); });
 })();

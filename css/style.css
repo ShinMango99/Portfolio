@@ -860,8 +860,25 @@ button { font: inherit; }
 
 /* about page */
 .about-grid { display: grid; gap: 24px; align-items: start; }
-@media (min-width: 768px) { .about-grid { grid-template-columns: 160px 1fr; gap: 40px; } }
+@media (min-width: 768px) { .about-grid { grid-template-columns: 180px 1fr; gap: 40px; } }
 .about-grid .profile-photo { width: 160px; height: 160px; }
+/* the photo and the three actions under it share one column; every button has the same size and shadow
+   (the yellow fill alone marks the main one) */
+.about-side { display: grid; gap: 20px; justify-items: center; }
+.about-side .actions { display: grid; gap: 14px; width: 100%; margin: 0; }
+.about-side .button, .about-side .button--primary {
+  display: flex; align-items: center; justify-content: center; min-height: 46px; padding: 10px 12px;
+  font-weight: 700; text-align: center; box-shadow: 4px 4px 0 var(--text);
+}
+.about-side .button:hover, .about-side .button:focus-visible { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 var(--text); }
+.about-side .button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--text); }
+/* phones: the photo on the left, the three buttons stacked beside it */
+@media (max-width: 767px) {
+  .about-side { grid-template-columns: 120px 1fr; align-items: center; gap: 20px; }
+  .about-grid .about-side .profile-photo { width: 120px; height: 120px; }
+  .about-side .actions { gap: 10px; }
+  .about-side .button, .about-side .button--primary { min-height: 40px; padding: 6px 10px; font-size: 0.95rem; }
+}
 
 /* contact block (every page) + footer */
 .section--contact { background: var(--surface); border-top: 1px solid var(--text); }
@@ -1483,7 +1500,7 @@ html.is-booting main *, html.is-booting main *::before, html.is-booting main *::
   html:not(.free-scroll):has(body[data-page="about"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
   html:not(.free-scroll) body[data-page="about"] { --view: calc(100svh - 57px); }
   html:not(.free-scroll) body[data-page="about"] .about,
-  html:not(.free-scroll) body[data-page="about"] #abilities { display: flex; align-items: center; min-height: var(--view); padding: 32px 0; scroll-snap-align: start; }
+  html:not(.free-scroll) body[data-page="about"] #abilities { display: flex; align-items: center; min-height: var(--view); padding: 24px 0; scroll-snap-align: start; }
   html:not(.free-scroll) body[data-page="about"] #abilities > .container { width: 100%; }
   html:not(.free-scroll) body[data-page="about"] .tl3d-stop { scroll-snap-align: start; }
   html:not(.free-scroll) body[data-page="about"] .site-footer { scroll-snap-align: end; }
