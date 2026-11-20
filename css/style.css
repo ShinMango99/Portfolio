@@ -1326,182 +1326,285 @@ html.is-booting main *, html.is-booting main *::before, html.is-booting main *::
   .bw-text { font-size: 0.95rem; }
 }
 
-/* =================== About: 3D timeline =================== */
-/* About: the timeline as a 3D flight back through time.
-   The section pins (sticky stage) while you scroll through it; the scroll drives a camera down a corridor
-   where every entry is a real HTML card placed in depth. Colours come from the site tokens, so it follows
-   the light / dark switch. */
+/* =================== About: timeline disc =================== */
+/* About: the timeline as a game disc in a console (js/timeline-dial.js).
+   The section pins (sticky stage) while you scroll through it and the scroll turns the disc. Left: the console
+   with the disc half out of its slot. Right: title, filters, a counter and one card, the same size for every
+   entry. Colours come from the site tokens, except the disc itself, which is black in both themes. */
 
-.tl3d-section { padding: 0; }
-
-/* the track gives the section its scroll length (timeline3d.js sets the height) */
-.tl3d { position: relative; height: 1200vh; --persp: 1000px; }
-.tl3d-stage {
+.tl-section { padding: 0; }
+.dial { position: relative; }
+.dial-stage {
   position: sticky; top: var(--hdr, 57px);
   height: calc(100vh - var(--hdr, 57px));
   height: calc(100dvh - var(--hdr, 57px));
-  overflow: hidden;
+  overflow: hidden; isolation: isolate;
   background:
-    radial-gradient(ellipse 70% 45% at 50% 62%, color-mix(in srgb, var(--yellow-strong) 7%, transparent), transparent 70%),
+    radial-gradient(ellipse 48% 60% at 22% 52%, color-mix(in srgb, var(--yellow-strong) 7%, transparent), transparent 72%),
     var(--bg);
-  isolation: isolate;
 }
-.tl3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-.tl3d-viewport { position: absolute; inset: 0; z-index: 1; perspective: var(--persp); perspective-origin: 50% 50%; overflow: hidden; }
-.tl3d-world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
-.tl3d-fade {
-  position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 50%, color-mix(in srgb, var(--bg) 80%, transparent));
+.dial-in {
+  position: relative; height: 100%; max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
 }
+.dial-visual { position: relative; z-index: 1; min-width: 0; }
+.dial-stage.is-opening .dial-visual { z-index: 4; }
 
-/* every object sits at the centre of the stage, then JS places it at (x, y, z) */
-.t-obj { position: absolute; left: 50%; top: 50%; }
+/* right column: everything is as wide as the card, and the card is as wide as a 16:9 thumbnail can be
+   while the whole column still fits the screen */
+.dial-side {
+  --cw: min(100%, 600px, calc((100dvh - var(--hdr, 57px) - 490px) * 16 / 9));
+  position: relative; z-index: 3; min-width: 0; min-height: 0;
+  display: flex; flex-direction: column; justify-content: center; gap: 14px;
+  padding: 18px var(--gutter) 22px 12px;
+}
+.dial-bar, .dial-slot { width: var(--cw); }
+.dial-head { width: min(100%, 720px); }
+.dial-head h2 { font-size: 1.6rem; }
+.dial-lead { color: var(--muted); font-size: 0.95rem; margin: 2px 0 10px; }
+.dial-tabs { display: flex; flex-wrap: wrap; gap: 7px; }
+.dial-tabs .tl-tab { font-size: 0.86rem; padding: 2px 10px; box-shadow: 2px 2px 0 var(--text); }
 
-/* ---------- project card ---------- */
-.t-card { width: 640px; font-size: 1.4rem; display: block; color: var(--text); text-decoration: none; }
-.t-card-in {
+.dial-bar { display: flex; align-items: center; gap: 14px; }
+.dial-when { display: flex; align-items: baseline; gap: 8px; font-family: var(--font-pixel); line-height: 1; }
+.dial-when b { font-size: 2.3rem; font-weight: 700; }
+.dial-when i { font-style: normal; font-size: 1.15rem; color: var(--muted); }
+.dial-num { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; color: var(--muted); }
+.dial-hint { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: opacity 0.3s; }
+.dial-hint.is-gone { opacity: 0; }
+.dial-steps { margin-left: auto; display: flex; gap: 6px; }
+.dial-steps button {
+  width: 34px; height: 30px; padding: 0; display: grid; place-items: center;
+  border: 1px solid var(--text); background: var(--surface); color: var(--text); cursor: pointer;
+  box-shadow: 2px 2px 0 var(--text); transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
+}
+.dial-steps button:hover { background: var(--hover); }
+.dial-steps button:active { transform: translate(2px, 2px); box-shadow: none; }
+.dial-skip { position: absolute; z-index: 5; right: calc(var(--gutter) + 90px); bottom: 8px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.dial-skip:hover, .dial-skip:focus-visible { color: var(--text); }
+/* while the intro runs from 2022 to now, the card waits for where it lands */
+.dial-slot { transition: opacity 0.2s; }
+.dial-stage.is-sweeping .dial-slot { opacity: 0.3; }
+
+/* ---------- the card ---------- */
+.tc {
+  display: flex; flex-direction: column; width: 100%;
+  color: var(--text); text-decoration: none;
   background: var(--surface); border: 1px solid var(--text); box-shadow: 6px 6px 0 var(--text);
   transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap);
 }
-.t-card:hover .t-card-in, .t-card:focus-visible .t-card-in { transform: translate(-4px, -4px); box-shadow: 10px 10px 0 var(--text); }
-.t-card:active .t-card-in { transform: translate(6px, 6px); box-shadow: 0 0 0 var(--text); transition-duration: 0.05s; }
-.t-card:focus-visible { outline: none; }
-.t-card:focus-visible .t-card-in { outline: 3px solid var(--accent); outline-offset: 4px; }
-
-.t-media { position: relative; aspect-ratio: 16 / 9; background: var(--placeholder); border-bottom: 1px solid var(--text); overflow: hidden; }
-.t-media video, .t-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.t-date {
-  position: absolute; left: 0.6em; top: 0.6em; z-index: 1;
-  padding: 0.15em 0.55em; background: var(--bg); color: var(--text); border: 1px solid var(--text);
-  font-family: var(--font-mono); font-size: 0.68em; letter-spacing: 0.06em; text-transform: uppercase;
-}
-.t-now {
-  position: absolute; right: 0.6em; top: 0.6em; z-index: 1;
-  display: flex; align-items: center; gap: 0.5em;
-  padding: 0.15em 0.55em; background: var(--yellow-strong); color: var(--on-yellow); border: 1px solid var(--on-yellow);
-  font-family: var(--font-mono); font-size: 0.68em; letter-spacing: 0.06em; text-transform: uppercase;
-}
-/* 10 pixel blocks, lit up to the completion */
-.t-now i { display: inline-flex; gap: 2px; }
-.t-now i b { width: 0.45em; height: 0.8em; background: color-mix(in srgb, var(--on-yellow) 22%, transparent); }
-.t-now i b.on { background: var(--on-yellow); }
 @media (prefers-reduced-motion: no-preference) {
-  .t-now::before { content: ""; width: 0.5em; height: 0.5em; background: var(--on-yellow); animation: t-blink 1s steps(1) infinite; }
+  .tc { animation: tc-in 0.24s var(--ease-out) both; }
 }
-@keyframes t-blink { 50% { opacity: 0; } }
+@keyframes tc-in { from { opacity: 0; transform: translateY(var(--from, 14px)); } }
+a.tc:hover, a.tc:focus-visible { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--text); }
+a.tc:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--text); transition-duration: 0.05s; }
+a.tc:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 
-.t-body { padding: 0.75em 0.9em 0.85em; display: grid; gap: 0.4em; }
-.t-body h3 { font-size: 1.45em; letter-spacing: -0.02em; line-height: 1.1; }
-.t-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.t-chips li { font-family: var(--font-mono); font-size: 0.66em; padding: 0.1em 0.6em; border: 1px solid var(--line); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-.t-body p { color: var(--muted); font-size: 0.85em; line-height: 1.45; }
-.t-go { font-size: 0.8em; font-weight: 700; color: var(--accent); }
-
-/* ---------- life milestone: a smaller sign without media ---------- */
-.t-ms { width: 440px; font-size: 1.3rem; }
-.t-ms-in {
-  display: flex; gap: 0.8em; align-items: center;
-  padding: 0.85em 1em; background: var(--bg); border: 1px solid var(--text); border-left: 0.5em solid var(--yellow-strong);
-  box-shadow: 6px 6px 0 var(--text);
+/* 16:9 frame; a thumbnail of any other shape is shown whole over a blurred copy of itself */
+.tc-media { position: relative; flex: none; aspect-ratio: 16 / 9; overflow: hidden; background: #141412; border-bottom: 1px solid var(--text); }
+.tc-bg { position: absolute; left: -10%; top: -10%; width: 120%; height: 120%; object-fit: cover; filter: blur(18px) brightness(0.6); }
+.tc-fg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+.tc-fg.is-cover { object-fit: cover; }
+.tc-now {
+  position: absolute; right: 10px; top: 10px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 2px 8px; background: var(--yellow-strong); color: var(--on-yellow); border: 1px solid var(--on-yellow);
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
 }
-.t-ms img { width: 2.4em; height: 2.4em; flex-shrink: 0; object-fit: contain; background: var(--surface); border: 1px solid var(--line); border-radius: 50%; }
-.t-ms small { display: block; font-family: var(--font-mono); font-size: 0.6em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.t-ms h3 { font-size: 1.05em; font-style: italic; line-height: 1.25; margin-top: 0.15em; }
-
-/* ---------- year gate: a huge pixel number you fly through ---------- */
-.t-gate {
-  font-family: var(--font-pixel); font-weight: 700; font-size: 34rem; line-height: 0.8; letter-spacing: -0.02em;
-  color: color-mix(in srgb, var(--yellow-strong) 6%, transparent);
-  -webkit-text-stroke: 3px color-mix(in srgb, var(--yellow-strong) 38%, transparent);
-  white-space: nowrap; pointer-events: none; user-select: none;
+.tc-now i { display: inline-flex; gap: 2px; }
+.tc-now i b { width: 6px; height: 11px; background: color-mix(in srgb, var(--on-yellow) 22%, transparent); }
+.tc-now i b.on { background: var(--on-yellow); }
+.tc-award {
+  position: absolute; left: 10px; bottom: 10px; max-width: calc(100% - 20px);
+  padding: 2px 8px; background: var(--yellow-strong); color: var(--on-yellow); border: 1px solid var(--on-yellow);
+  font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-/* ---------- start and end of the tape ---------- */
-.t-cap { width: 760px; text-align: center; font-size: 1.15rem; }
-.t-cap .t-kicker { font-family: var(--font-mono); font-size: 0.8em; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.t-cap h3 { font-family: var(--font-pixel); font-weight: 700; font-size: 7.5em; line-height: 0.9; letter-spacing: -0.01em; margin: 0.12em 0 0.18em; }
-.t-cap h3 em { font-style: normal; background: var(--yellow-strong); color: var(--on-yellow); padding: 0 0.12em; }
-.t-cap p { color: var(--muted); font-size: 1.05em; }
-.t-cap p b { color: var(--text); }
-.t-cap .actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
-.t-cap .button { font-size: 1.35rem; padding: 0.5em 1em; }
-
-/* ---------- HUD (flat, on top of the space) ---------- */
-.tl3d-head, .tl3d-years, .tl3d-clock, .tl3d-hint, .tl3d-skip { position: absolute; z-index: 4; }
-
-.tl3d-head { top: 20px; left: var(--gutter); right: var(--gutter); pointer-events: none; }
-.tl3d-head > * { pointer-events: auto; }
-.tl3d-head h2 { font-size: 1.75rem; margin: 0; }
-.tl3d-lead { color: var(--muted); margin: 2px 0 14px; }
-.tl3d-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.tl3d-tabs .tl-tab { font-size: 0.92rem; padding: 4px 12px; }
-
-.tl3d-years { left: var(--gutter); top: 50%; transform: translateY(-50%); }
-.tl3d-years ol { display: grid; gap: 2px; border-left: 2px solid var(--line); }
-.tl3d-years button {
-  display: flex; gap: 10px; align-items: baseline; margin-left: -2px; padding: 3px 12px;
-  border: 0; border-left: 4px solid transparent; background: none; cursor: pointer; text-align: left;
-  font-family: var(--font-pixel); font-size: 1.15rem; color: var(--muted);
+.tc-body { height: 276px; display: flex; flex-direction: column; gap: 8px; padding: 14px 18px 16px; }
+.tc-body > * { flex: none; }
+.tc-kicker { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-title { font-size: 1.7rem; letter-spacing: -0.02em; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-title--2 { font-size: 1.4rem; font-style: italic; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.tc-plain { font-size: 0.97rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.tc--life .tc-plain { color: var(--muted); }
+.tc-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding-top: 9px; border-top: 1px solid var(--line); }
+.tc-facts dt { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.tc-facts dd { margin: 2px 0 0; font-size: 0.84rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tc-go {
+  margin-top: auto; align-self: flex-start; padding: 7px 14px;
+  background: var(--yellow-strong); color: var(--on-yellow); border: 1px solid var(--text); box-shadow: 3px 3px 0 var(--text);
+  font-weight: 700; font-size: 0.95rem;
 }
-.tl3d-years button small { font-family: var(--font-mono); font-size: 0.72rem; }
-.tl3d-years button:hover { color: var(--text); }
-.tl3d-years button[aria-current="true"] { color: var(--text); border-left-color: var(--yellow-strong); }
+.tc-none {
+  margin-top: auto; align-self: flex-start; padding: 6px 12px; border: 1px dashed var(--line);
+  font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.tc.is-loading .tc-go-label::after { content: "..."; display: inline-block; width: 1.2em; overflow: hidden; vertical-align: bottom; animation: tc-dots 0.6s steps(4) infinite; }
+@keyframes tc-dots { from { width: 0; } to { width: 1.2em; } }
+/* life event: no thumbnail, the year on a striped plate */
+.tc-media--life { background: repeating-linear-gradient(-45deg, var(--placeholder) 0 10px, var(--surface) 10px 20px); }
+.tc-life { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 6px; }
+.tc-life img { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); object-fit: contain; }
+.tc-life b { font-family: var(--font-pixel); font-size: 4rem; line-height: 0.9; }
+.tc-life small { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
-.tl3d-clock { left: var(--gutter); bottom: 22px; display: grid; gap: 4px; }
-.tl3d-clock-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.tl3d-clock-date { display: flex; align-items: baseline; gap: 10px; font-family: var(--font-pixel); line-height: 1; }
-.tl3d-clock-date b { font-size: 3rem; font-weight: 700; }
-.tl3d-clock-date i { font-style: normal; font-size: 1.5rem; color: var(--muted); width: 2.4em; }
-.tl3d-clock-bar { display: block; width: 180px; height: 6px; background: var(--placeholder); border: 1px solid var(--text); }
-.tl3d-clock-bar span { display: block; height: 100%; width: 0; background: var(--yellow-strong); }
+/* ---------- the disc (black in both themes: it is an object) ---------- */
+.disc { position: absolute; inset: 0; will-change: transform; }
+.disc-face {
+  position: absolute; border-radius: 50%;
+  background:
+    conic-gradient(from 300deg, transparent 0 8%, rgba(255, 120, 200, 0.07) 11%, rgba(120, 220, 255, 0.09) 13%, rgba(255, 240, 150, 0.07) 15%, transparent 18% 57%,
+      rgba(255, 120, 200, 0.06) 60%, rgba(120, 220, 255, 0.08) 62%, rgba(255, 240, 150, 0.06) 64%, transparent 67%),
+    radial-gradient(circle closest-side, #1d1c1a 0 31%, #0c0c0c 31.5% 33.5%, transparent 34% 89.6%, #0c0c0c 90% 100%),
+    repeating-radial-gradient(circle closest-side, #151515 0 5px, #191919 5px 6px);
+  box-shadow: 0 0 0 1.5px #000;
+}
+/* the reading window: the track in it is the one on the card */
+.disc-win {
+  position: absolute; z-index: 1; border-radius: 6px; cursor: pointer;
+  background: var(--yellow-strong); box-shadow: 0 0 0 1.5px #000, 0 0 24px color-mix(in srgb, var(--yellow-strong) 45%, transparent);
+}
+.disc-win.is-life { background: #e9e4d8; cursor: default; }
+/* the turning layer: track titles along rays and the year ring */
+.disc-rot { position: absolute; z-index: 2; transform-origin: 50% 50%; will-change: transform; overflow: visible; pointer-events: none; }
+.disc-band { fill: #252422; stroke: #000; stroke-width: 1; }
+.disc-band--alt { fill: #302e2a; }
+.disc-yr { font-family: var(--font-pixel); font-weight: 700; fill: var(--yellow-strong); text-anchor: middle; dominant-baseline: middle; }
+.disc-sep { stroke: color-mix(in srgb, var(--yellow-strong) 60%, transparent); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.disc-trk { pointer-events: auto; cursor: pointer; }
+.disc-hit { fill: transparent; }
+.disc-dot { fill: #6f6a60; }
+.disc-ti { font-family: var(--font); font-weight: 600; fill: #ece7dc; }
+.disc-dt { font-family: var(--font-mono); fill: #9a9488; letter-spacing: 0.06em; }
+.disc-trk:hover .disc-ti { fill: #fff; text-decoration: underline; }
+.disc-trk.is-life .disc-ti { font-style: italic; fill: #c9c3b6; }
+.disc-trk.is-on .disc-ti { fill: #1c1c1c; font-weight: 700; text-decoration: none; }
+.disc-trk.is-on .disc-dt { fill: #3d3a33; }
+.disc-trk.is-on .disc-dot { fill: #1c1c1c; }
+/* the label: the current cover, spinning behind the console's porthole */
+.disc-label {
+  position: absolute; z-index: 3; padding: 0; border: 0; border-radius: 50%; overflow: hidden; cursor: pointer;
+  background: #2a2926; box-shadow: 0 0 0 1.5px #000; will-change: transform;
+}
+.disc-label:disabled { cursor: default; }
+.disc-label img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.25s; }
+.disc-label img.is-on { opacity: 1; }
+.disc-label.is-life { background: repeating-radial-gradient(circle, #e9e4d8 0 6px, #e2dccd 6px 7px); }
+.disc-label.is-life img { opacity: 0; }
+.disc-label i { position: absolute; left: 50%; top: 50%; width: 6%; height: 6%; transform: translate(-50%, -50%); border-radius: 50%; background: #0c0c0c; box-shadow: 0 0 0 2px #e9e4d8, 0 0 0 3.5px #000; }
 
-.tl3d-hint { left: 50%; bottom: 22px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: opacity 0.3s; }
-.tl3d-hint span { display: inline-block; color: var(--text); }
-@media (prefers-reduced-motion: no-preference) { .tl3d-hint span { animation: t-bob 1.2s steps(2) infinite; } }
-@keyframes t-bob { 50% { transform: translateY(4px); } }
-.tl3d-hint.is-gone { opacity: 0; }
+/* ---------- the console: a flat panel from the left edge, ink lines only ----------
+   The slot is its edge, with a hard shadow on the disc like every sticker on the site; the window over the
+   label has a lid ring. Three keys sit below it and each one works: POWER turns the disc off (the plain list
+   takes its place), RESET turns it back to now, EJECT opens the case study. */
+.cons { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.cons-shell { position: absolute; top: -40px; bottom: -40px; background: var(--surface); }
+.cons-slot { position: absolute; top: -40px; bottom: -40px; left: calc(var(--slot) - 8px); width: 8px; background: var(--placeholder); border-left: 1.5px solid var(--text); border-right: 1.5px solid var(--text); }
+.cons-shade { position: absolute; top: 0; bottom: 0; left: var(--slot); width: 6px; background: var(--text); }
+.cons-port { position: absolute; border-radius: 50%; border: 1.5px solid var(--text); box-shadow: 0 0 0 10px var(--surface), 0 0 0 11.5px var(--text); }
+.cons-brand { position: absolute; left: 22px; top: 22px; display: flex; align-items: center; gap: 10px; }
+.cons-brand b { font-family: var(--font-pixel); font-weight: 700; font-size: 2.2rem; line-height: 1; padding: 0 6px; background: var(--yellow-strong); color: var(--on-yellow); border: 1.5px solid var(--text); box-shadow: 3px 3px 0 var(--text); }
+.cons-brand span { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.5; color: var(--muted); }
 
-.tl3d-skip { right: var(--gutter); bottom: 22px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
-.tl3d-skip:hover, .tl3d-skip:focus-visible { color: var(--text); }
+/* the three keys: round stickers with the label underneath, all the same size */
+.cons-ctrl { position: absolute; z-index: 3; left: 22px; bottom: 28px; display: flex; gap: 16px; }
+.cons-btn { display: grid; justify-items: center; gap: 7px; padding: 0; border: 0; background: none; color: var(--text); cursor: pointer; font: inherit; }
+.cons-key {
+  position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  border: 1.5px solid var(--text); background: var(--surface); box-shadow: 3px 3px 0 var(--text);
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap), background var(--snap-time) var(--snap);
+}
+.cons-key svg { width: 18px; height: 18px; display: block; }
+.cons-lab { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.cons-btn:hover .cons-key, .cons-btn:focus-visible .cons-key { background: var(--hover); transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--text); }
+.cons-btn:hover .cons-lab, .cons-btn:focus-visible .cons-lab { color: var(--text); }
+.cons-btn:active .cons-key, .dial-stage.is-opening .cons-eject .cons-key, .dial-stage.is-off .cons-power .cons-key { transform: translate(3px, 3px); box-shadow: none; }
+.cons-btn:focus-visible { outline: none; }
+.cons-btn:focus-visible .cons-key { outline: 3px solid var(--accent); outline-offset: 3px; }
+.dial-stage.is-opening .cons-eject .cons-key { background: var(--yellow-strong); color: var(--on-yellow); }
+.cons-btn:disabled { cursor: default; opacity: 0.45; }
+.cons-btn:disabled .cons-key { box-shadow: none; transform: none; background: var(--surface); }
+/* the power light: one square of the point colour, off while shutting down */
+.cons-led { width: 12px; height: 12px; background: var(--yellow-strong); border: 1.5px solid var(--text); }
+.dial-stage.is-opening .cons-led { animation: cons-blink 0.16s steps(1) infinite; }
+.dial-stage.is-off .cons-led { background: var(--placeholder); }
+@keyframes cons-blink { 50% { background: var(--surface); } }
+/* small spaces (phones, short windows): the slot, the window and the keys */
+.is-compact .cons-brand { display: none; }
+.is-compact .cons-ctrl { left: 10px; bottom: 10px; gap: 10px; }
+.is-compact .cons-key { width: 32px; height: 32px; box-shadow: 2px 2px 0 var(--text); }
+.is-compact .cons-key svg { width: 14px; height: 14px; }
+.is-compact .cons-led { width: 9px; height: 9px; }
+.is-compact .cons-lab { display: none; }
 
-/* ---------- phones: one entry at a time, swaying left and right ---------- */
-@media (max-width: 759px) {
-  .tl3d { --persp: 760px; }
-  .tl3d-head { top: 12px; }
-  .tl3d-head h2 { font-size: 1.4rem; }
-  .tl3d-lead { display: none; }
-  .tl3d-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 8px 0 6px; }
-  .tl3d-tabs .tl-tab { white-space: nowrap; flex-shrink: 0; }
-  .tl3d-years, .tl3d-hint { display: none; }
-  .tl3d-clock { bottom: 14px; }
-  .tl3d-clock-date b { font-size: 2rem; }
-  .tl3d-clock-date i { font-size: 1.1rem; }
-  .tl3d-clock-bar { width: 120px; }
-  .tl3d-skip { bottom: 14px; }
-  /* built wider than the screen: the camera stands 200px back, so they shrink to fit */
-  .t-card { width: 108vw; font-size: 1.45rem; }
-  .t-ms { width: 104vw; font-size: 1.55rem; }
-  .t-cap { width: 108vw; font-size: 1.2rem; }
-  .t-cap h3 { font-size: 5em; }
-  .t-gate { font-size: 17rem; }
+/* POWER off: the plain list stands in for the disc, with a switch to turn it back on */
+.dial-shut .dial { display: none; }
+.dial-shut .tl-classic { display: block; padding: 64px var(--gutter); }
+.tl-power { margin: -8px 0 24px; }
+.tl-power .button { display: inline-flex; align-items: center; gap: 8px; }
+.tl-power svg { width: 15px; height: 15px; }
+
+/* ---------- Top: back to the top of the page (main.js adds it once you scroll past the first screen) ---------- */
+.to-top {
+  position: fixed; right: 18px; bottom: 18px; z-index: 20;
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  border: 1px solid var(--text); background: var(--surface); color: var(--text); cursor: pointer;
+  font: 600 0.85rem var(--font); letter-spacing: 0.06em; text-transform: uppercase;
+  box-shadow: 3px 3px 0 var(--text);
+  transition: transform var(--snap-time) var(--snap), box-shadow var(--snap-time) var(--snap), opacity 0.2s, visibility 0.2s;
+}
+.to-top:hover, .to-top:focus-visible { background: var(--hover); transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--text); }
+.to-top:active { transform: translate(3px, 3px); box-shadow: none; transition-duration: 0.05s; }
+.to-top[hidden] { display: inline-flex; opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* short windows: drop the lead and the facts row so the card keeps its 16:9 thumbnail */
+@media (max-height: 820px) and (min-width: 761px) {
+  .dial-side { --cw: min(100%, 600px, calc((100dvh - var(--hdr, 57px) - 380px) * 16 / 9)); }
+  .dial-lead, .tc-facts { display: none; }
+  .tc-body { height: 214px; }
+}
+
+/* phones: the console band on top, the card below */
+@media (max-width: 760px) {
+  .dial-in { grid-template-columns: 1fr; grid-template-rows: 30% minmax(0, 1fr); }
+  .dial-visual { grid-row: 1; overflow: hidden; }
+  .dial-stage.is-opening .dial-visual { overflow: visible; }
+  .dial-side {
+    --cw: min(100%, calc(((100dvh - var(--hdr, 57px)) * 0.7 - 290px) * 16 / 9));
+    grid-row: 2; justify-content: flex-start; align-items: center; gap: 10px; padding: 10px var(--gutter) 14px;
+  }
+  .dial-head, .dial-bar { width: 100%; }
+  .dial-head h2, .dial-lead, .dial-hint, .tc-facts { display: none; }
+  .dial-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 0 0 4px; }
+  .dial-tabs .tl-tab { flex-shrink: 0; white-space: nowrap; }
+  .dial-when b { font-size: 1.6rem; }
+  .tc-body { height: 186px; padding: 10px 14px 12px; gap: 6px; }
+  .tc-title { font-size: 1.3rem; }
+  .tc-title--2 { font-size: 1.1rem; }
+  .tc-plain { font-size: 0.88rem; -webkit-line-clamp: 2; }
+  .tc-go { padding: 5px 12px; font-size: 0.88rem; }
+  .tc-life b { font-size: 2.6rem; }
+  .dial-skip { display: none; }
 }
 
 /* ---------- reduced motion: the classic list instead ---------- */
 .tl-classic { display: none; }
-.tl3d-off .tl3d { display: none; }
-.tl3d-off .tl-classic { display: block; padding: 64px var(--gutter); }
+.dial-off .dial { display: none; }
+.dial-off .tl-classic { display: block; padding: 64px var(--gutter); }
 
 /* ---------- About scroll snap (mouse wheel only, same rule as Home and the category pages) ----------
-   Stops: the bio, the abilities, then every timeline entry (timeline3d.js puts a 1px
-   .tl3d-stop marker in the track at each entry), then the footer. The bio and abilities are one screen tall,
-   so the next section never peeks in. Touchpads get .free-scroll from main.js and scroll freely. */
-.tl3d-stop { position: absolute; left: 0; width: 1px; height: 1px; pointer-events: none; }
+   Stops: the bio, the abilities, then every timeline entry (timeline-dial.js puts a 1px .dial-stop marker
+   in the track at each entry), then the footer. The bio and abilities are one screen tall, so the next
+   section never peeks in. Touchpads get .free-scroll from main.js and scroll freely. */
+.dial-stop { position: absolute; left: 0; width: 1px; height: 1px; pointer-events: none; }
 @media (hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 640px) {
-  html:not(.free-scroll):has(body[data-page="about"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
+  /* not while the plain list stands in for the disc (POWER off, reduced motion): it has no stops */
+  html:not(.free-scroll):not(.dial-shut):not(.dial-off):has(body[data-page="about"]) { scroll-snap-type: y mandatory; scroll-padding-top: 57px; }
   html:not(.free-scroll) body[data-page="about"] { --view: calc(100svh - 57px); }
   html:not(.free-scroll) body[data-page="about"] .about,
   html:not(.free-scroll) body[data-page="about"] #abilities { display: flex; align-items: center; min-height: var(--view); padding: 24px 0; scroll-snap-align: start; }
   html:not(.free-scroll) body[data-page="about"] #abilities > .container { width: 100%; }
-  html:not(.free-scroll) body[data-page="about"] .tl3d-stop { scroll-snap-align: start; }
+  html:not(.free-scroll) body[data-page="about"] .dial-stop { scroll-snap-align: start; }
   html:not(.free-scroll) body[data-page="about"] .site-footer { scroll-snap-align: end; }
 }

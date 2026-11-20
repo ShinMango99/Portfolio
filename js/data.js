@@ -105,11 +105,12 @@
 
   // Life events shown on the timeline only.
   // date / end: "YYYY-MM-DD" or "YYYY-MM". image: optional small logo.
+  // category: optional, puts the event under that timeline filter (e.g. "Club"); without it the event is "Life".
   milestones: [
     { date: "2022-02-21", title: "Entered George Mason University: Computer Game Design" },
-    { date: "2022-03", title: "Joined Gnonymous, a game development club", image: "assets/img/gnonymous.png" },
-    { date: "2022-08-22", title: "Gnonymous: PR Manager", image: "assets/img/gnonymous.png" },
-    { date: "2023-02-20", end: "2023-12-13", title: "Gnonymous: Vice President", image: "assets/img/gnonymous.png" },
+    { date: "2022-03", title: "Joined Gnonymous, a game development club", image: "assets/img/gnonymous.png", category: "Club" },
+    { date: "2022-08-22", title: "Gnonymous: PR Manager", image: "assets/img/gnonymous.png", category: "Club" },
+    { date: "2023-02-20", end: "2023-12-13", title: "Gnonymous: Vice President", image: "assets/img/gnonymous.png", category: "Club" },
     { date: "2023-12-17", title: "Military service" },
     { date: "2025-08", title: "Returned to school" }
   ],

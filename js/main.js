@@ -1061,7 +1061,8 @@
     var tabs = $("#tl-tabs");
     if (tabs) {
       tabs.innerHTML = TL_TABS.map(function (t, i) {
-        var n = t.cat ? D.projects.filter(function (p) { return hasCat(p, t.cat); }).length : null;
+        var n = t.cat ? D.projects.filter(function (p) { return hasCat(p, t.cat); }).length +
+          (D.milestones || []).filter(function (m) { return m.category === t.cat; }).length : null;
         return '<button type="button" class="tl-tab" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' +
           esc(t.label) + (n != null ? " <span>" + n + "</span>" : "") + "</button>";
       }).join("");
@@ -1079,7 +1080,7 @@
   function fillTimeline(cat) {
     var events = D.projects.filter(function (p) { return !cat || hasCat(p, cat); }).map(function (p) {
       return { date: p.date, project: p };
-    }).concat(cat ? [] : (D.milestones || []).map(function (m) {
+    }).concat((D.milestones || []).filter(function (m) { return !cat || m.category === cat; }).map(function (m) {
       return { date: m.date, milestone: m };
     })).sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
 
@@ -1241,6 +1242,25 @@
   if (pages[body.dataset.page]) pages[body.dataset.page]();
   renderContact();
   themeToggle();
+  toTop();
+
+  /* Top: a sticker button in the bottom right corner, shown once you have scrolled past the first screen */
+  function toTop() {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "to-top";
+    btn.hidden = true;
+    btn.innerHTML = '<span aria-hidden="true">&uarr;</span> Top';
+    btn.setAttribute("aria-label", "Back to the top of the page");
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: reduced ? "instant" : "smooth" });
+      var skip = $(".skip-link"); if (skip) skip.focus({ preventScroll: true });
+    });
+    body.appendChild(btn);
+    function update() { btn.hidden = window.scrollY < window.innerHeight * 0.8; }
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+  }
 
   /* light / dark switch at the end of the header. Dark is the default; a click stores the choice
      (the inline script in <head> applies it before paint). */

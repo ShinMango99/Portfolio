@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- theme chosen with the header toggle, applied before paint so the page never flashes the other theme -->
   <script>try { var t = localStorage.getItem("theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
-  <script>if (matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("tl3d-off");</script>
+  <script>if (matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("dial-off");</script>
   <title>About · Jaemin Cho</title>
   <meta name="description" content="About Jaemin Cho: bio, skills, resume and a timeline from 2022 to now.">
   <link rel="icon" href="data:,">
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="js/data.js" defer></script>
   <script src="js/main.js" defer></script>
-  <script src="js/timeline3d.js" defer></script>
+  <script src="js/timeline-dial.js" defer></script>
 </head>
 <body data-page="about">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -68,32 +68,37 @@
       </div>
     </section>
 
-    <!-- 3D timeline: the section pins while you scroll through it, and the scroll drives a camera back through time.
-         With reduced motion the classic list below is shown instead (timeline3d.js never builds the space). -->
-    <section class="section tl3d-section" id="timeline" aria-labelledby="timeline-title">
-      <div class="tl3d" id="tl3d">
-        <div class="tl3d-stage" id="tl3d-stage">
-          <canvas class="tl3d-canvas" id="tl3d-canvas" aria-hidden="true"></canvas>
-          <div class="tl3d-viewport"><div class="tl3d-world" id="tl3d-world"></div></div>
-          <div class="tl3d-fade" aria-hidden="true"></div>
-
-          <!-- title, lead and filters sit inside the pinned stage, so the whole timeline fits one screen -->
-          <div class="tl3d-head">
-            <h2 id="timeline-title">Timeline</h2>
-            <p class="tl3d-lead">Newest first, back to 2022. Scroll to fly back through time, click an entry for the case study.</p>
-            <div class="tl3d-tabs" id="tl3d-tabs" role="group" aria-label="Filter timeline"></div>
+    <!-- Timeline disc: the section pins while you scroll through it, and the scroll turns a game disc in a console.
+         With reduced motion the classic list below is shown instead (timeline-dial.js builds nothing). -->
+    <section class="section tl-section" id="timeline" aria-labelledby="timeline-title">
+      <div class="dial" id="dial">
+        <div class="dial-stage" id="dial-stage">
+          <div class="dial-in">
+            <!-- left: the console and the disc (timeline-dial.js) -->
+            <div class="dial-visual" id="dial-visual"></div>
+            <!-- right: title, filters, counter and the card for the entry in the reading window -->
+            <div class="dial-side">
+              <div class="dial-head">
+                <h2 id="timeline-title">Timeline</h2>
+                <p class="dial-lead">2022 to now. Scroll to turn the disc, click a game to play it.</p>
+                <div class="dial-tabs" id="dial-tabs" role="group" aria-label="Filter timeline"></div>
+              </div>
+              <div class="dial-bar">
+                <p class="dial-when" aria-hidden="true"><b id="dial-year">2026</b><i id="dial-month">OCT</i></p>
+                <span class="dial-num" id="dial-num">01 / 20</span>
+                <span class="dial-hint" id="dial-hint">Scroll &darr;</span>
+                <span class="dial-steps">
+                  <button type="button" id="dial-prev" aria-label="Newer entry">&#9650;</button>
+                  <button type="button" id="dial-next" aria-label="Older entry">&#9660;</button>
+                </span>
+              </div>
+              <div class="dial-slot" id="dial-slot"></div>
+            </div>
           </div>
-          <nav class="tl3d-years" aria-label="Jump to year"><ol id="tl3d-years"></ol></nav>
-          <div class="tl3d-clock" aria-hidden="true">
-            <span class="tl3d-clock-label">Rewinding to</span>
-            <span class="tl3d-clock-date"><b id="tl3d-year">2026</b><i id="tl3d-month">OCT</i></span>
-            <span class="tl3d-clock-bar"><span id="tl3d-progress"></span></span>
-          </div>
-          <p class="tl3d-hint" id="tl3d-hint" aria-hidden="true">Scroll to rewind <span>&#8595;</span></p>
-          <a class="tl3d-skip" href="#tl3d-after">Skip the timeline</a>
+          <a class="dial-skip" href="#dial-after">Skip the timeline</a>
         </div>
       </div>
-      <span id="tl3d-after"></span>
+      <span id="dial-after"></span>
 
       <!-- classic list (main.js fills it). Hidden while the 3D timeline runs. -->
       <div class="container tl-classic">
