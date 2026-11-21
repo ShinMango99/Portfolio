@@ -654,15 +654,16 @@
       preview: "assets/video/preview/this-is-not-chess.mp4", // 4 s silent loop, plays on hover like an itch.io cover GIF
       summary: "Chess, but nothing stays still.",
       description:
-        "An online multiplayer chess game made for people who don't know chess. It fuses chess with entirely different genres, so the other genre does half the teaching. The first is Deckmate, a card game mode with Uno-style cards: play a card to bend the rules, and 22 jokers can completely change the board mid-game.",
+        "Chess fused with entirely different genres: same 64 squares, a whole new kind of fun, so even people who don't know chess can enjoy it. Deckmate crosses chess with a card game, where you match a card's color or number to move and jokers flip the whole game. King of the Board crosses it with a 1-4 player shooter: shrink to piece size and fight through a destructible library while two giant kings play chess above you. Partymate crosses it with a 1-4 player party game. Chess Academy is a 20-stage single-player campaign where a rude, dramatic Black King teaches chess from zero.",
       // plain-language summary for readers outside games (shown at the top of the project page)
       plain:
-        "Chess for people who don't know chess. It mixes chess with completely different kinds of games, starting with a card mode where cards change the rules mid-game, and you can play it online against a friend. I design the rules and build it with two teammates.",
+        "Chess mixed with completely different kinds of games: a card game, a 1-4 player shooter where you fight at piece size under two giant kings and a 1-4 player party game, plus a story campaign that teaches chess from zero. You can play online against a friend. I design the rules and build it with two teammates.",
       sections: [
         {
           heading: "What I focused on",
           items: [
-            "Fusing chess with different genres, and stretching one idea into many modes. Deckmate, the card mode with 22 jokers, is the first.",
+            "Fusing chess with entirely different genres, and stretching one idea into many modes: Deckmate (chess x card game), King of the Board (chess x 1-4 player shooter) and Partymate (chess x 1-4 player party game).",
+            "Chess Academy: a 20-stage campaign where the Black King teaches chess from \"this is a pawn\" to a graduation match, reacting to every wrong move.",
             "Online multiplayer, so two players can face each other from different computers.",
             "Game feel and VFX: making every move, card and joker feel punchy on screen.",
             "AI pair programming: using AI tools, skills and plugins to build faster, while checking that the game never feels AI-made and actually gives players a good experience.",
@@ -673,7 +674,7 @@
       role: "Game design, rules design, game feel/VFX direction, programming (AI-assisted)",
       tools: "Unity, C#, AI pair programming",
       team: "3",
-      outcome: "Windows build downloadable on itch.io, with online multiplayer, a Classic mode, and a Deckmate card mode with 22 jokers."
+      outcome: "Windows build downloadable on itch.io with Classic chess vs AI, Chess Academy, Deckmate, King of the Board, Partymate and online multiplayer."
     }
   ]
 };
